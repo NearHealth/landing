@@ -12,7 +12,7 @@ function CenterIcon() {
   return (
     <div className="how-center-icon">
       <div className="how-circle">
-        <img src={asset('assets/icons/near-logo.svg')} alt="" className="how-circle-logo" />
+        <img src={asset('assets/icons/near-logo-coloured.svg')} alt="" className="how-circle-logo" />
       </div>
     </div>
   )

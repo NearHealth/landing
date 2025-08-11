@@ -471,10 +471,10 @@ ul { list-style: none; }
 }
 .built-for-h-track {
   display: flex; align-items: center; gap: 0;
-  padding-left: calc(50vw - 60px);
+  padding-left: calc(50vw - 40px);
 }
 .built-for-h-item {
-  flex-shrink: 0; width: 120px; text-align: center;
+  flex-shrink: 0; width: 80px; text-align: center;
   font-size: var(--fs-body); font-weight: 500;
 }
 .hero-mobile-video {
@@ -577,22 +577,21 @@ ul { list-style: none; }
   .how-step-center-row { margin-top: 0; }
 
   /* ── Post-Enrollment (Dark) ── */
-  .post-enrollment { padding: 80px 0; }
+  .post-enrollment { padding: 80px var(--px); }
   .post-enrollment > .container { border-radius: 30px; padding: 36px 24px; }
   .post-enrollment .section-title { font-size: 32px; letter-spacing: -0.01em; margin-bottom: 40px; }
-  .post-grid { flex-direction: column; gap: 0; border-top: none; padding-top: 0; }
-  .post-grid-bottom { border-top: none; }
-  .post-col {
-    flex: 0 0 auto;
-    padding: 24px 0; border-bottom: 1px solid rgba(255,255,255,0.12);
-    display: flex; flex-direction: column; gap: 0;
+  .post-list-item {
+    padding: 24px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.12);
   }
-  .post-col:last-child { border-bottom: none; }
-  .post-icon { display: flex; align-items: center; gap: 12px; margin-bottom: 0; }
-  .post-col h3 { font-size: 22px; line-height: 1.13; margin-bottom: 10px; }
-  .post-col p { font-size: 16px; line-height: 1.42; opacity: 0.6; }
-  .post-divider-v { display: none; }
-  .post-col-hidden, .post-divider-hidden { display: none; }
+  .post-list-item:last-child { border-bottom: none; }
+  .post-list-header {
+    display: flex; align-items: center; gap: 12px;
+    margin-bottom: 10px;
+  }
+  .post-list-header .post-icon { margin-bottom: 0; flex-shrink: 0; }
+  .post-list-header h3 { font-size: 22px; font-weight: 500; color: var(--white); line-height: 1.13; }
+  .post-list-item p { font-size: 16px; line-height: 1.42; color: rgba(255,255,255,0.6); font-weight: 500; }
 
   /* ── One Platform ── */
   .one-platform { padding: 80px 0 0; }
@@ -617,7 +616,19 @@ ul { list-style: none; }
   /* ── Shaped Section ── */
   .shaped-section { padding: 80px 0; }
   .shaped-section .section-title { font-size: 36px; letter-spacing: -0.01em; }
-  .shaped-photo { border-radius: 30px; }
+  .shaped-photo { border-radius: 30px; height: 580px; }
+  .shaped-photo img { height: 100%; object-fit: cover; }
+  .shaped-overlay {
+    justify-content: flex-end; padding: 24px;
+    background: linear-gradient(to bottom, transparent 20%, rgba(0,0,0,0.65) 100%);
+  }
+  .shaped-overlay-text {
+    max-width: 100%; margin-left: 0;
+    font-size: 20px; line-height: 1.35;
+  }
+  .shaped-overlay-badge { margin-left: 0; margin-top: 24px; }
+  .shaped-badge-icon { width: 36px; }
+  .shaped-overlay-badge span { font-size: 10px; }
 
   /* ── Care Connected ── */
   .care-connected { padding: 40px 0; }

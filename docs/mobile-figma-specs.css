@@ -1,0 +1,23 @@
+/* Mobile Figma CSS specs - saved for reference */
+/* See the user's paste for full details */
+/* Key mobile typography and layout specs extracted below */
+
+/* Mobile Typography */
+/* Heading3: Gilroy 36px, weight 400, line-height 100%, letter-spacing -0.01em */
+/* Heading4: Gilroy 32px, weight 400, line-height 100%, letter-spacing -0.01em */
+/* Heading5: Gilroy 24px, weight 400, line-height 100%, letter-spacing -0.01em */
+/* Body1: Gilroy 22px, weight 500, line-height 113%, letter-spacing 0.02em */
+/* Body2: Gilroy 16px, weight 500, line-height 142%, letter-spacing 0.02em */
+/* Body3: Gilroy 16px/14px, weight 500, line-height 132%, letter-spacing 0.02em */
+/* Sub1: Gilroy 12px, weight 600, line-height 15px, letter-spacing 0.08em, uppercase */
+
+/* Mobile Layout */
+/* Content width: 380px (with 20px padding each side on 420px frame) */
+/* Card border-radius: 30px */
+/* Section gaps: 142px between major sections, 32px within sections */
+/* Care cards: 380x555px, border-radius 30px, bg #EFE1DC */
+/* Photo inside card: 360x208px, border-radius 20px, margin 10px */
+/* Feature bullets: 9px circle (border 1.2px solid #0A1C1E) instead of 13px line */
+/* Post-enrollment dark card: 380x807px, border-radius 30px */
+/* How it works: vertical timeline with 322px center line, cards 380x97px, radius 13px */
+/* Video containers: border-radius 30px */
