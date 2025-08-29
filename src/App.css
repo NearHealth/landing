@@ -331,7 +331,7 @@ ul { list-style: none; }
 .platform-text { max-width: 600px; }
 .platform-subtitle { font-size: var(--fs-body-sm); font-weight: 500; line-height: 1.5; margin: var(--space-sm) auto 0; }
 .platform-phone { margin-top: var(--space-lg); border-radius: clamp(12px, 1.2vw, 16px); overflow: hidden; background: var(--warm-light); }
-.platform-phone-img { max-width: min(454px, 80vw); width: 100%; height: auto; display: block; }
+.platform-phone-img { max-width: min(454px, 80vw); width: 100%; height: auto; display: block; border-radius: clamp(12px, 1.2vw, 16px); }
 
 .coverage-ticker {
   margin-top: var(--space-lg); overflow: hidden; white-space: nowrap; padding-bottom: 20px;
