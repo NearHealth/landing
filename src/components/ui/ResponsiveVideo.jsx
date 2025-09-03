@@ -36,6 +36,13 @@ export default function ResponsiveVideo({ desktop, mobile, desktopWebm, mobileWe
     return () => observer.disconnect()
   }, [scrollPlay])
 
+  useEffect(() => {
+    if (scrollPlay) return
+    const video = videoRef.current
+    if (!video) return
+    video.play().catch(() => {})
+  }, [isMobile, scrollPlay])
+
   return (
     <video
       ref={videoRef}

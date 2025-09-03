@@ -23,8 +23,18 @@ export default function BuiltForCarousel() {
   useEffect(() => {
     if (!carouselActive) return
     const step = isMobile ? ITEM_W : ITEM_H
-    const id = setInterval(() => setScrollPos((p) => p + step), INTERVAL)
-    return () => clearInterval(id)
+    let id = setInterval(() => setScrollPos((p) => p + step), INTERVAL)
+
+    const onVisibility = () => {
+      clearInterval(id)
+      if (!document.hidden) {
+        setScrollPos((p) => p + step)
+        id = setInterval(() => setScrollPos((p) => p + step), INTERVAL)
+      }
+    }
+    document.addEventListener('visibilitychange', onVisibility)
+
+    return () => { clearInterval(id); document.removeEventListener('visibilitychange', onVisibility) }
   }, [carouselActive, isMobile])
 
   const handleTransitionEnd = () => {
