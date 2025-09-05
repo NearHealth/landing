@@ -11,11 +11,14 @@ export default function ShapedSection() {
       <div className={`container ${fade.className}`}>
         <h2 className="section-title">Shaped by real-world use</h2>
         <div className="shaped-photo">
-          <img
-            src={asset(isMobile ? 'assets/images/shaped-real-world-use.jpg' : 'assets/images/shaped-real-world.png')}
-            alt="Real-world healthcare"
-            loading="lazy"
-          />
+          <picture>
+            <source srcSet={asset(isMobile ? 'assets/images/shaped-real-world-use.jpg' : 'assets/images/shaped-real-world.webp')} type="image/webp" />
+            <img
+              src={asset(isMobile ? 'assets/images/shaped-real-world-use.jpg' : 'assets/images/shaped-real-world.png')}
+              alt="Real-world healthcare"
+              loading="lazy"
+            />
+          </picture>
           <div className="shaped-overlay">
             <p className="shaped-overlay-text">
               From intake and scheduling to claims and follow-ups, every part reflects real operational needs – not assumptions. This isn&rsquo;t a top-down product. It&rsquo;s built from how care actually moves. Because the best systems aren&rsquo;t imagined. They&rsquo;re shaped by the people who rely on them.
