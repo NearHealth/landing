@@ -122,7 +122,7 @@ ul { list-style: none; }
   color: var(--dark); padding: 10px 18px; border-radius: 70px;
   transition: background 0.25s var(--ease);
 }
-.nav-link:hover { background: #FFFFFF; }
+.nav-link:hover, .nav-link:active { background: #A6F2FF; }
 .nav-cta {
   flex-shrink: 0; background: var(--accent); color: var(--dark);
   padding: 10px 18px; border-radius: 30px; font-size: var(--fs-btn); font-weight: 600;
