@@ -1,11 +1,21 @@
+import { useState, useEffect } from 'react'
 import useIsMobile from '../hooks/useIsMobile'
 import ResponsiveVideo from './ui/ResponsiveVideo'
 import BuiltForCarousel from './BuiltForCarousel'
 
 export default function Hero() {
   const isMobile = useIsMobile()
+  const [expanded, setExpanded] = useState(false)
+
+  useEffect(() => {
+    if (expanded) return
+    const handler = () => { if (window.scrollY > 80) setExpanded(true) }
+    window.addEventListener('scroll', handler, { passive: true })
+    return () => window.removeEventListener('scroll', handler)
+  }, [expanded])
 
   return (
+    <div className={`hero-outer${expanded ? ' hero-outer--expanded' : ''}`}>
     <section className="hero" id="hero">
       <div className="container hero-container">
         {isMobile ? (
@@ -47,5 +57,6 @@ export default function Hero() {
         )}
       </div>
     </section>
+    </div>
   )
 }
