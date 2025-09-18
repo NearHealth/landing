@@ -7,7 +7,7 @@ const features = [
   { title: 'Role-based access', desc: 'Structured permissions across members, brokers, and providers.',
     icon: <img src={asset('assets/images/role-access.svg')} alt="" width="20" height="20" /> },
   { title: 'Deep integrations', desc: 'Scheduling, enrollment, and plan data - fully connected.',
-    icon: <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><circle cx="6" cy="6" r="3" stroke="#0A1C1E" strokeWidth="2"/><circle cx="16" cy="6" r="3" stroke="#0A1C1E" strokeWidth="2"/><circle cx="6" cy="16" r="3" stroke="#0A1C1E" strokeWidth="2"/><circle cx="16" cy="16" r="3" stroke="#0A1C1E" strokeWidth="2"/><path d="M9 6h4M6 9v4M16 9v4M9 16h4" stroke="#0A1C1E" strokeWidth="1.5"/></svg> },
+    icon: <img src={asset('assets/images/deep-integration.svg')} alt="" width="22" height="22" /> },
   { title: 'Multi-tenant ready', desc: 'Supports branded experiences across agencies and provider networks.',
     icon: <svg width="22" height="22" viewBox="0 0 22 22" fill="none"><rect x="1" y="5" width="8" height="12" rx="1" stroke="#0A1C1E" strokeWidth="2"/><rect x="13" y="5" width="8" height="12" rx="1" stroke="#0A1C1E" strokeWidth="2"/><path d="M9 11h4" stroke="#0A1C1E" strokeWidth="2"/></svg> },
 ]
