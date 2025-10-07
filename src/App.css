@@ -440,14 +440,15 @@ ul { list-style: none; }
 .real-world .section-title { margin-bottom: var(--space-lg); }
 .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr)); gap: clamp(16px, 2.8vw, 40px); }
 .feature-card {
-  border-radius: clamp(12px, 1.2vw, 16px); padding: clamp(30px, 3.3vw, 48px) clamp(16px, 1.7vw, 24px);
+  border-radius: 50px; padding: clamp(30px, 3.3vw, 48px) clamp(16px, 1.7vw, 24px);
+  max-width: 330px; height: 246px;
   text-align: center; background: rgba(255,255,255,0.5); border: 1px solid rgba(10,28,30,0.04);
 }
 .feature-icon {
   width: clamp(40px, 3.3vw, 48px); height: clamp(40px, 3.3vw, 48px);
   background: var(--accent); border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  margin: 0 auto clamp(20px, 2.2vw, 32px);
+  margin: 0 auto clamp(25px, 2.75vw, 40px);
 }
 .feature-card h3 { font-size: var(--fs-h5); font-weight: 500; margin-bottom: 8px; }
 .feature-card p { font-size: var(--fs-body-sm); font-weight: 500; line-height: 1.35; color: var(--text-muted); }
