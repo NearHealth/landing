@@ -385,16 +385,17 @@ ul { list-style: none; }
 /* ── Post-Enrollment (Dark) ── */
 .post-enrollment { padding: var(--space-section) var(--px); margin: 0 auto; }
 .post-enrollment > .container {
-  background: var(--dark); border-radius: clamp(16px, 1.7vw, 24px);
-  padding: clamp(40px, 5.5vw, 80px) clamp(24px, 4vw, 60px); max-width: 100%;
+  background: #0A1C1E; border-radius: 40px;
+  padding: clamp(40px, 5.5vw, 80px) clamp(24px, 4vw, 60px);
+  max-width: 1440px; height: 717px;
 }
-.post-enrollment .section-title { color: var(--white); margin-bottom: var(--space-lg); }
+.post-enrollment .section-title { color: var(--white); margin-bottom: calc(var(--space-lg) * 2); }
 .post-grid {
-  display: flex; gap: 0; flex-wrap: wrap;
+  display: flex; gap: 29px; flex-wrap: wrap;
   padding-top: var(--space-lg);
 }
 .post-grid-bottom { margin-top: 0; }
-.post-col { flex: 1 1 250px; padding: 0 clamp(16px, 2vw, 32px); }
+.post-col { width: 392px; flex: 0 0 auto; padding: 0; }
 .post-col:first-child { padding-left: 0; }
 .post-divider-v { width: 1px; background: rgba(255,255,255,0.1); flex-shrink: 0; }
 .post-divider-hidden { visibility: hidden; }
