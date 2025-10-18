@@ -298,7 +298,7 @@ ul { list-style: none; }
 .member-experience { padding: var(--space-section) 0; }
 .member-header {
   display: flex; justify-content: space-between; align-items: flex-start;
-  gap: var(--space-lg); margin-bottom: var(--space-md); flex-wrap: wrap;
+  gap: var(--space-lg); margin-bottom: var(--space-md); max-width: 1439px;
 }
 .member-header .section-title { flex-shrink: 0; max-width: 527px; font-size: var(--fs-h3); }
 .member-desc {
