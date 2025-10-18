@@ -84,10 +84,20 @@ export default function HowItWorks() {
       setCurves({ W, H, left, right })
     }
 
-    requestAnimationFrame(() => requestAnimationFrame(compute))
+    let timer
+    if (fade.visible) {
+      // Cards animate translateY(16px)→0 over 0.6s — wait for them to settle before measuring
+      timer = setTimeout(() => requestAnimationFrame(compute), 650)
+    } else {
+      requestAnimationFrame(() => requestAnimationFrame(compute))
+    }
+
     window.addEventListener('resize', compute)
-    return () => window.removeEventListener('resize', compute)
-  }, [isMobile])
+    return () => {
+      clearTimeout(timer)
+      window.removeEventListener('resize', compute)
+    }
+  }, [isMobile, fade.visible])
 
   return (
     <section className="how-it-works" id="how-it-works" ref={fade.ref}>
