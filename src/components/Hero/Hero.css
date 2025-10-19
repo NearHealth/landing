@@ -69,7 +69,18 @@
   -webkit-mask-image: linear-gradient(to bottom, black 0%, rgba(0,0,0,0.4) 50%, transparent 85%);
 }
 .built-for-track { display: flex; flex-direction: column; }
+.built-for-track--active {
+  animation: built-for-scroll-v 12s linear infinite;
+}
+.built-for-track--paused {
+  animation-play-state: paused;
+}
 .built-for-item { height: 28px; line-height: 28px; font-size: var(--fs-caption); font-weight: 500; white-space: nowrap; }
+
+@keyframes built-for-scroll-v {
+  0%   { transform: translateY(0); }
+  100% { transform: translateY(-196px); }
+}
 
 /* ── Hero Mobile ── */
 .hero-mobile-top {
@@ -151,9 +162,12 @@
   .hero-built-for,
   .hero-mobile-built-for,
   .hero-video-card,
-  .hero-mobile-video {
+  .hero-mobile-video,
+  .built-for-track--active,
+  .built-for-h-track--active {
     animation-duration: 0.01ms;
     animation-delay: 0ms;
+    animation-iteration-count: 1;
   }
 }
 

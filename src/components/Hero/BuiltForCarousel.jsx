@@ -1,20 +1,20 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import useIsMobile from '../../hooks/useIsMobile'
 
-const ITEMS = ['Agents', 'Agencies', 'FMOs', 'GAs', 'Clinics', 'Groups', 'MSOs']
-const ITEM_H = 28
-const ITEM_W = 80
-const INTERVAL = 1220
+const TRIPLED = [
+  'Agents', 'Agencies', 'FMOs', 'GAs', 'Clinics', 'Groups', 'MSOs',
+  'Agents', 'Agencies', 'FMOs', 'GAs', 'Clinics', 'Groups', 'MSOs',
+  'Agents', 'Agencies', 'FMOs', 'GAs', 'Clinics', 'Groups', 'MSOs',
+]
 const LINE_ANIM_DURATION = 800
 const LINE_DELAY = 250
 const CAROUSEL_DELAY = LINE_DELAY + LINE_ANIM_DURATION
 
 export default function BuiltForCarousel() {
   const isMobile = useIsMobile()
-  const [scrollPos, setScrollPos] = useState(0)
   const [lineReady, setLineReady] = useState(false)
   const [carouselActive, setCarouselActive] = useState(false)
-  const trackRef = useRef(null)
+  const [isPaused, setIsPaused] = useState(false)
 
   useEffect(() => {
     const lineTimer = setTimeout(() => setLineReady(true), LINE_DELAY)
@@ -23,38 +23,10 @@ export default function BuiltForCarousel() {
   }, [])
 
   useEffect(() => {
-    if (!carouselActive) return
-    const step = isMobile ? ITEM_W : ITEM_H
-    let id = setInterval(() => setScrollPos((p) => p + step), INTERVAL)
-
-    const onVisibility = () => {
-      clearInterval(id)
-      if (!document.hidden) {
-        setScrollPos((p) => p + step)
-        id = setInterval(() => setScrollPos((p) => p + step), INTERVAL)
-      }
-    }
+    const onVisibility = () => setIsPaused(document.hidden)
     document.addEventListener('visibilitychange', onVisibility)
-
-    return () => { clearInterval(id); document.removeEventListener('visibilitychange', onVisibility) }
-  }, [carouselActive, isMobile])
-
-  const handleTransitionEnd = () => {
-    const step = isMobile ? ITEM_W : ITEM_H
-    if (scrollPos >= ITEMS.length * step) {
-      const el = trackRef.current
-      if (!el) return
-      el.style.transition = 'none'
-      setScrollPos((p) => p - ITEMS.length * step)
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          if (el) el.style.transition = 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)'
-        })
-      })
-    }
-  }
-
-  const tripled = [...ITEMS, ...ITEMS, ...ITEMS]
+    return () => document.removeEventListener('visibilitychange', onVisibility)
+  }, [])
 
   if (isMobile) {
     return (
@@ -66,7 +38,7 @@ export default function BuiltForCarousel() {
             className={`built-for-h-track${carouselActive ? ' built-for-h-track--active' : ''}`}
             style={{ opacity: carouselActive ? 1 : 0 }}
           >
-            {tripled.map((item, i) => (
+            {TRIPLED.map((item, i) => (
               <span className="built-for-h-item" key={i}>{item}</span>
             ))}
           </div>
@@ -81,16 +53,14 @@ export default function BuiltForCarousel() {
       <div className={`built-for-divider${lineReady ? ' built-for-divider--active' : ''}`}></div>
       <div className="built-for-viewport">
         <div
-          className="built-for-track"
-          ref={trackRef}
-          style={{
-            transform: `translateY(-${scrollPos}px)`,
-            transition: 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
-            opacity: carouselActive ? 1 : 0,
-          }}
-          onTransitionEnd={handleTransitionEnd}
+          className={[
+            'built-for-track',
+            carouselActive ? 'built-for-track--active' : '',
+            isPaused ? 'built-for-track--paused' : '',
+          ].filter(Boolean).join(' ')}
+          style={{ opacity: carouselActive ? 1 : 0 }}
         >
-          {tripled.map((item, i) => (
+          {TRIPLED.map((item, i) => (
             <div className="built-for-item" key={i}>{item}</div>
           ))}
         </div>
