@@ -43,6 +43,12 @@
     width: 36px; height: 36px; grid-row: 1 / -1; align-self: start;
     margin: 0; border-radius: 746.25px;
   }
-  .feature-card h3 { font-size: 20px; font-weight: 400; letter-spacing: 0.02em; margin-bottom: 10px; }
-  .feature-card p { font-size: 16px; line-height: 1.32; letter-spacing: 0.02em; opacity: 0.6; color: var(--dark); }
+  .feature-card h3 {
+    font-family: var(--font-heading); font-size: 20px; font-weight: 400;
+    letter-spacing: 0.02em; margin-bottom: 0; padding-top: 3px;
+  }
+  .feature-card p {
+    font-size: 16px; font-weight: 500; line-height: 1.32;
+    letter-spacing: 0.02em; opacity: 0.6; color: var(--dark);
+  }
 }
