@@ -145,7 +145,6 @@
   will-change: transform;
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
-  transform: translateZ(0);
   -webkit-font-smoothing: antialiased;
 }
 .built-for-h-track--active {
@@ -157,8 +156,8 @@
   font-size: var(--fs-body); font-weight: 500;
 }
 @keyframes built-for-scroll {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-560px); }
+  0% { transform: translate3d(0, 0, 0); }
+  100% { transform: translate3d(-560px, 0, 0); }
 }
 .hero-mobile-video {
   width: 100%; max-width: 380px; aspect-ratio: 1/1; margin: 0 auto;
