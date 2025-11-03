@@ -42,10 +42,30 @@ export default function ResponsiveVideo({ desktop, mobile, desktopWebm, mobileWe
       { threshold: 0.1 }
     )
 
+    // Re-trigger play when the page becomes visible again (tab switch, app foreground)
+    const onVisibilityChange = () => {
+      if (!document.hidden && visible) tryPlay()
+    }
+
+    // Retry if the browser stalls or suspends the video (common on low-power mobile)
+    let stalledTimer = null
+    const onStalled = () => {
+      clearTimeout(stalledTimer)
+      stalledTimer = setTimeout(tryPlay, 300)
+    }
+
     video.addEventListener('loadeddata', tryPlay)
+    video.addEventListener('stalled', onStalled)
+    video.addEventListener('suspend', onStalled)
+    document.addEventListener('visibilitychange', onVisibilityChange)
     observer.observe(video)
+
     return () => {
+      clearTimeout(stalledTimer)
       video.removeEventListener('loadeddata', tryPlay)
+      video.removeEventListener('stalled', onStalled)
+      video.removeEventListener('suspend', onStalled)
+      document.removeEventListener('visibilitychange', onVisibilityChange)
       observer.disconnect()
     }
   }, [scrollPlay])

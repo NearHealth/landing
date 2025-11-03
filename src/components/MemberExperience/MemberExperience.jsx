@@ -14,17 +14,19 @@ export default function MemberExperience() {
           <SectionTitle>What your<br />members experience</SectionTitle>
           <p className="member-desc">Members can interact via chat or voice for everyday questions after enrollment. Near takes over the request, keeps brokers in the loop, and routes care when needed.</p>
         </div>
-        <div className="member-video-wrap">
-          <ResponsiveVideo
-            desktop="assets/AI Chat_Desktop.mp4"
-            mobile="assets/AI Chat_Mobile.mp4"
-            desktopWebm="assets/AI Chat_Desktop.webm"
-            mobileWebm="assets/AI Chat_Mobile.webm"
-            desktopPoster="assets/AI_Chat_Desktop_poster.jpg"
-            mobilePoster="assets/AI_Chat_Mobile_poster.jpg"
-            scrollPlay
-            className="member-video"
-          />
+        <div className="member-video-animate">
+          <div className="member-video-wrap">
+            <ResponsiveVideo
+              desktop="assets/AI Chat_Desktop.mp4"
+              mobile="assets/AI Chat_Mobile.mp4"
+              desktopWebm="assets/AI Chat_Desktop.webm"
+              mobileWebm="assets/AI Chat_Mobile.webm"
+              desktopPoster="assets/AI_Chat_Desktop_poster.jpg"
+              mobilePoster="assets/AI_Chat_Mobile_poster.jpg"
+              scrollPlay
+              className="member-video"
+            />
+          </div>
         </div>
         <div className="member-footer">
           <p className="member-footer-text">Brokers and providers stay informed</p>

@@ -28,17 +28,18 @@
 /* MemberExperience staggered reveal */
 .member-experience .fade-in { opacity: 1; transform: none; transition: none; }
 .member-experience .fade-in .member-header,
-.member-experience .fade-in .member-video-wrap,
+.member-experience .fade-in .member-video-animate,
 .member-experience .fade-in .member-footer {
   opacity: 0;
   transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
 }
-.member-experience .fade-in .member-header    { transform: translateY(16px); }
-.member-experience .fade-in .member-video-wrap { transform: translateY(20px) scale(0.98); transition-duration: 0.85s; }
-.member-experience .fade-in .member-footer    { transform: translateY(16px); }
-.member-experience .fade-in.visible .member-header    { opacity: 1; transform: translateY(0); transition-delay: 0s; }
-.member-experience .fade-in.visible .member-video-wrap { opacity: 1; transform: translateY(0) scale(1); transition-delay: 0.14s; }
-.member-experience .fade-in.visible .member-footer    { opacity: 1; transform: translateY(0); transition-delay: 0.26s; }
+.member-experience .fade-in .member-header         { transform: translateY(16px); }
+/* scale is on the outer animate shell — the video-wrap never gets a scale transform */
+.member-experience .fade-in .member-video-animate  { transform: translateY(20px) scale(0.98); transition-duration: 0.85s; }
+.member-experience .fade-in .member-footer         { transform: translateY(16px); }
+.member-experience .fade-in.visible .member-header         { opacity: 1; transform: translateY(0); transition-delay: 0s; }
+.member-experience .fade-in.visible .member-video-animate  { opacity: 1; transform: translateY(0) scale(1); transition-delay: 0.14s; }
+.member-experience .fade-in.visible .member-footer         { opacity: 1; transform: translateY(0); transition-delay: 0.26s; }
 
 @media (max-width: 1024px) {
   .member-header { flex-direction: column; gap: var(--space-md); }
@@ -50,6 +51,18 @@
   .member-header .section-title { letter-spacing: -0.01em; }
   .member-desc { font-size: 16px; line-height: 1.42; }
   .member-video-wrap { border-radius: 30px; max-width: 380px; aspect-ratio: 380/548; position: relative; }
-  .member-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .member-video {
+    position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+    /* Force the video onto its own GPU compositor layer so parent transforms
+       (translateY on .member-video-animate) never destroy its render surface */
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+  /* On mobile, drop the scale — translateY alone is safe; scale → 1 transitions
+     tear the compositor layer in iOS Safari and Chrome mobile emulation */
+  .member-experience .fade-in .member-video-animate  { transform: translateY(20px); }
+  .member-experience .fade-in.visible .member-video-animate { transform: translateY(0); }
   .member-footer { gap: 24px; margin-top: 24px; }
 }
