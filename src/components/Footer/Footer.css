@@ -19,8 +19,8 @@
 @media (max-width: 768px) {
   .footer-brand { width: 100%; max-width: 380px; height: auto; gap: 32.8px; justify-content: flex-start; }
   .footer-brand .near-brand__icon { height: 99px; width: 97.15px; flex-shrink: 0; }
-  .footer-brand .near-brand__wordmark { max-width: 250.05px; height: 65.92px; gap: 8.14px; flex-shrink: 1; min-width: 0; }
-  .footer-brand .near-brand__wordmark img { height: 64.57px; width: 56.41px; }
+  .footer-brand .near-brand__wordmark { gap: 8.14px; flex-shrink: 1; min-width: 0; }
+  .footer-brand .near-brand__wordmark img { height: 65.92px; width: auto; }
   .footer .container {
     display: grid;
     grid-template-columns: 1fr auto 1fr;
