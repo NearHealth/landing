@@ -132,48 +132,51 @@ Font: **Gilroy** (loaded from CDNfonts)
 - Buttons/labels: Gilroy-SemiBold (600)
 - Fallback: Inter, system fonts
 
-### Navbar Glass Effect + Dark Section Color Swap
+### Navbar Glass Effect + Auto Color Inversion
 
-The navbar uses a **frosted glass (glassmorphism)** effect with an automatic color swap when it overlaps dark sections.
+The navbar uses a **frosted glass (glassmorphism)** effect with automatic color inversion via `mix-blend-mode: difference`.
 
 **Glass effect — how it works:**
 
-Two CSS properties work together:
+Multiple CSS properties combine to simulate real glass:
 
 ```css
-background: rgba(255,255,255,0.45);   /* semi-transparent white */
-backdrop-filter: blur(20px);           /* blurs whatever is BEHIND the element */
+background: rgba(255,255,255,0.08);                    /* very low opacity — almost fully transparent */
+backdrop-filter: blur(20px) saturate(150%);             /* blur + boosted color saturation behind the glass */
+border: 1px solid rgba(255,255,255,0.16);               /* subtle white edge */
+box-shadow: 0 10px 30px rgba(0,0,0,0.14),              /* outer depth shadow */
+            inset 0 1px 0 rgba(255,255,255,0.18);       /* inner highlight line at the top */
 ```
 
-- `background: rgba(255,255,255,0.45)` — the navbar is only 45% white, so you can see through it
-- `backdrop-filter: blur(20px)` — anything visible through that transparency gets a 20px gaussian blur, creating the "frosted glass" look (like looking through a shower door)
-- `border-bottom: 1px solid rgba(255,255,255,0.25)` — a subtle white edge that catches light, making the glass feel physical
+A `::before` pseudo-element adds a soft top-to-bottom highlight gradient, simulating light refraction:
 
-When the user scrolls past 50px, the `.scrolled` class bumps the white to 65% — slightly more opaque but still glassy.
-
-**Dark section color swap — how it works:**
-
-When the navbar floats over a dark-background element (e.g. the PostEnrollment card with `#0A1C1E`):
-
-1. A scroll listener (`useNavbarDark` hook) checks every frame: "is any `[data-navbar-dark]` element behind the navbar right now?"
-2. If yes, the `.navbar--dark` class is added to the `<nav>`
-3. CSS takes over:
-   - Glass tint flips from white to dark: `rgba(10,28,30,0.45)` — same blur, different tint color
-   - Logo filter changes to `brightness(0) invert(1)` — turns any image pure white
-   - Nav links get `color: white`
-4. Everything has `transition: 0.3s` so the swap is a smooth fade, not a hard cut
-
-To mark a new section as dark, add `data-navbar-dark` to the element with the dark background:
-
-```jsx
-<div className="my-dark-container" data-navbar-dark>
+```css
+.navbar::before {
+  background: linear-gradient(180deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0) 100%);
+}
 ```
+
+When the user scrolls past 50px, the `.scrolled` class bumps the background to `0.14` — slightly more opaque but still glassy.
+
+**Auto color inversion — how it works:**
+
+Instead of detecting dark sections with JavaScript, the nav content uses `mix-blend-mode: difference`:
+
+```css
+.nav-container { mix-blend-mode: difference; }
+.nav-link, .nav-cta { color: white; }
+```
+
+With `difference` blending, white content automatically inverts against whatever background sits behind the glass:
+- Over **light backgrounds** → text/logo appears dark
+- Over **dark backgrounds** (e.g. PostEnrollment `#0A1C1E`) → text/logo appears light
+
+This is a pure CSS solution — zero JavaScript, works against any background automatically. The logo images are set to white via `filter: brightness(0) invert(1)` so they participate in the blend mode.
 
 **Key files:**
-- `src/components/Navbar/Navbar.css` — glass styles + `.navbar--dark` rules
-- `src/components/Navbar/Navbar.jsx` — applies `scrolled` and `navbar--dark` classes
-- `src/components/ui/NearBrand/NearBrand.css` — logo white filter override
-- `src/hooks/useScrollAnimation.js` — `useNavbarScroll()` + `useNavbarDark()` hooks
+- `src/components/Navbar/Navbar.css` — glass styles + blend mode
+- `src/components/ui/NearBrand/NearBrand.css` — navbar logo white filter for blend mode
+- `src/hooks/useScrollAnimation.js` — `useNavbarScroll()` hook (scroll state only)
 
 ### Adding a Mobile Version
 
