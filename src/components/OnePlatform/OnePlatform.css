@@ -1,6 +1,14 @@
 /* ── One Platform ── */
 .one-platform { padding: 120px 0; overflow: hidden; }
-.one-platform .section-title { }
+.one-platform .section-title {
+  font-family: Gilroy, sans-serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 96px;
+  line-height: 100%;
+  letter-spacing: -0.03em;
+  text-align: center;
+}
 .one-platform-inner { display: flex; flex-direction: column; align-items: center; text-align: center; }
 .platform-text { max-width: 600px; }
 .platform-subtitle { font-size: 18px; font-weight: 500; line-height: 1.5; margin: var(--space-sm) auto 0; }
@@ -22,6 +30,13 @@
   white-space: nowrap; flex-shrink: 0;
   transition: opacity 0.6s ease;
   color: #FFFFFF;
+  display: flex; align-items: center; gap: clamp(16px, 2.5vw, 40px);
+}
+.carousel-item::after {
+  content: '\00B7';
+  color: #FFFFFF;
+  font-weight: 400;
+  flex-shrink: 0;
 }
 .carousel-item--active {
   color: var(--dark);
