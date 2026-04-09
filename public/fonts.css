@@ -1,0 +1,16 @@
+/* Local Gilroy fonts — fallback if CDN is unavailable */
+@font-face {
+  font-family: 'Gilroy-Regular';
+  src: local('Gilroy-Regular'), url('./assets/fonts/Gilroy-Regular.woff') format('woff');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Gilroy-Medium';
+  src: local('Gilroy-Medium'), url('./assets/fonts/Gilroy-Medium.woff') format('woff');
+  font-weight: 500; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Gilroy-Bold';
+  src: local('Gilroy-Bold'), url('./assets/fonts/Gilroy-Bold.woff') format('woff');
+  font-weight: 700; font-style: normal; font-display: swap;
+}
