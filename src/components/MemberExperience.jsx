@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useFadeIn } from '../hooks/useScrollAnimation'
 import Button from './ui/Button'
 import SectionTitle from './ui/SectionTitle'
+import { asset } from '../utils/assetPath'
 
 export default function MemberExperience() {
   const fade = useFadeIn()
@@ -22,7 +23,7 @@ export default function MemberExperience() {
         </div>
         <div className="member-video-wrap">
           <video autoPlay muted loop playsInline className="member-video">
-            <source src={isMobile ? '/assets/AI Chat_Mobile.mp4' : '/assets/AI Chat_Desktop.mp4'} type="video/mp4" />
+            <source src={asset(isMobile ? 'assets/AI Chat_Mobile.mp4' : 'assets/AI Chat_Desktop.mp4')} type="video/mp4" />
           </video>
         </div>
         <div className="member-footer">

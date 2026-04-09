@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { DotLottieReact } from '@lottiefiles/dotlottie-react'
+import { asset } from '../utils/assetPath'
 
 export default function CareConnected() {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
@@ -15,7 +16,7 @@ export default function CareConnected() {
       <div className="container">
         <div className="care-connected-card">
           <DotLottieReact
-            src={isMobile ? '/assets/CTA_Gradient_Mobile.lottie' : '/assets/CTA_Gradient_Desktop.lottie'}
+            src={asset(isMobile ? 'assets/CTA_Gradient_Mobile.lottie' : 'assets/CTA_Gradient_Desktop.lottie')}
             loop
             autoplay
             className="lottie-bg"

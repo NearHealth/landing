@@ -1,4 +1,5 @@
 import { useFadeIn } from '../hooks/useScrollAnimation'
+import { asset } from '../utils/assetPath'
 
 export default function HowItWorks() {
   const fade = useFadeIn()
@@ -29,7 +30,7 @@ export default function HowItWorks() {
 
           <div className="how-center-icon">
             <div className="how-circle">
-              <img src="/assets/icons/near-logo.svg" alt="" className="how-circle-logo" />
+              <img src={asset('assets/icons/near-logo.svg')} alt="" className="how-circle-logo" />
             </div>
           </div>
 

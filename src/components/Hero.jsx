@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { asset } from '../utils/assetPath'
 
 const ITEMS = ['Agents', 'Agencies', 'FMOs', 'GAs', 'Clinics', 'Groups', 'MSOs']
 const ITEM_H = 28
@@ -89,7 +90,7 @@ export default function Hero() {
           </div>
           <div className="hero-video-card">
             <video autoPlay muted loop playsInline>
-              <source src={isMobile ? '/assets/Hero_Mobile.mp4' : '/assets/Hero_Desktop.mp4'} type="video/mp4" />
+              <source src={asset(isMobile ? 'assets/Hero_Mobile.mp4' : 'assets/Hero_Desktop.mp4')} type="video/mp4" />
             </video>
           </div>
         </div>

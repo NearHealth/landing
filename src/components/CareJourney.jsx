@@ -1,11 +1,12 @@
 import { useFadeIn } from '../hooks/useScrollAnimation'
 import SectionTitle from './ui/SectionTitle'
+import { asset } from '../utils/assetPath'
 
 const cards = [
   {
     title: 'For Brokers',
     subtitle: 'Agents · Agencies · FMOs · GAs',
-    image: '/assets/images/person1.jpg',
+    image: asset('assets/images/person1.jpg'),
     features: [
       'Reduce manual follow-ups and service workload.',
       'Improve member experience and retention.',
@@ -16,7 +17,7 @@ const cards = [
   {
     title: 'For Providers',
     subtitle: 'Clinics · Groups · MSOs',
-    image: '/assets/images/person2.jpg',
+    image: asset('assets/images/person2.jpg'),
     features: [
       'Expand your reach through a trusted, AI-powered provider network.',
       'Gain visibility with high-intent patients and broker-driven referrals.',

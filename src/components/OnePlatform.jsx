@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useFadeIn } from '../hooks/useScrollAnimation'
+import { asset } from '../utils/assetPath'
 
 const tickerItems = ['Vision', 'Dental', 'Medicare', 'ACA', 'Employer-sponsored']
 
@@ -28,7 +29,7 @@ export default function OnePlatform() {
         </div>
         <div className="platform-phone">
           <img
-            src={isMobile ? '/assets/images/one-platform-mobile.jpg' : '/assets/images/one-platform-desktop.jpg'}
+            src={asset(isMobile ? 'assets/images/one-platform-mobile.jpg' : 'assets/images/one-platform-desktop.jpg')}
             alt="Near Health - Activate Care"
             loading="lazy"
             className="platform-phone-img"
