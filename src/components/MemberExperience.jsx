@@ -1,18 +1,10 @@
-import { useState, useEffect } from 'react'
 import { useFadeIn } from '../hooks/useScrollAnimation'
 import Button from './ui/Button'
 import SectionTitle from './ui/SectionTitle'
-import { asset } from '../utils/assetPath'
+import ResponsiveVideo from './ui/ResponsiveVideo'
 
 export default function MemberExperience() {
   const fade = useFadeIn()
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
-
-  useEffect(() => {
-    const handle = () => setIsMobile(window.innerWidth < 768)
-    window.addEventListener('resize', handle)
-    return () => window.removeEventListener('resize', handle)
-  }, [])
 
   return (
     <section className="member-experience" id="member-experience" ref={fade.ref}>
@@ -22,9 +14,11 @@ export default function MemberExperience() {
           <p className="member-desc">Members can interact via chat or voice for everyday questions after enrollment. Near takes over the request, keeps brokers in the loop, and routes care when needed.</p>
         </div>
         <div className="member-video-wrap">
-          <video autoPlay muted loop playsInline className="member-video">
-            <source src={asset(isMobile ? 'assets/AI Chat_Mobile.mp4' : 'assets/AI Chat_Desktop.mp4')} type="video/mp4" />
-          </video>
+          <ResponsiveVideo
+            desktop="assets/AI Chat_Desktop.mp4"
+            mobile="assets/AI Chat_Mobile.mp4"
+            className="member-video"
+          />
         </div>
         <div className="member-footer">
           <p className="member-footer-text">Brokers and providers stay informed</p>

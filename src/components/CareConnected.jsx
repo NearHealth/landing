@@ -1,15 +1,9 @@
-import { useState, useEffect } from 'react'
 import { DotLottieReact } from '@lottiefiles/dotlottie-react'
+import useIsMobile from '../hooks/useIsMobile'
 import { asset } from '../utils/assetPath'
 
 export default function CareConnected() {
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
-
-  useEffect(() => {
-    const handle = () => setIsMobile(window.innerWidth < 768)
-    window.addEventListener('resize', handle)
-    return () => window.removeEventListener('resize', handle)
-  }, [])
+  const isMobile = useIsMobile()
 
   return (
     <section className="care-connected">

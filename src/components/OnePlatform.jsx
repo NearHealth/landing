@@ -1,18 +1,12 @@
-import { useState, useEffect } from 'react'
 import { useFadeIn } from '../hooks/useScrollAnimation'
+import useIsMobile from '../hooks/useIsMobile'
 import { asset } from '../utils/assetPath'
 
 const tickerItems = ['Vision', 'Dental', 'Medicare', 'ACA', 'Employer-sponsored']
 
 export default function OnePlatform() {
   const fade = useFadeIn()
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768)
-
-  useEffect(() => {
-    const handle = () => setIsMobile(window.innerWidth < 768)
-    window.addEventListener('resize', handle)
-    return () => window.removeEventListener('resize', handle)
-  }, [])
+  const isMobile = useIsMobile()
 
   const renderTicker = () =>
     tickerItems.flatMap((item, i) => [
