@@ -1,28 +1,30 @@
 import { useFadeIn } from '../hooks/useScrollAnimation'
+import SectionTitle from './ui/SectionTitle'
 
-function CareCard({ title, subtitle, desc, imgAlt, bars }) {
-  return (
-    <div className="care-card">
-      <div className="care-card-photo">
-        <img src="/assets/images/care-journey.png" alt={imgAlt} loading="lazy" />
-        <div className="care-card-overlay">
-          <h3>{title}</h3>
-          <span>{subtitle}</span>
-        </div>
-      </div>
-      <div className="care-card-body">
-        <div className="care-card-bars">
-          {bars.map((w, i) => (
-            <div className="bar" key={i}><span style={{ width: w }}></span></div>
-          ))}
-        </div>
-        <div className="care-card-divider"></div>
-        <p className="care-card-text">{desc}</p>
-        <a href="#contact" className="care-card-cta">Learn more →</a>
-      </div>
-    </div>
-  )
-}
+const cards = [
+  {
+    title: 'For Brokers',
+    subtitle: 'Agents · Agencies · FMOs · GAs',
+    image: '/assets/images/person1.jpg',
+    features: [
+      'Reduce manual follow-ups and service workload.',
+      'Improve member experience and retention.',
+      'Coordinate care with visibility.',
+    ],
+    desc: 'Deliver post-enrollment support that truly scales - and focus on relationships, not operations.',
+  },
+  {
+    title: 'For Providers',
+    subtitle: 'Clinics · Groups · MSOs',
+    image: '/assets/images/person2.jpg',
+    features: [
+      'Expand your reach through a trusted, AI-powered provider network.',
+      'Gain visibility with high-intent patients and broker-driven referrals.',
+      'Streamline intake and scheduling with better-prepared patients.',
+    ],
+    desc: 'Turn access into growth by connecting you with the right patients, at the right moment.',
+  },
+]
 
 export default function CareJourney() {
   const fade = useFadeIn()
@@ -30,25 +32,31 @@ export default function CareJourney() {
   return (
     <section className="care-journey" id="built-for" ref={fade.ref}>
       <div className={`container ${fade.className}`}>
-        <div className="care-journey-header">
-          <h2 className="section-title">Serving the full care journey</h2>
-          <p className="section-subtitle">A coordinated path across brokers, providers, and members.</p>
-        </div>
+        <SectionTitle subtitle="A coordinated path across brokers, providers, and members." className="care-journey-header">
+          Serving the full care journey
+        </SectionTitle>
         <div className="care-cards">
-          <CareCard
-            title="For Brokers"
-            subtitle="Agents · Agencies · FMOs · GAs"
-            desc="Deliver post-enrollment support that truly scales - and focus on relationships, not operations."
-            imgAlt="Broker using Near Health"
-            bars={['90%', '75%', '55%']}
-          />
-          <CareCard
-            title="For Providers"
-            subtitle="Clinics · Groups · MSOs"
-            desc="Turn access into growth by connecting you with the right patients, at the right moment."
-            imgAlt="Provider using Near Health"
-            bars={['95%', '80%', '70%']}
-          />
+          {cards.map((card, i) => (
+            <div className="care-card" key={i}>
+              <div className="care-card-photo">
+                <img src={card.image} alt={card.title} loading="lazy" />
+                <div className="care-card-overlay">
+                  <h3>{card.title}</h3>
+                  <span>{card.subtitle}</span>
+                </div>
+              </div>
+              <div className="care-card-body">
+                <ul className="care-card-features">
+                  {card.features.map((f, j) => (
+                    <li key={j}>{f}</li>
+                  ))}
+                </ul>
+                <div className="care-card-divider"></div>
+                <p className="care-card-text">{card.desc}</p>
+                <a href="#contact" className="care-card-btn">Learn more</a>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>

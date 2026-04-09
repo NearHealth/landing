@@ -26,9 +26,11 @@ export default function App() {
       <RealWorld />
       <ShapedSection />
       <CareConnected />
-      <FooterCta />
-      <FooterLogo />
-      <Footer />
+      <div className="footer-wrap">
+        <FooterCta />
+        <FooterLogo />
+        <Footer />
+      </div>
     </>
   )
 }

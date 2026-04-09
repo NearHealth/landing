@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavbarScroll } from '../hooks/useScrollAnimation'
+import NearBrand from './ui/NearBrand'
 
 export default function Navbar() {
   const scrolled = useNavbarScroll()
@@ -19,13 +20,7 @@ export default function Navbar() {
     <nav className={`navbar${scrolled ? ' scrolled' : ''}`}>
       <div className="nav-container">
         <a href="#" className="nav-logo">
-          <img src="/assets/icons/near-logo.svg" alt="Near Health" className="nav-logo-img" />
-          <div className="nav-wordmark">
-            <img src="/assets/icons/n.svg" alt="n" />
-            <img src="/assets/icons/e.svg" alt="e" />
-            <img src="/assets/icons/a.svg" alt="a" />
-            <img src="/assets/icons/r.svg" alt="r" />
-          </div>
+          <NearBrand size="sm" />
         </a>
         <div className={`nav-links${menuOpen ? ' active' : ''}`}>
           <a href="#built-for" className="nav-link" onClick={(e) => handleLinkClick(e, '#built-for')}>Built for</a>
