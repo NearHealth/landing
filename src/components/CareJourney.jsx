@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { DotLottieReact } from '@lottiefiles/dotlottie-react'
 import { useFadeIn } from '../hooks/useScrollAnimation'
+import useIsMobile from '../hooks/useIsMobile'
 import SectionTitle from './ui/SectionTitle'
 import { asset } from '../utils/assetPath'
 
@@ -30,7 +31,9 @@ const cards = [
 ]
 
 function CareCard({ card }) {
+  const isMobile = useIsMobile()
   const [hovered, setHovered] = useState(false)
+  const showLottie = isMobile || hovered
 
   return (
     <div
@@ -38,7 +41,7 @@ function CareCard({ card }) {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      {hovered && (
+      {showLottie && (
         <DotLottieReact
           src={asset('assets/Hover_Gradient.lottie')}
           loop
