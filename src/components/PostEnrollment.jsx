@@ -1,5 +1,6 @@
 import React from 'react'
 import { useFadeIn } from '../hooks/useScrollAnimation'
+import useIsMobile from '../hooks/useIsMobile'
 
 const features = [
   {
@@ -31,37 +32,54 @@ const features = [
 
 export default function PostEnrollment() {
   const fade = useFadeIn()
+  const isMobile = useIsMobile()
 
   return (
     <section className="post-enrollment" id="why-near" ref={fade.ref}>
       <div className={`container ${fade.className}`}>
         <h2 className="section-title">Designed for the<br />post-enrollment reality</h2>
-        <div className="post-grid">
-          {features.slice(0, 3).map((f, i) => (
-            <React.Fragment key={i}>
-              {i > 0 && <div className="post-divider-v"></div>}
-              <div className="post-col">
-                <div className="post-icon">{f.icon}</div>
-                <h3>{f.title}</h3>
+        {isMobile ? (
+          <div className="post-list">
+            {features.map((f, i) => (
+              <div className="post-list-item" key={i}>
+                <div className="post-list-header">
+                  <div className="post-icon">{f.icon}</div>
+                  <h3>{f.title}</h3>
+                </div>
                 <p>{f.desc}</p>
               </div>
-            </React.Fragment>
-          ))}
-        </div>
-        <div className="post-grid post-grid-bottom">
-          {features.slice(3).map((f, i) => (
-            <React.Fragment key={i}>
-              {i > 0 && <div className="post-divider-v"></div>}
-              <div className="post-col">
-                <div className="post-icon">{f.icon}</div>
-                <h3>{f.title}</h3>
-                <p>{f.desc}</p>
-              </div>
-            </React.Fragment>
-          ))}
-          <div className="post-divider-v post-divider-hidden"></div>
-          <div className="post-col post-col-hidden"></div>
-        </div>
+            ))}
+          </div>
+        ) : (
+          <>
+            <div className="post-grid">
+              {features.slice(0, 3).map((f, i) => (
+                <React.Fragment key={i}>
+                  {i > 0 && <div className="post-divider-v"></div>}
+                  <div className="post-col">
+                    <div className="post-icon">{f.icon}</div>
+                    <h3>{f.title}</h3>
+                    <p>{f.desc}</p>
+                  </div>
+                </React.Fragment>
+              ))}
+            </div>
+            <div className="post-grid post-grid-bottom">
+              {features.slice(3).map((f, i) => (
+                <React.Fragment key={i}>
+                  {i > 0 && <div className="post-divider-v"></div>}
+                  <div className="post-col">
+                    <div className="post-icon">{f.icon}</div>
+                    <h3>{f.title}</h3>
+                    <p>{f.desc}</p>
+                  </div>
+                </React.Fragment>
+              ))}
+              <div className="post-divider-v post-divider-hidden"></div>
+              <div className="post-col post-col-hidden"></div>
+            </div>
+          </>
+        )}
       </div>
     </section>
   )
