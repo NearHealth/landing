@@ -35,5 +35,5 @@ export function useFadeIn() {
     return () => observer.disconnect()
   }, [])
 
-  return { ref, className: `fade-in${visible ? ' visible' : ''}` }
+  return { ref, className: `fade-in${visible ? ' visible' : ''}`, visible }
 }

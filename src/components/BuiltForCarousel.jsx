@@ -36,7 +36,7 @@ export default function BuiltForCarousel() {
       setScrollPos((p) => p - ITEMS.length * step)
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
-          if (el) el.style.transition = 'transform 0.6s ease'
+          if (el) el.style.transition = 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)'
         })
       })
     }
@@ -73,7 +73,7 @@ export default function BuiltForCarousel() {
           ref={trackRef}
           style={{
             transform: `translateY(-${scrollPos}px)`,
-            transition: 'transform 0.6s ease',
+            transition: 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
             opacity: carouselActive ? 1 : 0,
           }}
           onTransitionEnd={handleTransitionEnd}

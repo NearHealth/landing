@@ -16,6 +16,10 @@
   --font: 'Gilroy-Medium', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-heading: 'Gilroy-Regular', 'Inter', -apple-system, sans-serif;
 
+  /* Motion */
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --duration: 0.7s;
+
   /* Fluid spacing */
   --px: clamp(20px, 5vw, 80px);
   --space-section: clamp(60px, 8vw, 120px);
@@ -62,7 +66,7 @@ ul { list-style: none; }
 .btn, .btn--primary, .btn--secondary, .btn--outline, .btn--ghost {
   display: inline-flex; align-items: center; justify-content: center;
   font-family: var(--font); font-weight: 600; cursor: pointer;
-  transition: all 0.25s ease; border: 1.5px solid transparent;
+  transition: all 0.25s var(--ease); border: 1.5px solid transparent;
   letter-spacing: 0.08em; text-transform: uppercase;
 }
 .btn--md, .btn { padding: 12px 18px; border-radius: 30px; font-size: var(--fs-btn); }
@@ -82,7 +86,7 @@ ul { list-style: none; }
 .navbar {
   position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
   height: 66px; display: flex; align-items: center;
-  transition: all 0.3s ease;
+  transition: all 0.3s var(--ease);
   border-bottom: 1px solid rgba(10,28,30,0.06);
 }
 .navbar.scrolled {
@@ -171,7 +175,7 @@ ul { list-style: none; }
 .built-for-label { font-size: var(--fs-caption); font-weight: 500; white-space: nowrap; }
 .built-for-divider {
   width: 0; height: 1px; background: var(--dark); margin-top: 9px; flex-shrink: 0;
-  transition: width 0.8s ease-out;
+  transition: width 0.8s var(--ease);
 }
 .built-for-divider--active { width: clamp(60px, 9vw, 130px); }
 .built-for-viewport {
@@ -467,7 +471,7 @@ ul { list-style: none; }
 }
 .built-for-line-v {
   width: 1px; height: 0; background: var(--dark);
-  margin: 8px 0; transition: height 0.8s ease-out;
+  margin: 8px 0; transition: height 0.8s var(--ease);
 }
 .built-for-line-v--active { height: 40px; }
 .built-for-h-viewport {
@@ -501,8 +505,39 @@ ul { list-style: none; }
 }
 
 /* ── Animations ── */
-.fade-in { opacity: 0; transform: translateY(30px); transition: opacity 0.8s ease, transform 0.8s ease; }
+.fade-in { opacity: 0; transform: translateY(20px); transition: opacity var(--duration) var(--ease), transform var(--duration) var(--ease); }
 .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+/* Hero load-in — CSS animation on mount, staggered */
+@keyframes hero-enter {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.hero-heading { opacity: 0; animation: hero-enter 0.8s var(--ease) 0.1s forwards; }
+.hero-subtitle { opacity: 0; animation: hero-enter 0.8s var(--ease) 0.25s forwards; }
+.hero-buttons { opacity: 0; animation: hero-enter 0.8s var(--ease) 0.35s forwards; }
+.hero-built-for, .hero-mobile-built-for { opacity: 0; animation: hero-enter 0.8s var(--ease) 0.3s forwards; }
+.hero-video-card, .hero-mobile-video { opacity: 0; animation: hero-enter 0.8s var(--ease) 0.45s forwards; }
+
+/* Care card hover elevation */
+.care-card { transition: transform 0.4s var(--ease), box-shadow 0.4s var(--ease); }
+.care-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.08); }
+
+/* HowItWorks staggered reveal — override container fade, animate children */
+.how-it-works .fade-in { opacity: 1; transform: none; transition: none; }
+.how-it-works .fade-in .how-header,
+.how-it-works .fade-in .how-step-card,
+.how-it-works .fade-in .how-center-icon,
+.how-it-works .fade-in .how-arrow {
+  opacity: 0; transform: translateY(16px);
+  transition: opacity 0.6s var(--ease), transform 0.6s var(--ease);
+}
+.how-it-works .fade-in.visible .how-header,
+.how-it-works .fade-in.visible .how-step-card,
+.how-it-works .fade-in.visible .how-center-icon,
+.how-it-works .fade-in.visible .how-arrow {
+  opacity: 1; transform: translateY(0);
+}
 
 /* ============================================
    Responsive — only layout shifts, no size overrides

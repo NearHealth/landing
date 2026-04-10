@@ -8,9 +8,9 @@ const steps = [
   { title: 'Align everyone around it', desc: 'Members, brokers, and providers stay in sync.', num: '03' },
 ]
 
-function CenterIcon() {
+function CenterIcon({ delay = 0 }) {
   return (
-    <div className="how-center-icon">
+    <div className="how-center-icon" style={delay ? { transitionDelay: `${delay}s` } : undefined}>
       <div className="how-circle">
         <img src={asset('assets/icons/near-logo-coloured.svg')} alt="" className="how-circle-logo" />
       </div>
@@ -18,9 +18,9 @@ function CenterIcon() {
   )
 }
 
-function StepCard({ title, desc, num }) {
+function StepCard({ title, desc, num, delay = 0 }) {
   return (
-    <div className="how-step-card">
+    <div className="how-step-card" style={delay ? { transitionDelay: `${delay}s` } : undefined}>
       <div className="how-step-top">
         <h3>{title}</h3>
         <span className="how-num">{num}</span>
@@ -46,10 +46,10 @@ export default function HowItWorks() {
         {isMobile ? (
           /* Mobile: center icon + vertical timeline */
           <>
-            <CenterIcon />
+            <CenterIcon delay={0.1} />
             <div className="how-steps-row">
-              {steps.map((s) => (
-                <StepCard key={s.num} {...s} />
+              {steps.map((s, i) => (
+                <StepCard key={s.num} {...s} delay={0.15 + i * 0.1} />
               ))}
             </div>
           </>
@@ -57,28 +57,28 @@ export default function HowItWorks() {
           /* Desktop: horizontal with arrows */
           <>
             <div className="how-steps-row">
-              <StepCard {...steps[0]} />
+              <StepCard {...steps[0]} delay={0.1} />
 
-              <div className="how-arrow how-arrow-down">
+              <div className="how-arrow how-arrow-down" style={{ transitionDelay: '0.15s' }}>
                 <svg width="268" height="154" viewBox="0 0 268 154" fill="none">
                   <path d="M0 10 C80 10, 120 144, 268 144" stroke="#0A1C1E" strokeWidth="1.5" strokeDasharray="5 5" />
                   <path d="M258 138 L268 144 L258 150" stroke="#0A1C1E" strokeWidth="1.5" fill="none" />
                 </svg>
               </div>
 
-              <CenterIcon />
+              <CenterIcon delay={0.2} />
 
-              <div className="how-arrow how-arrow-up">
+              <div className="how-arrow how-arrow-up" style={{ transitionDelay: '0.25s' }}>
                 <svg width="268" height="154" viewBox="0 0 268 154" fill="none">
                   <path d="M0 144 C80 144, 120 10, 268 10" stroke="#0A1C1E" strokeWidth="1.5" strokeDasharray="5 5" />
                   <path d="M258 4 L268 10 L258 16" stroke="#0A1C1E" strokeWidth="1.5" fill="none" />
                 </svg>
               </div>
 
-              <StepCard {...steps[2]} />
+              <StepCard {...steps[2]} delay={0.3} />
             </div>
             <div className="how-step-center-row">
-              <StepCard {...steps[1]} />
+              <StepCard {...steps[1]} delay={0.4} />
             </div>
           </>
         )}

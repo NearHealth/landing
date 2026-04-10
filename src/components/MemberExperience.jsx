@@ -19,6 +19,7 @@ export default function MemberExperience() {
             mobile="assets/AI Chat_Mobile.mp4"
             desktopWebm="assets/AI Chat_Desktop.webm"
             mobileWebm="assets/AI Chat_Mobile.webm"
+            scrollPlay
             className="member-video"
           />
         </div>
