@@ -33,7 +33,7 @@ const cards = [
 function CareCard({ card }) {
   const isMobile = useIsMobile()
   const [hovered, setHovered] = useState(false)
-  const showLottie = isMobile || hovered
+  const showLottie = !isMobile && hovered
 
   return (
     <div
