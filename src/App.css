@@ -470,17 +470,25 @@ ul { list-style: none; }
 }
 .built-for-line-v--active { height: 40px; }
 .built-for-h-viewport {
-  width: 100vw; margin-left: calc(-50vw + 50%); overflow: hidden; position: relative;
-  mask-image: linear-gradient(to right, transparent 0%, black 30%, black 70%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 30%, black 70%, transparent 100%);
+  width: calc(100% + var(--px) * 2);
+  margin-left: calc(-1 * var(--px));
+  overflow: hidden; position: relative;
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0%, black 15%, black 85%, transparent 100%);
 }
 .built-for-h-track {
   display: flex; align-items: center; gap: 0;
-  padding-left: calc(50vw - 40px);
+}
+.built-for-h-track--active {
+  animation: built-for-scroll 10s linear infinite;
 }
 .built-for-h-item {
   flex-shrink: 0; width: 80px; text-align: center;
   font-size: var(--fs-body); font-weight: 500;
+}
+@keyframes built-for-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-560px); }
 }
 .hero-mobile-video {
   width: calc(100% - var(--px) * 2); margin: 0 auto;

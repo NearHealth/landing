@@ -51,14 +51,8 @@ export default function BuiltForCarousel() {
         <div className={`built-for-line-v${lineReady ? ' built-for-line-v--active' : ''}`}></div>
         <div className="built-for-h-viewport">
           <div
-            className="built-for-h-track"
-            ref={trackRef}
-            style={{
-              transform: `translateX(-${scrollPos}px)`,
-              transition: 'transform 0.6s ease',
-              opacity: carouselActive ? 1 : 0,
-            }}
-            onTransitionEnd={handleTransitionEnd}
+            className={`built-for-h-track${carouselActive ? ' built-for-h-track--active' : ''}`}
+            style={{ opacity: carouselActive ? 1 : 0 }}
           >
             {tripled.map((item, i) => (
               <span className="built-for-h-item" key={i}>{item}</span>
