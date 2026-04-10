@@ -11,7 +11,10 @@ export default function CareConnected() {
 
   useEffect(() => {
     if (!dotLottie) return
-    if (fade.visible) dotLottie.play()
+    const tryPlay = () => { if (fade.visible) dotLottie.play() }
+    tryPlay()
+    dotLottie.addEventListener('load', tryPlay)
+    return () => dotLottie.removeEventListener('load', tryPlay)
   }, [fade.visible, dotLottie])
 
   return (
