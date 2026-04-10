@@ -43,10 +43,11 @@ function CareCard({ card }) {
     >
       {showLottie && (
         <DotLottieReact
-          src={asset('assets/Hover_Gradient.lottie')}
+          src={asset('assets/Hover_Gradient.json')}
           loop
           autoplay
           className="care-card-lottie"
+          layout={{ fit: 'fill' }}
         />
       )}
       <div className="care-card-photo">
