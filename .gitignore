@@ -26,3 +26,6 @@ yarn-error.log*
 # Cache
 .eslintcache
 .vite/
+
+# Video originals (uncompressed backups)
+public/assets/originals/

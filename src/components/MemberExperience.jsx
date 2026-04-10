@@ -17,6 +17,8 @@ export default function MemberExperience() {
           <ResponsiveVideo
             desktop="assets/AI Chat_Desktop.mp4"
             mobile="assets/AI Chat_Mobile.mp4"
+            desktopWebm="assets/AI Chat_Desktop.webm"
+            mobileWebm="assets/AI Chat_Mobile.webm"
             className="member-video"
           />
         </div>

@@ -21,7 +21,7 @@ export default function Hero() {
             </div>
             <BuiltForCarousel />
             <div className="hero-mobile-video">
-              <ResponsiveVideo desktop="assets/Hero_Desktop.mp4" mobile="assets/Hero_Mobile.mp4" />
+              <ResponsiveVideo desktop="assets/Hero_Desktop.mp4" mobile="assets/Hero_Mobile.mp4" desktopWebm="assets/Hero_Desktop.webm" mobileWebm="assets/Hero_Mobile.webm" />
             </div>
           </>
         ) : (
@@ -40,7 +40,7 @@ export default function Hero() {
                 </div>
               </div>
               <div className="hero-video-card">
-                <ResponsiveVideo desktop="assets/Hero_Desktop.mp4" mobile="assets/Hero_Mobile.mp4" />
+                <ResponsiveVideo desktop="assets/Hero_Desktop.mp4" mobile="assets/Hero_Mobile.mp4" desktopWebm="assets/Hero_Desktop.webm" mobileWebm="assets/Hero_Mobile.webm" />
               </div>
             </div>
           </>
