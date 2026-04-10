@@ -380,7 +380,7 @@ ul { list-style: none; }
   display: flex; align-items: center; gap: 12px;
   margin-left: auto;
 }
-.shaped-badge-icon { width: clamp(24px, 2.5vw, 36px); height: auto; }
+.shaped-overlay-badge .shaped-badge-icon { width: clamp(24px, 2.5vw, 36px); height: auto; }
 .shaped-overlay-badge span {
   font-size: var(--fs-btn); font-weight: 600;
   letter-spacing: 0.08em; text-transform: uppercase;
@@ -668,19 +668,19 @@ ul { list-style: none; }
   /* ── Shaped Section ── */
   .shaped-section { padding: 80px 0; }
   .shaped-section .section-title { font-size: 36px; letter-spacing: -0.01em; }
-  .shaped-photo { border-radius: 30px; height: 580px; }
+  .shaped-photo { border-radius: 30px; height: 665px; }
   .shaped-photo img { height: 100%; object-fit: cover; }
   .shaped-overlay {
-    justify-content: flex-end; padding: 24px;
-    background: linear-gradient(to bottom, transparent 20%, rgba(0,0,0,0.65) 100%);
+    justify-content: flex-end; padding: 24px 29px;
+    background: linear-gradient(180deg, rgba(10, 28, 30, 0) 40%, #0A1C1E 100%);
   }
   .shaped-overlay-text {
     max-width: 100%; margin-left: 0;
-    font-size: 20px; line-height: 1.35;
+    font-size: 20px; line-height: 1.2;
   }
-  .shaped-overlay-badge { margin-left: 0; margin-top: 24px; }
-  .shaped-badge-icon { width: 36px; }
-  .shaped-overlay-badge span { font-size: 10px; }
+  .shaped-overlay-badge { margin-left: 0; margin-top: 24px; align-items: center; gap: 12px; }
+  .shaped-overlay-badge .shaped-badge-icon { width: 29px; height: 30px; flex-shrink: 0; }
+  .shaped-overlay-badge span { font-size: 12px; line-height: 14px; max-width: 276px; }
 
   /* ── Care Connected ── */
   .care-connected { padding: 40px 0; }
