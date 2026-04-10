@@ -1,3 +1,5 @@
+import { useState } from 'react'
+import { DotLottieReact } from '@lottiefiles/dotlottie-react'
 import { useFadeIn } from '../hooks/useScrollAnimation'
 import SectionTitle from './ui/SectionTitle'
 import { asset } from '../utils/assetPath'
@@ -27,6 +29,44 @@ const cards = [
   },
 ]
 
+function CareCard({ card }) {
+  const [hovered, setHovered] = useState(false)
+
+  return (
+    <div
+      className="care-card"
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      {hovered && (
+        <DotLottieReact
+          src={asset('assets/Hover_Gradient.lottie')}
+          loop
+          autoplay
+          className="care-card-lottie"
+        />
+      )}
+      <div className="care-card-photo">
+        <img src={card.image} alt={card.title} loading="lazy" />
+        <div className="care-card-overlay">
+          <h3>{card.title}</h3>
+          <span>{card.subtitle}</span>
+        </div>
+      </div>
+      <div className="care-card-body">
+        <ul className="care-card-features">
+          {card.features.map((f, j) => (
+            <li key={j}>{f}</li>
+          ))}
+        </ul>
+        <div className="care-card-divider"></div>
+        <p className="care-card-text">{card.desc}</p>
+        <a href="#contact" className="care-card-btn">Learn more</a>
+      </div>
+    </div>
+  )
+}
+
 export default function CareJourney() {
   const fade = useFadeIn()
 
@@ -38,25 +78,7 @@ export default function CareJourney() {
         </SectionTitle>
         <div className="care-cards">
           {cards.map((card, i) => (
-            <div className="care-card" key={i}>
-              <div className="care-card-photo">
-                <img src={card.image} alt={card.title} loading="lazy" />
-                <div className="care-card-overlay">
-                  <h3>{card.title}</h3>
-                  <span>{card.subtitle}</span>
-                </div>
-              </div>
-              <div className="care-card-body">
-                <ul className="care-card-features">
-                  {card.features.map((f, j) => (
-                    <li key={j}>{f}</li>
-                  ))}
-                </ul>
-                <div className="care-card-divider"></div>
-                <p className="care-card-text">{card.desc}</p>
-                <a href="#contact" className="care-card-btn">Learn more</a>
-              </div>
-            </div>
+            <CareCard key={i} card={card} />
           ))}
         </div>
       </div>
