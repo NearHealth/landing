@@ -40,6 +40,7 @@ export default function ResponsiveVideo({ desktop, mobile, desktopWebm, mobileWe
     if (scrollPlay) return
     const video = videoRef.current
     if (!video) return
+    video.muted = true
     video.play().catch(() => {})
   }, [isMobile, scrollPlay])
 
