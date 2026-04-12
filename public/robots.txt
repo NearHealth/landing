@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://nearhealth.github.io/landing/sitemap.xml
