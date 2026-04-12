@@ -42,7 +42,7 @@
 
 /* ── Reset ── */
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; background: #5EE6FD; overscroll-behavior-y: none; }
 body { font-family: var(--font); color: var(--dark); background: var(--white); overflow-x: hidden; position: relative; font-size: var(--fs-body); }
 img { max-width: 100%; height: auto; display: block; }
 a { text-decoration: none; color: inherit; }
