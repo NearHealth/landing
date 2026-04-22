@@ -4,10 +4,11 @@
   filter: brightness(0) saturate(100%) invert(8%) sepia(15%) saturate(3000%) hue-rotate(150deg) brightness(95%) contrast(95%);
   transition: filter 0.3s var(--ease);
 }
-/* White logo over dark sections */
+/* White logo over dark sections — paired with difference blend for adaptive contrast */
 .navbar.navbar--dark .near-brand__icon,
 .navbar.navbar--dark .near-brand__wordmark img {
   filter: brightness(0) invert(1);
+  mix-blend-mode: difference;
 }
 .near-brand__wordmark { display: flex; align-items: center; }
 /* sm = header */
