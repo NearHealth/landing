@@ -2,7 +2,7 @@
 .shaped-section { padding: 120px 0; }
 .shaped-section .container { padding: 0 74px 0 80px; }
 .shaped-section .section-title { margin-bottom: 32px; }
-.shaped-photo { width: 100%; max-width: 1440px; height: 815px; border-radius: 0; overflow: hidden; position: relative; }
+.shaped-photo { width: 100%; max-width: 1440px; height: 815px; border-radius: 40px; overflow: hidden; position: relative; }
 .shaped-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .shaped-overlay {
   position: absolute; inset: 0;
