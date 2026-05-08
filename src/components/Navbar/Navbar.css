@@ -6,7 +6,7 @@
   border: 1px solid rgba(255,255,255,0.16);
   border-bottom: 1px solid #0A1C1E33;
   background: rgba(255,255,255,0.35);
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(8px);
   transition: all 0.3s var(--ease);
 }
 .navbar::before {
