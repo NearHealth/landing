@@ -6,8 +6,8 @@
   border: 1px solid rgba(255,255,255,0.16);
   border-bottom: 1px solid #0A1C1E33;
   background: rgba(255,255,255,0.35);
-  backdrop-filter: var(--backdrop-glass-strong);
-  -webkit-backdrop-filter: var(--backdrop-glass-strong);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   transition: all 0.3s var(--ease);
 }
 .navbar::before {
