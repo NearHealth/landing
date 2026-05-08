@@ -39,10 +39,8 @@
   color: var(--dark);
   transition: background 0.25s var(--ease), color 0.3s var(--ease);
 }
-/* Figma hover: #9C9C9C at 15% with mix-blend-mode: difference — single style for light/dark */
 .nav-link:hover, .nav-link:active {
-  mix-blend-mode: difference;
-  background: rgba(156, 156, 156, 0.15);
+  background: #FFFFFF;
 }
 .nav-cta {
   flex-shrink: 0;
