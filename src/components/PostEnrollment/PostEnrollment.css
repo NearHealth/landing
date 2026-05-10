@@ -1,17 +1,16 @@
 /* ── Post-Enrollment (Dark) ── */
-.post-enrollment { padding: 120px 74px 120px 80px; margin: 0 auto; }
+.post-enrollment { padding: 120px var(--page-px); margin: 0 auto; }
 .post-enrollment > .container {
-  width: 100%; max-width: 100%; height: 717px;
-  padding: clamp(40px, 5.5vw, 80px) clamp(24px, 4vw, 60px);
+  width: 100%; max-width: 100%; min-height: 717px;
+  padding: clamp(40px, 5.5vw, 80px) 80px;
   border-radius: var(--radius-lg);
   background: var(--dark);
 }
-.post-enrollment .section-title { margin-bottom: calc(var(--space-lg) * 2); color: var(--white); }
+.post-enrollment .section-title { margin-bottom: 10.5rem; color: var(--white); }
 .post-grid {
-  display: flex; flex-wrap: wrap; gap: 29px;
-  padding-top: var(--space-lg);
+  display: flex; flex-wrap: wrap; gap: 22px;
 }
-.post-grid-bottom { margin-top: 0; }
+.post-grid-bottom { margin-top: 5rem; }
 .post-col { flex: 1 1 min(392px, 30%); padding: 0; }
 .post-col:first-child { padding-left: 0; }
 .post-divider-v { flex-shrink: 0; width: 1px; background: rgba(255,255,255,0.1); }

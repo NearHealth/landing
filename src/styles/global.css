@@ -36,8 +36,13 @@
   --duration-reveal: 0.6s;
 
   /* Fluid spacing */
-  --px: clamp(20px, 5vw, 80px);
-  --px-section-x: 0 74px 0 80px;
+  /* --page-px is the canonical outer page margin. Every section reads from
+     it (directly or via --px / --px-section-x) so content lines up with the
+     12-column dev grid (which also uses 80px outer margins).
+     Keep this in sync with .grid-overlay-inner's margin in GridOverlay.css. */
+  --page-px: 80px;
+  --px: var(--page-px);
+  --px-section-x: 0 var(--page-px);
   --space-section: clamp(72px, 9.6vw, 144px);
   --space-section-mobile: 71px;
   --space-lg: clamp(24px, 3vw, 48px);
@@ -99,5 +104,6 @@ ul { list-style: none; }
 .footer-wrap { position: relative; }
 
 @media (max-width: 768px) {
+  :root { --page-px: 19.5px; }
   .section-subtitle { font-size: var(--fs-body-mobile); }
 }

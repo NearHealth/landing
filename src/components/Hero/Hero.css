@@ -1,6 +1,10 @@
 /* ── Hero ── */
+/* No horizontal padding here — the inner .container handles the 80px page
+   margin so hero content lines up with every other section on the 12-col
+   grid. (Previously this added an extra 8–32px outer chrome that pushed the
+   heading off the grid.) */
 .hero-outer {
-  padding: 0 clamp(8px, 2vw, 32px);
+  padding: 0;
   border-radius: clamp(16px, 1.5vw, 24px);
   overflow: visible;
 }
@@ -54,7 +58,7 @@
 .hero-left { flex-shrink: 0; max-width: 420px; }
 .hero-subtitle {
   max-width: 376px;
-  margin-bottom: var(--space-md);
+  margin-bottom: 16px;
   font-size: 18px; font-weight: 500; line-height: 1.4;
 }
 .hero-buttons { display: inline-grid; grid-template-columns: 1fr 1fr; gap: 12px; }

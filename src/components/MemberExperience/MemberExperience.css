@@ -22,7 +22,7 @@
 .member-video { width: 100%; height: 100%; object-fit: cover; }
 .member-footer {
   display: flex; flex-direction: column; align-items: center;
-  gap: var(--space-sm);
+  gap: 32px;
   margin-top: var(--space-md);
 }
 .member-footer-text {

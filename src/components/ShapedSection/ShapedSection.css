@@ -1,5 +1,5 @@
 /* ── Shaped by Real-World Use ── */
-.shaped-section { padding: 120px 0; }
+.shaped-section { padding: 120px 0 0; margin-bottom: 15rem; }
 .shaped-section .container { padding: var(--px-section-x); }
 .shaped-section .section-title { margin-bottom: 32px; }
 .shaped-photo {

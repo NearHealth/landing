@@ -78,24 +78,36 @@ export default function OnePlatform() {
     let last = 0
     let raf = 0
 
-    const paintItem = (el, i) => {
-      const screenX = centers[i] + tx
-      const dist = Math.abs(screenX - containerCenter)
-      // Plateau-with-smoothstep falloff: the active word stays fully dark for a
-      // wide centre band (innerR), then smoothly transitions to white across a
-      // short ramp (innerR → outerR), then is white. Both endpoints sit well
-      // inside one item-spacing so adjacent items are always white when one is
-      // at the centre — the highlight never doubles up — while the active word
-      // gets a long dwell at full dark and a soft (not instant) colour change.
-      const innerR = spacing * 0.32
-      const outerR = spacing * 0.48
-      const x = Math.max(0, Math.min(1, (dist - innerR) / (outerR - innerR)))
-      const t = x * x * (3 - 2 * x)
-      // Opacity has a wider falloff so far-away items still register as context
-      // without competing with the active one for attention.
-      const fadeT = Math.min(1, dist / (spacing * 2.2))
-      el.style.opacity = (1 - fadeT * 0.7).toString()
-      el.style.setProperty('--t', t.toString())
+    // Winner-take-all highlight: only the single item nearest the centre is
+    // ever darkened. As soon as another item becomes the closest, the
+    // highlight hands off — there's no moment where two items are both
+    // partially dark, and no white-only gap between consecutive actives.
+    const paint = () => {
+      let minDist = Infinity
+      let minIdx = -1
+      for (let i = 0; i < els.length; i++) {
+        const d = Math.abs(centers[i] + tx - containerCenter)
+        if (d < minDist) { minDist = d; minIdx = i }
+      }
+
+      for (let i = 0; i < els.length; i++) {
+        const el = els[i]
+        const dist = Math.abs(centers[i] + tx - containerCenter)
+        // Active item: smoothstep dark→white over its half of the spacing.
+        // It hits ~white right as the next item takes over (dist ≈ spacing/2),
+        // so the swap is visually continuous despite being a hard logical flip.
+        // Inactive items: forced to white.
+        let t = 1
+        if (i === minIdx) {
+          const x = Math.min(1, dist / (spacing * 0.5))
+          t = x * x * (3 - 2 * x)
+        }
+        // Opacity has a wider falloff so far-away items still register as
+        // context without competing with the active one for attention.
+        const fadeT = Math.min(1, dist / (spacing * 2.2))
+        el.style.opacity = (1 - fadeT * 0.7).toString()
+        el.style.setProperty('--t', t.toString())
+      }
     }
 
     const tick = (time) => {
@@ -109,7 +121,7 @@ export default function OnePlatform() {
       while (setWidth > 0 && tx <= baseTx - setWidth) tx += setWidth
 
       track.style.transform = `translate3d(${tx}px, 0, 0)`
-      els.forEach(paintItem)
+      paint()
 
       raf = requestAnimationFrame(tick)
     }
@@ -117,7 +129,7 @@ export default function OnePlatform() {
     if (reduceMotion) {
       // Static state: fix the start frame so labels still read sensibly.
       track.style.transform = `translate3d(${baseTx}px, 0, 0)`
-      els.forEach(paintItem)
+      paint()
       return
     }
 

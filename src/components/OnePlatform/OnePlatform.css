@@ -6,7 +6,7 @@
 }
 .one-platform-inner { display: flex; flex-direction: column; align-items: center; text-align: center; }
 .platform-text { max-width: 600px; }
-.platform-subtitle { margin: var(--space-sm) auto 0; font-size: 18px; font-weight: 500; line-height: 1.5; }
+.platform-subtitle { margin: var(--space-sm) auto 0; font-size: 18px; font-weight: 500; line-height: 1.5; text-wrap: balance; }
 .platform-phone { margin-top: var(--space-lg); border-radius: var(--radius-lg); overflow: hidden; }
 .platform-phone-img {
   display: block;

@@ -59,7 +59,7 @@
   line-height: 1.32; letter-spacing: 0.02em;
   color: var(--white);
 }
-.care-card-body { padding: clamp(16px, 2vw, 28px) clamp(20px, 2.5vw, 36px) clamp(20px, 2.5vw, 36px); }
+.care-card-body { padding: 44px clamp(20px, 2.5vw, 36px) clamp(20px, 2.5vw, 36px); }
 .care-card-features {
   display: flex; flex-direction: column; gap: clamp(12px, 1.5vw, 21px);
   margin-bottom: var(--space-md);

@@ -89,13 +89,13 @@
   position: relative;
   display: flex; align-items: center;
   width: 100%;
-  padding: 0 80px;
+  padding: 0 var(--page-px);
 }
 /* Logo SVGs are <img> tags with baked-in fills; CSS color can't recolor
    them, so we invert the whole element via filter so the difference blend
    restores the original look. */
 .nav-logo  { display: flex; align-items: center; flex-shrink: 0; filter: invert(1); }
-.nav-links { display: flex; flex: 1; justify-content: space-evenly; margin: 0 clamp(20px, 3vw, 40px); }
+.nav-links { display: flex; flex: 1; justify-content: space-evenly; margin: 0; }
 /* color: #F5E3E1 = 255 - var(--dark) #0A1C1E → after difference renders as --dark */
 .nav-link {
   padding: 10px 18px;
@@ -146,7 +146,7 @@
 
 /* ── Mobile (≤768px) ── */
 @media (max-width: 768px) {
-  .nav-container { justify-content: space-between; padding: 0 20px; }
+  .nav-container { justify-content: space-between; padding: 0 var(--page-px); }
   .nav-links       { display: none; }
   .mobile-menu-btn { display: none; }
   .nav-cta { display: inline-flex; margin-left: auto; }
