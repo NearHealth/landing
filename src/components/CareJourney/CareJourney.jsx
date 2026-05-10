@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { DotLottieReact } from '@lottiefiles/dotlottie-react'
 import { useScrollReveal } from '../../hooks/useScrollReveal'
 import { splitLines, lineRevealVars, blockRevealVars, blockRevealFromVars, selfTrigger } from '../../utils/reveal'
@@ -40,15 +41,48 @@ function CareCard({ card, refProp }) {
   const [hovered, setHovered] = useState(false)
   const [mounted, setMounted] = useState(false)
   const [visible, setVisible] = useState(false)
-  const isActive = !isMobile && hovered
-  const lottieSrc = asset('assets/Hover_Gradient_Desktop.lottie')
+  const cardRef = useRef(null)
 
+  const lottieSrc = asset(isMobile
+    ? 'assets/Hover_Gradient_Mobile.lottie'
+    : 'assets/Hover_Gradient_Desktop.lottie'
+  )
+
+  // Desktop: fade in on hover
   useEffect(() => {
-    if (!mounted) return
-    if (!isActive) { setVisible(false); return }
+    if (isMobile || !mounted) return
+    if (!hovered) { setVisible(false); return }
     const id = requestAnimationFrame(() => setVisible(true))
     return () => cancelAnimationFrame(id)
-  }, [mounted, isActive])
+  }, [mounted, hovered, isMobile])
+
+  // Mobile: show lottie when card scrolls into view
+  useEffect(() => {
+    if (!isMobile) return
+    const el = cardRef.current
+    if (!el) return
+
+    let raf
+    const st = ScrollTrigger.create({
+      trigger: el,
+      start: 'top 85%',
+      end: 'bottom 15%',
+      onToggle(self) {
+        if (self.isActive) {
+          setMounted(true)
+          raf = requestAnimationFrame(() => setVisible(true))
+        } else {
+          cancelAnimationFrame(raf)
+          setVisible(false)
+        }
+      },
+    })
+
+    return () => {
+      cancelAnimationFrame(raf)
+      st.kill()
+    }
+  }, [isMobile])
 
   const activate = () => {
     if (isMobile) return
@@ -63,11 +97,14 @@ function CareCard({ card, refProp }) {
   return (
     <div
       className="care-card"
-      ref={refProp}
+      ref={(el) => {
+        cardRef.current = el
+        if (typeof refProp === 'function') refProp(el)
+      }}
       onMouseEnter={activate}
       onMouseLeave={deactivate}
     >
-      {mounted && !isMobile && (
+      {mounted && (
         <DotLottieReact
           src={lottieSrc}
           loop

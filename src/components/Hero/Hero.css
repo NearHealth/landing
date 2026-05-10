@@ -210,8 +210,8 @@
   width: 100%;
   overflow: hidden;
   opacity: 0;
-  mask-image: linear-gradient(to right, transparent 0%, transparent 25%, black 40%, black 60%, transparent 75%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to right, transparent 0%, transparent 25%, black 40%, black 60%, transparent 75%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0%, transparent 15%, black 35%, black 65%, transparent 85%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, transparent 15%, black 35%, black 65%, transparent 85%, transparent 100%);
   animation: fade-in-track 0.3s ease 1.05s forwards;
 }
 @keyframes fade-in-track {
@@ -314,4 +314,12 @@
   .hero-outer { padding: 0; border-radius: 0; overflow: visible; }
   .hero { min-height: auto; padding: 143px 0 var(--space-lg); }
   .hero-container { align-items: center; }
+  /* Break out to full screen width so mask percentages are relative to 100vw,
+     not the container's padded content box (which was causing almost no visible fade). */
+  .built-for-h-viewport {
+    width: 100vw;
+    margin-left: calc(-1 * var(--page-px));
+    mask-image: linear-gradient(to right, transparent 0%, black 42%, black 58%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 42%, black 58%, transparent 100%);
+  }
 }
