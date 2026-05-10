@@ -21,6 +21,13 @@ export default function Footer() {
       return
     }
 
+    // Proxy object animated by GSAP; we write its value back to the CSS
+    // custom property each frame. This sidesteps any unit-parsing quirks of
+    // GSAP's direct CSS-var handling and guarantees a smooth, visible drift.
+    const stopProxy = { v: 50 }
+    const writeStop = () => gradient.style.setProperty('--gradient-stop', `${stopProxy.v}%`)
+    writeStop()
+
     const ctx = gsap.context(() => {
       gsap.set(brand, { opacity: 0, y: 90 })
       gsap.set(gradient, { opacity: 0 })
@@ -28,16 +35,41 @@ export default function Footer() {
       gsap.to(brand, {
         opacity: 1,
         y: 0,
-        duration: 1.6,
+        duration: 2.4,
         ease: 'expo.out',
         scrollTrigger: { trigger: footer, start: 'top 95%', once: true },
       })
 
+      // Slower fade-in for the cyan gradient. The breathing (opacity dip +
+      // stop drift) starts in parallel, so motion is visible during the
+      // fade-in itself instead of waiting for it to finish.
       gsap.to(gradient, {
         opacity: 1,
-        duration: 2.2,
+        duration: 3.6,
         ease: 'power2.out',
-        scrollTrigger: { trigger: footer, start: 'top bottom', once: true },
+        scrollTrigger: {
+          trigger: footer,
+          start: 'top bottom',
+          once: true,
+          onEnter: () => {
+            gsap.to(stopProxy, {
+              v: -10,
+              duration: 4.5,
+              ease: 'sine.inOut',
+              yoyo: true,
+              repeat: -1,
+              onUpdate: writeStop,
+            })
+            gsap.to(gradient, {
+              opacity: 0.25,
+              duration: 5.0,
+              delay: 3.6,
+              ease: 'sine.inOut',
+              yoyo: true,
+              repeat: -1,
+            })
+          },
+        },
       })
     }, footer)
 

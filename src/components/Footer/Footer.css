@@ -10,14 +10,24 @@
 
 /* ── Cyan gradient: transparent in the top half, ramping to solid cyan at the
    bottom of the footer (faded in via GSAP). z-index:-1 keeps it behind content. ── */
+/* Registering --gradient-stop so the browser actually interpolates it; without
+   @property GSAP would just snap-set the value (custom props default to
+   <string> and are not animatable). */
+@property --gradient-stop {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 50%;
+}
 .footer-gradient {
   position: absolute;
   inset: 0;
   pointer-events: none;
   z-index: -1;
   opacity: 0;
-  background: linear-gradient(in oklab to bottom, rgba(94,230,253,0) 50%, #5EE6FD 100%);
-  will-change: opacity;
+  /* --gradient-stop is animated by GSAP to drift the transparent→cyan handoff
+     point a few percent up/down, giving the gradient a subtle breathing feel. */
+  background: linear-gradient(in oklab to bottom, rgba(94,230,253,0) var(--gradient-stop), #5EE6FD 100%);
+  will-change: opacity, background;
 }
 .footer-brand {
   width: 100%; max-width: 1440px; height: auto;
