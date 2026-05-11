@@ -76,14 +76,14 @@ body {
   position: relative; font-size: var(--fs-body);
   background: var(--white);
 }
-/* Figma "Background Layer" — absolutely positioned at the top of the document,
-   spans full width and full body height. SVG is sized at natural aspect ratio
-   (100% width, auto height) and repeats vertically if the document is taller
-   than the SVG. */
+/* Figma "Background Layer" — absolutely positioned, spans full document.
+   Stretched to 100% 100% so a single SVG instance fills the whole body
+   without a tiling seam. The source is an abstract soft gradient, so mild
+   vertical stretching is invisible. */
 body::before {
   content: ''; position: absolute; inset: 0;
   z-index: -1;
-  background: url('/background.svg') top left / 100% auto repeat-y;
+  background: url('/background.svg') top left / 100% 100% no-repeat;
   pointer-events: none;
 }
 img { max-width: 100%; height: auto; display: block; }
