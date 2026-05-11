@@ -77,12 +77,13 @@ body {
   background: var(--white);
 }
 /* Figma "Background Layer" — absolutely positioned at the top of the document,
-   full width, with the SVG rendered at its natural aspect ratio (1600 × 10244). */
+   spans full width and full body height. SVG is sized at natural aspect ratio
+   (100% width, auto height) and repeats vertically if the document is taller
+   than the SVG. */
 body::before {
-  content: ''; position: absolute; top: 0; left: 0;
-  width: 100%; aspect-ratio: 1600 / 10244;
+  content: ''; position: absolute; inset: 0;
   z-index: -1;
-  background: url('/background.svg') top left / 100% 100% no-repeat;
+  background: url('/background.svg') top left / 100% auto repeat-y;
   pointer-events: none;
 }
 img { max-width: 100%; height: auto; display: block; }
