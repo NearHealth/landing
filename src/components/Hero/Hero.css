@@ -89,7 +89,6 @@
   border-radius: var(--radius-card);
   overflow: hidden;
   background: var(--surface-tint);
-  box-shadow: var(--shadow-card);
   will-change: width, height, transform;
 }
 .hero-video-card-inner video {

@@ -29,7 +29,7 @@
 .member-footer {
   display: flex; flex-direction: column; align-items: center;
   gap: 32px;
-  margin-top: var(--space-md);
+  padding-top: 32px;
 }
 .member-footer-text {
   font-size: var(--fs-body-sm); font-weight: 500;
@@ -44,7 +44,7 @@
   .member-header { flex-direction: column; align-items: center; gap: 16px; }
   .member-header .section-title { max-width: 100%; text-align: center; }
   .member-desc { max-width: 100%; text-align: center; }
-  .member-footer { gap: 24px; margin-top: 24px; }
+  .member-footer { gap: 24px; padding-top: 24px; }
 }
 
 /* ── Mobile (≤480px) ── */
@@ -71,5 +71,5 @@
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
   }
-  .member-footer { gap: 24px; margin-top: 24px; }
+  .member-footer { gap: 24px; padding-top: 24px; }
 }

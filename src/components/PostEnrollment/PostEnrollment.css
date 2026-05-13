@@ -17,12 +17,12 @@
   display: flex; flex-wrap: wrap; gap: 22px;
 }
 .post-grid-bottom { margin-top: 5rem; }
-.post-col { flex: 1 1 min(392px, 30%); padding: 0; }
-.post-col:first-child { padding-left: 0; }
+.post-col { flex: 1 1 min(392px, 30%); padding: 0; display: flex; flex-direction: row; align-items: flex-start; gap: 32px; }
 .post-divider-v { flex-shrink: 0; width: 1px; background: rgba(255,255,255,0.1); }
 .post-divider-hidden { visibility: hidden; }
 .post-col-hidden { visibility: hidden; }
-.post-icon { margin-bottom: var(--space-sm); }
+.post-icon { flex-shrink: 0; margin-bottom: 0; }
+.post-col-body { flex: 1; }
 
 .post-col h3 { margin-bottom: 8px; font-size: var(--fs-h5); font-weight: 500; color: var(--white); }
 .post-col p  { font-size: var(--fs-body); font-weight: 500; line-height: 1.5; color: rgba(255,255,255,0.7); }

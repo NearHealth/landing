@@ -101,8 +101,10 @@ export default function PostEnrollment() {
                     ref={(el) => { cardsRef.current[i] = el }}
                   >
                     <div className="post-icon">{f.icon}</div>
-                    <h3>{f.title}</h3>
-                    <p>{f.desc}</p>
+                    <div className="post-col-body">
+                      <h3>{f.title}</h3>
+                      <p>{f.desc}</p>
+                    </div>
                   </div>
                 </React.Fragment>
               ))}
@@ -116,8 +118,10 @@ export default function PostEnrollment() {
                     ref={(el) => { cardsRef.current[3 + i] = el }}
                   >
                     <div className="post-icon">{f.icon}</div>
-                    <h3>{f.title}</h3>
-                    <p>{f.desc}</p>
+                    <div className="post-col-body">
+                      <h3>{f.title}</h3>
+                      <p>{f.desc}</p>
+                    </div>
                   </div>
                 </React.Fragment>
               ))}
