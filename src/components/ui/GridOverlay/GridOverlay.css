@@ -10,9 +10,10 @@
 }
 .grid-overlay-inner {
   height: 100%;
-  /* Reads --page-px so the overlay always matches whatever the page margin
-     is set to in global.css — change once, both stay aligned. */
-  margin: 0 var(--page-px, 80px);
+  /* Matches .container's content area: a true 1440px max, with --page-px
+     gutter on each side. Change --page-px once and both stay aligned. */
+  width: min(1440px, 100% - 2 * var(--page-px, 80px));
+  margin-inline: auto;
   display: grid;
   grid-template-columns: repeat(12, 1fr);
   gap: 40px;

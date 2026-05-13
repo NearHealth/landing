@@ -7,7 +7,7 @@
 .navbar {
   position: fixed; top: 0; left: 0; z-index: 1000;
   display: flex; align-items: center;
-  width: 100%; height: 66px;
+  width: 100%; height: var(--navbar-h);
   isolation: isolate;
   mix-blend-mode: difference;
   /* Slide-hide on scroll-down, slide-back on scroll-up. transform is the only
@@ -25,8 +25,8 @@
    against this blurred surface + the page beneath. */
 .navbar-blur {
   position: fixed; left: 0; top: 0; z-index: 999;
-  width: 100%; height: 66px;
-  backdrop-filter: blur(20px) saturate(150%);
+  width: 100%; height: var(--navbar-h);
+  backdrop-filter: blur(20px);
   pointer-events: none;
   transform: translateY(0);
   transition: transform 0.35s var(--ease);
@@ -51,7 +51,7 @@
    `~` (general sibling) is required because .navbar-edge is no longer
    directly adjacent to .navbar — .navbar-blur sits between them. */
 .navbar--hidden ~ .navbar-blur,
-.navbar--hidden ~ .navbar-edge { transform: translateY(-66px); }
+.navbar--hidden ~ .navbar-edge { transform: translateY(calc(-1 * var(--navbar-h))); }
 /* Glass plate — sibling layer that holds the backdrop-filter, base tint,
    border, shadow, AND the soft highlight gradient (its own ::before). It must
    stay BELOW the nav content in paint order, so we leave it as the first
@@ -90,19 +90,24 @@
   width: 100%;
   padding: 0 var(--page-px);
 }
-/* Logo SVGs are <img> tags with baked-in fills; CSS color can't recolor
-   them, so we invert the whole element via filter so the difference blend
-   restores the original look. */
-.nav-logo  { display: flex; align-items: center; flex-shrink: 0; filter: invert(1); }
+/* Logo SVGs are inline with fill="currentColor", so the logo inherits the
+   same source value as the nav links and goes through the navbar's
+   mix-blend-mode: difference the same way the text does. */
+.nav-logo  {
+  display: flex; align-items: center; flex-shrink: 0;
+  color: var(--nav-link-color, #ECF5F2);
+}
 .nav-links { display: flex; flex: 1; justify-content: space-evenly; margin: 0; }
-/* color: #F5E3E1 = 255 - var(--dark) #0A1C1E → after difference renders as --dark */
+/* Source color is the pre-difference value; the navbar's mix-blend-mode: difference
+   inverts it against whatever paints below (page + blur). Exposed as a CSS var
+   so the dev NavColorTuner can live-tune it. */
 .nav-link {
   padding: 10px 18px;
   border-radius: var(--radius-pill);
   font-family: var(--font);
   font-size: var(--fs-btn); font-weight: 600;
   letter-spacing: 0.08em; text-transform: uppercase;
-  color: #F5E3E1;
+  color: var(--nav-link-color, #ECF5F2);
   transition: background 0.25s var(--ease), color 0.3s var(--ease);
 }
 .nav-link:hover, .nav-link:active {
@@ -157,8 +162,8 @@
   transition: all 0.3s;
 }
 
-/* ── Mobile (≤768px) ── */
-@media (max-width: 768px) {
+/* ── Mobile + Tablet (≤1024px) ── */
+@media (max-width: 1024px) {
   .nav-container { justify-content: space-between; padding: 0 var(--page-px); }
   .nav-links       { display: none; }
   .mobile-menu-btn { display: none; }

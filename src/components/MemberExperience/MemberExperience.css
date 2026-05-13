@@ -1,16 +1,22 @@
 /* ── Member Experience ── */
-.member-experience { padding: 120px 0; }
+.member-experience {
+  padding: var(--space-section-desktop) 0;
+  background:
+    radial-gradient(ellipse at 35% 45%, rgba(var(--accent-cream-mid-rgb), 0.5) 0%, rgba(var(--accent-cream-mid-rgb), 0) 50%),
+    radial-gradient(ellipse at 100% 70%, rgba(var(--accent-dusty-warm-rgb), 0.45) 0%, rgba(var(--accent-dusty-warm-rgb), 0) 55%),
+    linear-gradient(180deg, var(--bg-stop-2) 0%, var(--bg-stop-3) 100%);
+}
 .member-experience .container { padding: var(--px-section-x); }
 .member-header {
   display: flex; justify-content: space-between; align-items: flex-start;
   gap: var(--space-lg);
   margin-bottom: var(--space-md);
 }
-.member-header .section-title { flex-shrink: 0; max-width: 527px; font-size: var(--fs-h2); }
+.member-header .section-title { flex-shrink: 0; max-width: 527px; font-size: var(--fs-h2); text-wrap: balance; }
 .member-desc {
   max-width: 447px;
   padding-top: 10px;
-  font-size: 18px; font-weight: 500;
+  font-size: var(--fs-subtitle); font-weight: 500;
   line-height: 1.36; letter-spacing: 0.02em;
 }
 .member-video-wrap {
@@ -35,19 +41,22 @@
 
 /* ── Tablet (≤1024px) ── */
 @media (max-width: 1024px) {
-  .member-header { flex-direction: column; gap: var(--space-md); }
+  .member-header { flex-direction: column; align-items: center; gap: 16px; }
+  .member-header .section-title { max-width: 100%; text-align: center; }
+  .member-desc { max-width: 100%; text-align: center; }
+  .member-footer { gap: 24px; margin-top: 24px; }
 }
 
-/* ── Mobile (≤768px) ── */
-@media (max-width: 768px) {
+/* ── Mobile (≤480px) ── */
+@media (max-width: 480px) {
   .member-experience { padding: var(--space-section-mobile) 0; }
   .member-experience .container { padding: 0 19.5px; }
-  .member-header { flex-direction: column; gap: 16px; }
-  .member-header .section-title { letter-spacing: -0.01em; }
-  .member-desc { font-size: var(--fs-body-mobile); line-height: 1.42; }
+  .member-header { flex-direction: column; align-items: center; gap: 16px; }
+  .member-header .section-title { letter-spacing: -0.01em; max-width: 100%; text-align: center; }
+  .member-desc { font-size: var(--fs-body-mobile); line-height: 1.42; width: 100%; max-width: 100%; text-align: center; }
   .member-video-wrap {
     position: relative;
-    max-width: 380px; aspect-ratio: 380/548;
+    width: 100%; max-width: none; aspect-ratio: 380/548;
     border-radius: var(--radius-card);
   }
   .member-video {

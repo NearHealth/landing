@@ -1,8 +1,9 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { useScrollReveal } from '../../hooks/useScrollReveal'
 import { splitLines, lineRevealVars, blockRevealVars, blockRevealFromVars, selfTrigger } from '../../utils/reveal'
 import useIsMobile from '../../hooks/useIsMobile'
+import { BREAKPOINT_PHONE } from '../../utils/layout'
 import { asset } from '../../utils/assetPath'
 import './OnePlatform.css'
 
@@ -15,6 +16,16 @@ const SPEED = 70
 
 export default function OnePlatform() {
   const isMobile = useIsMobile()
+
+  // Use the mobile image only on small phones (≤480px), not on tablet
+  const [useSmallImage, setUseSmallImage] = useState(
+    typeof window !== 'undefined' ? window.innerWidth <= BREAKPOINT_PHONE : false
+  )
+  useEffect(() => {
+    const handle = () => setUseSmallImage(window.innerWidth <= BREAKPOINT_PHONE)
+    window.addEventListener('resize', handle)
+    return () => window.removeEventListener('resize', handle)
+  }, [])
 
   const sectionRef = useRef(null)
   const titleRef = useRef(null)
@@ -185,9 +196,9 @@ export default function OnePlatform() {
         </div>
         <div className="platform-phone" ref={phoneRef}>
           <picture>
-            <source srcSet={asset(isMobile ? 'assets/images/one-platform-mobile.webp' : 'assets/images/one-platform-desktop.webp')} type="image/webp" />
+            <source srcSet={asset(useSmallImage ? 'assets/images/one-platform-mobile.webp' : 'assets/images/one-platform-desktop.webp')} type="image/webp" />
             <img
-              src={asset(isMobile ? 'assets/images/one-platform-mobile.jpg' : 'assets/images/one-platform-desktop.jpg')}
+              src={asset(useSmallImage ? 'assets/images/one-platform-mobile.jpg' : 'assets/images/one-platform-desktop.jpg')}
               alt="Near Health - Activate Care"
               loading="lazy"
               className="platform-phone-img"

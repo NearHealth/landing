@@ -61,6 +61,52 @@
   --fs-caption: clamp(11px, 0.8vw, 14px);
   --fs-btn: 12px;
   --fs-ticker: clamp(48px, 6.5vw, 96px);
+  --fs-subtitle: 18px;             /* secondary copy under section titles */
+
+  /* Layout */
+  --space-section-desktop: 120px;  /* locked desktop section padding (--space-section above is the fluid mobile-to-desktop ramp) */
+  --navbar-h: 66px;
+  --navbar-sticky-offset: 82px;    /* --navbar-h + 16px breathing room */
+
+  /* Page background base */
+  --bg-page: #eee2df;
+
+  /* Section-background palette ramp. Each --bg-stop-N is the boundary shared
+     between section N and section N+1, so adjacent linear-gradient handoffs
+     reference the same variable. */
+  --bg-stop-hero-top: #ece3e1;     /* Hero top only */
+  --bg-stop-hero-mid: #eee3e0;     /* Hero 55% only */
+  --bg-stop-1:        #f0e4e0;     /* Hero bottom ↔ CareJourney top */
+  --bg-stop-2:        #f2e5df;     /* CareJourney bottom ↔ MemberExperience top */
+  --bg-stop-3:        #efe2dc;     /* MemberExperience bottom ↔ HowItWorks top */
+  --bg-stop-4:        #f1e4dd;     /* HowItWorks bottom ↔ PostEnrollment top */
+  --bg-stop-5:        #eadad1;     /* PostEnrollment bottom ↔ OnePlatform top */
+  --bg-stop-6:        #e2d3cf;     /* OnePlatform bottom ↔ RealWorld top */
+  --bg-stop-7:        #ded0cd;     /* RealWorld bottom ↔ ShapedSection top */
+  --bg-stop-8:        #d9cccb;     /* ShapedSection bottom ↔ CareConnected top */
+  --bg-stop-9:        #d8cccd;     /* CareConnected bottom ↔ FooterCta ↔ Footer top */
+  --bg-footer-end:    #d2c8ca;     /* Footer bottom only */
+
+  /* Radial-highlight palette as RGB triples. Call sites apply alpha:
+     rgba(var(--accent-cream-warm-rgb), 0.65). */
+  --accent-cream-soft-rgb:    255, 250, 246;
+  --accent-cream-warm-rgb:    255, 244, 231;
+  --accent-cream-mid-rgb:     252, 236, 219;
+  --accent-cream-deep-rgb:    255, 250, 244;
+  --accent-cream-bright-rgb:  255, 246, 239;
+  --accent-peach-soft-rgb:    246, 212, 179;
+  --accent-peach-warm-rgb:    252, 235, 214;
+  --accent-peach-bold-rgb:    244, 202, 166;
+  --accent-peach-mid-rgb:     235, 194, 162;
+  --accent-dusty-light-rgb:   232, 218, 215;
+  --accent-dusty-warm-rgb:    224, 215, 219;
+  --accent-dusty-mid-rgb:     222, 211, 216;
+  --accent-dusty-cool-rgb:    215, 207, 216;
+  --accent-dusty-lilac-rgb:   218, 210, 216;
+  --accent-dusty-deep-rgb:    209, 202, 211;
+  --accent-dusty-neutral-rgb: 210, 202, 212;
+  --accent-warm-pearl-rgb:    238, 224, 219;
+  --accent-cyan-rgb:          145, 235, 245;
 }
 
 /* ── Reset ── */
@@ -74,23 +120,13 @@ html.lenis, html.lenis body { height: auto; }
 body {
   font-family: var(--font); color: var(--dark); overflow-x: clip;
   position: relative; font-size: var(--fs-body);
-  background: var(--white);
-}
-/* Figma "Background Layer" — fixed to the top of the viewport at full width
-   and natural aspect ratio. Anything below the SVG's natural height is cropped
-   off rather than repeated or stretched. */
-body::before {
-  content: ''; position: fixed; top: 0; left: 0;
-  width: 100%; height: 100vh;
-  z-index: -1;
-  background: url('/background.svg') top left / 100% auto no-repeat;
-  pointer-events: none;
+  background: var(--bg-page);
 }
 img { max-width: 100%; height: auto; display: block; }
 a { text-decoration: none; color: inherit; }
 ul { list-style: none; }
 
-.container { max-width: 100%; margin: 0 auto; padding: 0 var(--px); }
+.container { max-width: calc(1440px + 2 * var(--px)); margin: 0 auto; padding: 0 var(--px); }
 
 
 /* ── Section shared ── */
@@ -99,14 +135,12 @@ ul { list-style: none; }
   font-weight: 400; line-height: 1; letter-spacing: -0.03em;
 }
 .section-subtitle {
-  font-size: 18px; font-weight: 500;
+  font-size: var(--fs-subtitle); font-weight: 500;
   line-height: 1.36; letter-spacing: 0.02em; margin-top: var(--space-sm);
 }
-.section-header { margin-bottom: var(--space-md); }
-
 .footer-wrap { position: relative; }
 
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
   :root { --page-px: 19.5px; }
   .section-subtitle { font-size: var(--fs-body-mobile); }
 }

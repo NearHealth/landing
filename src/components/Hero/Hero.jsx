@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import useIsMobile from '../../hooks/useIsMobile'
+import { BREAKPOINT_TABLET, NAVBAR_STICKY_OFFSET } from '../../utils/layout'
 import ResponsiveVideo from '../ui/ResponsiveVideo/ResponsiveVideo'
 import BuiltForCarousel from './BuiltForCarousel'
 import './Hero.css'
@@ -22,7 +23,7 @@ export default function Hero() {
     if (typeof window === 'undefined') return
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     // Skip the scrub on tablet width: layout collapses to a column at <=1024px
-    if (window.innerWidth <= 1024) return
+    if (window.innerWidth <= BREAKPOINT_TABLET) return
 
     const row = bottomRowRef.current
     const card = cardRef.current
@@ -44,18 +45,17 @@ export default function Hero() {
         scrollTrigger: {
           trigger: row,
           start: 'top top',
-          end: () => '+=' + window.innerHeight * 1.3,
+          end: () => '+=' + window.innerHeight * 0.6,
           scrub: 0.6,
           invalidateOnRefresh: true,
           onRefreshInit: () => {
             // Read the inner card's natural geometry (no transform, no
             // animated width/height). It sits absolutely positioned over the
             // outer layout slot, so its rect matches the slot's natural size.
-            // STICKY_TOP mirrors the CSS `position: sticky; top: 82px;` on the
-            // outer slot — we can't read getBoundingClientRect().top because
+            // NAVBAR_STICKY_OFFSET mirrors the CSS `position: sticky; top` on
+            // the outer slot — we can't read getBoundingClientRect().top because
             // onRefreshInit fires at scroll = 0 (card not yet stuck).
-            const STICKY_TOP = 82
-            const SCRUB_VH = 1.3 // matches scrollTrigger end below (0.7 scale + 0.6 hold)
+            const SCRUB_VH = 0.6 // matches scrollTrigger end above (0.7 scale + 0.6 hold)
             const TAIL_GAP = 120 // empty space below the expanded video; pairs with CareJourney's 120px top padding for a 240px section gap
             const vw = window.innerWidth
             const vh = window.innerHeight
@@ -64,21 +64,21 @@ export default function Hero() {
             const r = card.getBoundingClientRect()
             targets.w0 = r.width
             targets.h0 = r.height
-            targets.w = vw - 2 * pad
+            targets.w = Math.min(vw - 2 * pad, 1440)
             targets.h = vh - 2 * pad
             // Center the resized box on the viewport. Anchor is the inner's
-            // top-left (top:0, left:0 of the slot, slot top = STICKY_TOP).
+            // top-left (top:0, left:0 of the slot, slot top = NAVBAR_STICKY_OFFSET).
             targets.dx = vw / 2 - r.left - targets.w / 2
-            targets.dy = pad - STICKY_TOP
+            targets.dy = pad - NAVBAR_STICKY_OFFSET
             // Calibrate the sticky range and hero tail so:
             //   1. the slot unsticks the moment the scrub completes
             //      (no dead pinned scroll between the animation and CareJourney)
             //   2. the constant post-unstick gap below the expanded card lands
             //      at exactly TAIL_GAP px. Derivation:
-            //        gap = paddingBottom + pad + STICKY_TOP + slotH - vh
+            //        gap = paddingBottom + pad + NAVBAR_STICKY_OFFSET + slotH - vh
             if (heroEl) {
-              row.style.minHeight = `${SCRUB_VH * vh + targets.h0 + STICKY_TOP}px`
-              heroEl.style.paddingBottom = `${TAIL_GAP + vh - pad - STICKY_TOP - targets.h0}px`
+              row.style.minHeight = `${SCRUB_VH * vh + targets.h0 + NAVBAR_STICKY_OFFSET}px`
+              heroEl.style.paddingBottom = `${TAIL_GAP + vh - pad - NAVBAR_STICKY_OFFSET - targets.h0}px`
             }
           },
         },

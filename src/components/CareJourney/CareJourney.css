@@ -1,5 +1,11 @@
 /* ── Care Journey ── */
-.care-journey { padding: var(--space-section) 0 120px; }
+.care-journey {
+  padding: var(--space-section) 0 var(--space-section-desktop);
+  background:
+    radial-gradient(ellipse 70% 45% at 15% 50%, rgba(var(--accent-cream-warm-rgb), 0.65) 0%, rgba(var(--accent-cream-warm-rgb), 0) 100%),
+    radial-gradient(ellipse at 85% 65%, rgba(var(--accent-dusty-light-rgb), 0.45) 0%, rgba(var(--accent-dusty-light-rgb), 0) 50%),
+    linear-gradient(180deg, var(--bg-stop-1) 0%, var(--bg-stop-2) 100%);
+}
 .care-journey .container { padding: var(--px-section-x); }
 .care-journey-header { margin-bottom: var(--space-md); }
 .care-cards {
@@ -12,21 +18,15 @@
   border-radius: clamp(24px, 3.5vw, 50px);
   overflow: hidden;
   background: var(--warm);
-  /* Only transition props the hover actually touches, and use `translate`
-     (not `transform`) so we don't fight GSAP's reveal which writes `transform`. */
-  transition:
-    translate 0.5s var(--ease-out),
-    box-shadow 0.5s var(--ease-out);
+  transition: box-shadow 0.5s var(--ease-out);
 }
 @media (hover: hover) {
   .care-card:hover {
-    translate: 0 -3px;
     box-shadow: 0 10px 28px rgba(10,28,30,0.07);
   }
 }
 @media (prefers-reduced-motion: reduce) {
   .care-card { transition: none; }
-  .care-card:hover { translate: none; }
 }
 .care-card-lottie {
   position: absolute; inset: 0; z-index: 1;
@@ -101,8 +101,8 @@
 }
 .care-card-btn:hover { background: rgba(255,255,255,0.85); }
 
-/* ── Mobile (≤768px) ── */
-@media (max-width: 768px) {
+/* ── Mobile (≤480px) ── */
+@media (max-width: 480px) {
   .care-journey { padding: var(--space-section-mobile) 0; }
   .care-journey .container { padding: 0 19.5px; }
   .care-card { border-radius: var(--radius-card); }

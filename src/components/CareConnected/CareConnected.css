@@ -1,5 +1,10 @@
 /* ── Care, Connected ── */
-.care-connected { padding: 0; }
+.care-connected {
+  padding: 0;
+  background:
+    radial-gradient(ellipse at 50% 55%, rgba(var(--accent-cream-bright-rgb), 0.45) 0%, rgba(var(--accent-cream-bright-rgb), 0) 50%),
+    linear-gradient(180deg, var(--bg-stop-8) 0%, var(--bg-stop-9) 100%);
+}
 .care-connected-card {
   position: relative;
   display: flex; align-items: center; justify-content: center;
@@ -21,13 +26,14 @@
 }
 .lottie-bg canvas { width: 100% !important; height: 100% !important; background: transparent !important; }
 
-/* ── Mobile (≤768px) ── */
-@media (max-width: 768px) {
+/* ── Mobile (≤480px) ── */
+@media (max-width: 480px) {
   .care-connected { padding: var(--space-section-mobile) 0 0; }
   .care-connected-card {
     width: calc(100vw - 16px);
     max-width: 900px;
-    height: 320px;
+    height: auto;
+    aspect-ratio: 946 / 408;
     border-radius: var(--radius-pill);
     /* Break out of the .container's horizontal padding so the pill can span
        the full viewport (capped at max-width). */

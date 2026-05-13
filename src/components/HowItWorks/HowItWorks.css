@@ -1,5 +1,10 @@
 /* ── How It Works ── */
-.how-it-works { padding: 120px 0; }
+.how-it-works {
+  padding: var(--space-section-desktop) 0;
+  background:
+    radial-gradient(ellipse at 50% 40%, rgba(var(--accent-cream-deep-rgb), 0.7) 0%, rgba(var(--accent-cream-deep-rgb), 0) 48%),
+    linear-gradient(180deg, var(--bg-stop-3) 0%, var(--bg-stop-4) 100%);
+}
 .how-header { margin-bottom: 88px; text-align: center; }
 .how-label {
   display: block;
@@ -52,22 +57,10 @@
 }
 .how-circle-logo { width: 104px; height: 104px; }
 
-/* ── Tablet (≤1024px) ── */
+/* ── Tablet/Mobile (≤1024px) ── */
 @media (max-width: 1024px) {
-  .how-steps-row { flex-direction: column; gap: 0; }
   .how-arrow, .how-spacer, .how-curves { display: none; }
   .how-curves-row { margin-top: 0; }
-}
-
-/* ── Mobile (≤768px) ── */
-@media (max-width: 768px) {
-  .how-it-works { padding: var(--space-section-mobile) 0; }
-  .how-header .section-title {
-    width: 380px; max-width: 100%; height: 72px;
-    margin-left: auto; margin-right: auto;
-    font-size: 36px; line-height: 1; letter-spacing: -0.01em;
-  }
-  .how-desc { font-size: var(--fs-body-mobile); line-height: 1.32; }
   .how-center-icon {
     position: relative;
     display: flex; justify-content: center;
@@ -81,9 +74,6 @@
     transform: translateX(-50%);
   }
   .how-circle { width: 48px; height: 48px; border-radius: 13.85px; }
-  /* Icon fills the container (matches desktop ratio: icon size = container size).
-     SVG's internal viewBox provides the visual padding, so the rendered glyph
-     scales proportionally with the dark badge. */
   .how-circle-logo { width: 48px; height: 48px; }
   .how-steps-row {
     position: relative;
@@ -100,12 +90,24 @@
   }
   .how-step-card {
     position: relative; z-index: 1;
-    width: 100%; max-width: 380px; height: 97px;
+    flex: none;
+    width: 100%; max-width: 560px; max-height: none; height: 97px;
     padding: 21px 32px;
     border-radius: 13px;
   }
   .how-num { top: 9px; right: 14px; font-size: 16px; }
   .how-step-card h3 { font-size: 24px; letter-spacing: -0.01em; }
   .how-step-card p  { font-size: 14px; line-height: 1.32; }
-  .how-curves-row { margin-top: 0; }
+}
+
+/* ── Mobile (≤480px) ── */
+@media (max-width: 480px) {
+  .how-it-works { padding: var(--space-section-mobile) 0; }
+  .how-header .section-title {
+    width: 380px; max-width: 100%; height: 72px;
+    margin-left: auto; margin-right: auto;
+    font-size: 36px; line-height: 1; letter-spacing: -0.01em;
+  }
+  .how-desc { font-size: var(--fs-body-mobile); line-height: 1.32; }
+  .how-step-card { max-width: 380px; }
 }

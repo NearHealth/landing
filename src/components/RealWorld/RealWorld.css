@@ -1,5 +1,11 @@
 /* ── Real-World Operations ── */
-.real-world { padding: 120px 0; }
+.real-world {
+  padding: var(--space-section-desktop) 0;
+  background:
+    radial-gradient(ellipse 70% 45% at 15% 50%, rgba(var(--accent-peach-warm-rgb), 0.5) 0%, rgba(var(--accent-peach-warm-rgb), 0) 100%),
+    radial-gradient(ellipse at 90% 70%, rgba(var(--accent-dusty-lilac-rgb), 0.5) 0%, rgba(var(--accent-dusty-lilac-rgb), 0) 50%),
+    linear-gradient(180deg, var(--bg-stop-6) 0%, var(--bg-stop-7) 100%);
+}
 .real-world .container { padding: var(--px-section-x); }
 .real-world .section-title { margin-bottom: 32px; }
 .real-world .mobile-only  { display: none; }
@@ -10,7 +16,8 @@
   gap: clamp(16px, 2.8vw, 40px);
 }
 .feature-card {
-  max-width: 330px; height: 264px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  max-width: 330px; min-height: 264px;
   padding: clamp(30px, 3.3vw, 48px) clamp(16px, 1.7vw, 24px);
   border: 1px solid rgba(10,28,30,0.04); border-radius: 50px;
   text-align: center;
@@ -23,21 +30,30 @@
   border-radius: 50%;
   background: var(--accent);
 }
-.feature-card h3 { margin-bottom: 8px; font-size: var(--fs-h5); font-weight: 500; }
-.feature-card p  { font-size: var(--fs-body-sm); font-weight: 500; line-height: 1.35; color: var(--text-muted); }
+.feature-card h3 { margin-bottom: 20px; font-size: var(--fs-h5); font-weight: 500; }
+.feature-card p  { font-size: var(--fs-body-sm); font-weight: 500; line-height: 1.35; color: var(--text-muted); text-wrap: balance; }
 
-/* ── Mobile (≤768px) ── */
-@media (max-width: 768px) {
+/* ── Tablet (≤1024px) ── */
+@media (max-width: 1024px) {
+  .real-world .section-title { text-align: center; }
+  .features-grid { grid-template-columns: repeat(2, 1fr); }
+  /* Drop the fixed min-height so cards size to their content instead of
+     leaving a tall empty band below the description on tablet widths. */
+  .feature-card { max-width: 100%; width: 100%; min-height: 0; }
+}
+
+/* ── Mobile (≤480px) ── */
+@media (max-width: 480px) {
   .real-world { padding: var(--space-section-mobile) 0; }
   .real-world .container { padding: 0 19.5px; }
-  .real-world .section-title { margin-bottom: 28px; letter-spacing: -0.01em; }
+  .real-world .section-title { margin-bottom: 28px; letter-spacing: -0.01em; text-align: center; }
   .real-world .mobile-only  { display: inline; }
   .real-world .desktop-only { display: none; }
   .features-grid { grid-template-columns: 1fr; gap: 11px; }
   .feature-card {
     display: grid; grid-template-columns: 36px 1fr; grid-template-rows: auto auto;
     column-gap: 14px; row-gap: 10px; align-content: start;
-    max-width: 381px; height: 118px;
+    max-width: 381px; min-height: 0; height: auto;
     padding: 16px 16.5px;
     border-radius: 26px;
     text-align: left;

@@ -20,7 +20,7 @@ const cards = [
       'Improve member experience and retention.',
       'Coordinate care with visibility.',
     ],
-    desc: <>Deliver post-enrollment support that truly scales - and focus on<br />relationships, not operations.</>,
+    desc: 'Deliver post-enrollment support that truly scales - and focus on relationships, not operations.',
   },
   {
     title: 'For Providers',
@@ -32,11 +32,11 @@ const cards = [
       'Gain visibility with high-intent patients and broker-driven referrals.',
       'Streamline intake and scheduling with better-prepared patients.',
     ],
-    desc: <>Turn access into growth by connecting you with the right patients, at<br />the right moment.</>,
+    desc: 'Turn access into growth by connecting you with the right patients, at the right moment.',
   },
 ]
 
-function CareCard({ card, refProp }) {
+function CareCard({ card, refProp, mobileActive }) {
   const isMobile = useIsMobile()
   const [hovered, setHovered] = useState(false)
   const [mounted, setMounted] = useState(false)
@@ -48,45 +48,18 @@ function CareCard({ card, refProp }) {
     : 'assets/Hover_Gradient_Desktop.lottie'
   )
 
-  // Desktop: fade in on hover
+  const active = isMobile ? mobileActive : hovered
+
+  // Cross-fade based on active state (drives both desktop hover and mobile scroll exclusivity)
   useEffect(() => {
-    if (isMobile || !mounted) return
-    if (!hovered) { setVisible(false); return }
+    if (!active) { setVisible(false); return }
+    setMounted(true)
     const id = requestAnimationFrame(() => setVisible(true))
     return () => cancelAnimationFrame(id)
-  }, [mounted, hovered, isMobile])
-
-  // Mobile: show lottie when card scrolls into view
-  useEffect(() => {
-    if (!isMobile) return
-    const el = cardRef.current
-    if (!el) return
-
-    let raf
-    const st = ScrollTrigger.create({
-      trigger: el,
-      start: 'top 85%',
-      end: 'bottom 15%',
-      onToggle(self) {
-        if (self.isActive) {
-          setMounted(true)
-          raf = requestAnimationFrame(() => setVisible(true))
-        } else {
-          cancelAnimationFrame(raf)
-          setVisible(false)
-        }
-      },
-    })
-
-    return () => {
-      cancelAnimationFrame(raf)
-      st.kill()
-    }
-  }, [isMobile])
+  }, [active])
 
   const activate = () => {
     if (isMobile) return
-    setMounted(true)
     setHovered(true)
   }
   const deactivate = () => {
@@ -141,6 +114,64 @@ export default function CareJourney() {
   const sectionRef = useRef(null)
   const headerRef = useRef(null)
   const cardsRef = useRef([])
+  const isMobile = useIsMobile()
+  const [activeIndex, setActiveIndex] = useState(-1)
+
+  useEffect(() => {
+    const section = sectionRef.current
+    if (!section) return
+    const equalize = () => {
+      ;['.care-card-features', '.care-card-text'].forEach(sel => {
+        const els = section.querySelectorAll(sel)
+        els.forEach(el => { el.style.minHeight = '' })
+        const max = Math.max(...Array.from(els).map(el => el.offsetHeight))
+        els.forEach(el => { el.style.minHeight = `${max}px` })
+      })
+    }
+    const ro = new ResizeObserver(equalize)
+    ro.observe(section)
+    equalize()
+    return () => ro.disconnect()
+  }, [])
+
+  // Mobile: only the card closest to viewport center is the primary focus —
+  // guarantees one active card at a time so the gradient never doubles up.
+  useEffect(() => {
+    if (!isMobile) { setActiveIndex(-1); return }
+    const section = sectionRef.current
+    if (!section) return
+
+    let current = -1
+    const update = () => {
+      const cards = cardsRef.current.filter(Boolean)
+      if (!cards.length) return
+      const viewportCenter = window.innerHeight / 2
+      let bestIdx = -1
+      let bestDist = Infinity
+      cards.forEach((el, i) => {
+        const rect = el.getBoundingClientRect()
+        // Card must overlap the viewport to be eligible.
+        if (rect.bottom <= 0 || rect.top >= window.innerHeight) return
+        const dist = Math.abs(rect.top + rect.height / 2 - viewportCenter)
+        if (dist < bestDist) { bestDist = dist; bestIdx = i }
+      })
+      if (bestIdx !== current) {
+        current = bestIdx
+        setActiveIndex(bestIdx)
+      }
+    }
+
+    const st = ScrollTrigger.create({
+      trigger: section,
+      start: 'top bottom',
+      end: 'bottom top',
+      onUpdate: update,
+      onLeave: () => { current = -1; setActiveIndex(-1) },
+      onLeaveBack: () => { current = -1; setActiveIndex(-1) },
+    })
+    update()
+    return () => st.kill()
+  }, [isMobile])
 
   useScrollReveal({
     scopeRef: sectionRef,
@@ -185,6 +216,7 @@ export default function CareJourney() {
             <CareCard
               key={i}
               card={card}
+              mobileActive={activeIndex === i}
               refProp={(el) => { cardsRef.current[i] = el }}
             />
           ))}

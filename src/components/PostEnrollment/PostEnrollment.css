@@ -1,7 +1,13 @@
 /* ── Post-Enrollment (Dark) ── */
-.post-enrollment { padding: 120px var(--page-px); margin: 0 auto; }
+.post-enrollment {
+  padding: var(--space-section-desktop) var(--page-px); margin: 0 auto;
+  background:
+    radial-gradient(ellipse at 0% 40%, rgba(var(--accent-peach-soft-rgb), 0.45) 0%, rgba(var(--accent-peach-soft-rgb), 0) 52%),
+    radial-gradient(ellipse at 100% 65%, rgba(var(--accent-dusty-mid-rgb), 0.45) 0%, rgba(var(--accent-dusty-mid-rgb), 0) 52%),
+    linear-gradient(180deg, var(--bg-stop-4) 0%, var(--bg-stop-5) 100%);
+}
 .post-enrollment > .container {
-  width: 100%; max-width: 100%; min-height: 717px;
+  width: 100%; max-width: 1440px; min-height: 717px;
   padding: clamp(40px, 5.5vw, 80px) 80px;
   border-radius: var(--radius-lg);
   background: var(--dark);
@@ -29,11 +35,11 @@
   .post-col-hidden, .post-divider-hidden { display: none; }
 }
 
-/* ── Mobile (≤768px) ── */
-@media (max-width: 768px) {
-  .post-enrollment { padding: 71px var(--px); }
-  .post-enrollment > .container { padding: 36px 24px; border-radius: var(--radius-card); }
-  .post-enrollment .section-title { margin-bottom: 40px; font-size: 32px; letter-spacing: -0.01em; }
+/* ── Mobile + Tablet list layout (<1024px) ──
+   Layout-only rules for the list markup the JSX renders below 1024px.
+   Section/card padding stays at the desktop values for tablet (see below)
+   and only collapses at the phone breakpoint. */
+@media (max-width: 1023px) {
   .post-list-item { padding: 24px 0; }
   .post-list-header {
     display: flex; align-items: center; gap: 12px;
@@ -42,4 +48,11 @@
   .post-list-header .post-icon { flex-shrink: 0; margin-bottom: 0; }
   .post-list-header h3 { font-size: 22px; font-weight: 500; line-height: 1.13; color: var(--white); }
   .post-list-item p    { font-size: 16px; font-weight: 500; line-height: 1.42; color: rgba(255,255,255,0.6); }
+}
+
+/* ── Mobile only (≤480px) ── */
+@media (max-width: 480px) {
+  .post-enrollment { padding: 71px var(--px); }
+  .post-enrollment > .container { padding: 36px 24px; border-radius: var(--radius-card); min-height: unset; }
+  .post-enrollment .section-title { margin-bottom: 40px; font-size: 32px; letter-spacing: -0.01em; }
 }

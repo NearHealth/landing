@@ -1,5 +1,11 @@
 /* ── Shaped by Real-World Use ── */
-.shaped-section { padding: 120px 0 0; margin-bottom: 15rem; }
+.shaped-section {
+  padding: var(--space-section-desktop) 0 15rem;
+  background:
+    radial-gradient(ellipse at 0% 55%, rgba(var(--accent-peach-mid-rgb), 0.55) 0%, rgba(var(--accent-peach-mid-rgb), 0) 50%),
+    radial-gradient(ellipse at 100% 60%, rgba(var(--accent-dusty-deep-rgb), 0.55) 0%, rgba(var(--accent-dusty-deep-rgb), 0) 52%),
+    linear-gradient(180deg, var(--bg-stop-7) 0%, var(--bg-stop-8) 100%);
+}
 .shaped-section .container { padding: var(--px-section-x); }
 .shaped-section .section-title { margin-bottom: 32px; }
 .shaped-photo {
@@ -9,8 +15,19 @@
   overflow: hidden;
 }
 .shaped-photo img { display: block; width: 100%; height: 100%; object-fit: cover; }
+/* Right-half darkening gradient — 50% wide, anchored right. Paints between
+   the photo and the .shaped-overlay text (z-index 1 vs overlay's z-index 2). */
+.shaped-photo::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(89.02deg, rgba(10, 28, 30, 0) 37.79%, rgba(10, 28, 30, 0.6) 60.43%);
+  pointer-events: none;
+}
 .shaped-overlay {
   position: absolute; inset: 0;
+  z-index: 2;
   display: flex; flex-direction: column; justify-content: space-between;
   padding: clamp(24px, 4vw, 60px);
 }
@@ -35,8 +52,8 @@
   color: var(--white);
 }
 
-/* ── Mobile (≤768px) ── */
-@media (max-width: 768px) {
+/* ── Mobile (≤480px) ── */
+@media (max-width: 480px) {
   .shaped-section { padding: var(--space-section-mobile) 0; margin-bottom: 0; }
   .shaped-section .container { padding: 0 19.5px; }
   .shaped-section .section-title { margin-bottom: 16px; letter-spacing: -0.01em; }

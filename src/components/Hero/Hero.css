@@ -7,6 +7,9 @@
   padding: 0;
   border-radius: clamp(16px, 1.5vw, 24px);
   overflow: visible;
+  background:
+    radial-gradient(ellipse at 50% 20%, rgba(var(--accent-cream-soft-rgb), 0.65) 0%, rgba(var(--accent-cream-soft-rgb), 0) 45%),
+    linear-gradient(180deg, var(--bg-stop-hero-top) 0%, var(--bg-stop-hero-mid) 55%, var(--bg-stop-1) 100%);
 }
 .hero {
   position: relative; min-height: 100vh;
@@ -62,14 +65,14 @@
 .hero-subtitle {
   max-width: 376px;
   margin-bottom: 16px;
-  font-size: 18px; font-weight: 500; line-height: 1.4;
+  font-size: var(--fs-subtitle); font-weight: 500; line-height: 1.4;
 }
 .hero-buttons { display: inline-grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .hero-buttons .btn { justify-content: center; text-align: center; white-space: nowrap; }
 .hero-video-card {
   /* Layout slot only — the visible card lives in .hero-video-card-inner.
      Sticky offset = navbar height (66px) + 16px breathing room. */
-  position: sticky; top: 82px;
+  position: sticky; top: var(--navbar-sticky-offset);
   z-index: 2;
   flex: 1;
   width: 100%; max-width: 982px; aspect-ratio: 982/552;
@@ -99,11 +102,11 @@
 /* ── Built-for ticker (desktop) ── */
 /* margin-top offsets account for the viewport's 12% top fade band so the
    label and divider stay visually aligned with the now-shifted active row. */
-.built-for-label { font-size: var(--fs-caption); font-weight: 500; white-space: nowrap; margin-top: 16px; }
+.built-for-label { font-size: var(--fs-caption); font-weight: 500; white-space: nowrap; margin-top: 56px; }
 /* Pure CSS: divider grows via keyframe, no JS class toggle */
 .built-for-divider {
   flex-shrink: 0;
-  width: 0; height: 1px; margin-top: 25px;
+  width: 0; height: 1px; margin-top: 65px;
   background: var(--dark);
   animation: divider-grow 0.8s var(--ease) 0.25s forwards;
 }
@@ -114,14 +117,11 @@
    which breaks repaint when child track scrolls via translateY) */
 .built-for-viewport {
   position: relative;
-  height: 130px;
+  height: 180px;
   overflow: hidden;
   opacity: 0;
-  /* Tight active band (15-25%) anchors a single highlighted row; the fade
-     below it drops to transparent by 65% so off-band rows recede quickly
-     rather than lingering as faint ghosts to the bottom. */
-  mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 25%, transparent 65%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 15%, black 25%, transparent 65%, transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 25%, black 30%, black 70%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 25%, black 30%, black 70%, transparent 100%);
   animation: fade-in-track 0.3s ease 1.05s forwards;
 }
 /* Track flows continuously: 7 items × 28px = 196px loop, linear so motion
@@ -138,7 +138,7 @@
   will-change: transform;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
-  animation: built-for-scroll-v 18s linear 1.35s infinite;
+  animation: built-for-scroll-v 14.4s linear 1.35s infinite;
 }
 .built-for-item {
   height: 28px;
@@ -176,6 +176,11 @@
   width: 100%;
 }
 .hero-buttons--mobile .btn { justify-content: center; text-align: center; white-space: nowrap; }
+/* Tablet (481px–1024px): narrow the buttons row so the two CTAs don't span
+   the full content width — feels more proportionate at tablet sizes. */
+@media (min-width: 481px) and (max-width: 1024px) {
+  .hero-buttons--mobile { width: 75%; }
+}
 .hero-mobile-built-for {
   display: flex; flex-direction: column; align-items: center; gap: 0;
   margin-bottom: var(--space-md);
@@ -235,7 +240,7 @@
   will-change: transform;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
-  animation: built-for-scroll 18s linear 1.35s infinite;
+  animation: built-for-scroll 14.4s linear 1.35s infinite;
 }
 .built-for-h-item {
   flex-shrink: 0;
@@ -310,7 +315,7 @@
   .hero-video-card { position: relative; top: auto; }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 480px) {
   .hero-outer { padding: 0; border-radius: 0; overflow: visible; }
   .hero { min-height: auto; padding: 143px 0 var(--space-lg); }
   .hero-container { align-items: center; }
