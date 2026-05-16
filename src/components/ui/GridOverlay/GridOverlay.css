@@ -1,0 +1,51 @@
+/* ── 12-column dev grid overlay ──
+   Fixed-position overlay sitting above all page content. 80px outer margins,
+   40px gutters between columns. Toggled with the floating button (or
+   Cmd/Ctrl+Shift+G). State persists via localStorage. */
+.grid-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  pointer-events: none;
+}
+.grid-overlay-inner {
+  height: 100%;
+  /* Matches .container's content area: a true 1440px max, with --page-px
+     gutter on each side. Change --page-px once and both stay aligned. */
+  width: min(1440px, 100% - 2 * var(--page-px, 80px));
+  margin-inline: auto;
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 40px;
+}
+.grid-overlay-col {
+  height: 100%;
+  background: rgba(255, 64, 129, 0.10);
+  outline: 1px dashed rgba(255, 64, 129, 0.35);
+  outline-offset: -1px;
+}
+
+.grid-overlay-toggle {
+  position: fixed;
+  bottom: 16px;
+  right: 16px;
+  z-index: 9999;
+  padding: 8px 14px;
+  border: 1px solid rgba(10, 28, 30, 0.15);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+  font: 600 11px/1 var(--font-heading, system-ui, sans-serif);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--dark, #0a1c1e);
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  transition: background 0.15s, color 0.15s, transform 0.15s;
+}
+.grid-overlay-toggle:hover { transform: translateY(-1px); }
+.grid-overlay-toggle.is-on {
+  background: #ff4081;
+  color: #fff;
+  border-color: #ff4081;
+}

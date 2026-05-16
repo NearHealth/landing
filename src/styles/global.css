@@ -36,8 +36,13 @@
   --duration-reveal: 0.6s;
 
   /* Fluid spacing */
-  --px: clamp(20px, 5vw, 80px);
-  --px-section-x: 0 74px 0 80px;
+  /* --page-px is the canonical outer page margin. Every section reads from
+     it (directly or via --px / --px-section-x) so content lines up with the
+     12-column dev grid (which also uses 80px outer margins).
+     Keep this in sync with .grid-overlay-inner's margin in GridOverlay.css. */
+  --page-px: 80px;
+  --px: var(--page-px);
+  --px-section-x: 0 var(--page-px);
   --space-section: clamp(72px, 9.6vw, 144px);
   --space-section-mobile: 71px;
   --space-lg: clamp(24px, 3vw, 48px);
@@ -56,56 +61,97 @@
   --fs-caption: clamp(11px, 0.8vw, 14px);
   --fs-btn: 12px;
   --fs-ticker: clamp(48px, 6.5vw, 96px);
+  --fs-subtitle: 18px;             /* secondary copy under section titles */
+
+  /* Layout */
+  --space-section-desktop: 120px;  /* locked desktop section padding (--space-section above is the fluid mobile-to-desktop ramp) */
+  --navbar-h: 66px;
+  --navbar-sticky-offset: 82px;    /* --navbar-h + 16px breathing room */
+
+
+  /* Section-background palette ramp. Each --bg-stop-N is the boundary shared
+     between section N and section N+1, so adjacent linear-gradient handoffs
+     reference the same variable. */
+  --bg-stop-hero-top: #ece3e1;     /* Hero top only */
+  --bg-stop-hero-mid: #eee3e0;     /* Hero 55% only */
+  --bg-stop-1:        #f0e4e0;     /* Hero bottom ↔ CareJourney top */
+  --bg-stop-2:        #f2e5df;     /* CareJourney bottom ↔ MemberExperience top */
+  --bg-stop-3:        #efe2dc;     /* MemberExperience bottom ↔ HowItWorks top */
+  --bg-stop-4:        #f1e4dd;     /* HowItWorks bottom ↔ PostEnrollment top */
+  --bg-stop-5:        #eadad1;     /* PostEnrollment bottom ↔ OnePlatform top */
+  --bg-stop-6:        #e2d3cf;     /* OnePlatform bottom ↔ RealWorld top */
+  --bg-stop-7:        #ded0cd;     /* RealWorld bottom ↔ ShapedSection top */
+  --bg-stop-8:        #d9cccb;     /* ShapedSection bottom ↔ CareConnected top */
+  --bg-stop-9:        #d8cccd;     /* CareConnected bottom ↔ FooterCta ↔ Footer top */
+  --bg-footer-end:    #d2c8ca;     /* Footer bottom only */
+
+  /* Radial-highlight palette as RGB triples. Call sites apply alpha:
+     rgba(var(--accent-cream-warm-rgb), 0.65). */
+  --accent-cream-soft-rgb:    255, 250, 246;
+  --accent-cream-warm-rgb:    255, 244, 231;
+  --accent-cream-mid-rgb:     252, 236, 219;
+  --accent-cream-deep-rgb:    255, 250, 244;
+  --accent-cream-bright-rgb:  255, 246, 239;
+  --accent-peach-soft-rgb:    246, 212, 179;
+  --accent-peach-warm-rgb:    252, 235, 214;
+  --accent-peach-bold-rgb:    244, 202, 166;
+  --accent-peach-mid-rgb:     235, 194, 162;
+  --accent-dusty-light-rgb:   232, 218, 215;
+  --accent-dusty-warm-rgb:    224, 215, 219;
+  --accent-dusty-mid-rgb:     222, 211, 216;
+  --accent-dusty-cool-rgb:    215, 207, 216;
+  --accent-dusty-lilac-rgb:   218, 210, 216;
+  --accent-dusty-deep-rgb:    209, 202, 211;
+  --accent-dusty-neutral-rgb: 210, 202, 212;
+  --accent-warm-pearl-rgb:    238, 224, 219;
+  --accent-cyan-rgb:          145, 235, 245;
 }
 
 /* ── Reset ── */
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; background: transparent; overscroll-behavior-y: none; overflow-x: hidden; }
+html { -webkit-font-smoothing: antialiased; overscroll-behavior-y: none; overflow-x: clip; }
+html.lenis, html.lenis body { height: auto; }
+.lenis.lenis-smooth { scroll-behavior: auto !important; }
+.lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }
+.lenis.lenis-stopped { overflow: clip; }
+.lenis.lenis-scrolling iframe { pointer-events: none; }
 body {
-  font-family: var(--font); color: var(--dark); overflow-x: hidden;
+  font-family: var(--font); color: var(--dark); overflow-x: clip;
   position: relative; font-size: var(--fs-body);
-  background: var(--white);
-}
-/* Figma "Background Layer" — fixed to viewport so it never cuts out
-   as the page grows taller than the image's natural height */
-body::before {
-  content: ''; position: fixed; inset: 0; z-index: -1;
-  background: url('/landing/assets/page-bg.webp') center center / cover no-repeat;
-  pointer-events: none;
+  background: url('/background.svg') center top / cover no-repeat;
 }
 img { max-width: 100%; height: auto; display: block; }
 a { text-decoration: none; color: inherit; }
 ul { list-style: none; }
 
-.container { max-width: 100%; margin: 0 auto; padding: 0 var(--px); }
+.container { max-width: calc(1440px + 2 * var(--px)); margin: 0 auto; padding: 0 var(--px); }
 
+
+.mobile-br { display: none; }
+@media (max-width: 480px) { .mobile-br { display: block; } }
 
 /* ── Section shared ── */
+.section-header { margin-bottom: 32px; }
+/* SplitText clones the h2 per line — zero out margin on clones inside .section-header
+   so only the wrapper's margin-bottom controls spacing, not each cloned line. */
+.section-header .section-title { margin-bottom: 0; }
 .section-title {
   font-family: var(--font-heading); font-size: var(--fs-h2);
   font-weight: 400; line-height: 1; letter-spacing: -0.03em;
 }
 .section-subtitle {
-  font-size: 18px; font-weight: 500;
+  font-size: var(--fs-subtitle); font-weight: 500;
   line-height: 1.36; letter-spacing: 0.02em; margin-top: var(--space-sm);
+  text-wrap: balance;
 }
-.section-header { margin-bottom: var(--space-md); }
+.footer-wrap { position: relative; }
 
-/* ── Animations ── */
-.fade-in { opacity: 0; transform: translateY(20px); transition: opacity var(--duration) var(--ease), transform var(--duration) var(--ease); }
-.fade-in.visible { opacity: 1; transform: translateY(0); }
-
-/* ── Footer wrap (cyan gradient behind logo + cta + footer) ── */
-.footer-wrap {
-  position: relative;
-}
-.footer-wrap::before {
-  content: ''; position: absolute; inset: 0;
-  background: linear-gradient(180deg, rgba(94,230,253,0) 75%, rgba(94,230,253,0.51) 90%, #5EE6FD 100%);
-  opacity: 0.7; pointer-events: none; z-index: 0;
-}
-.footer-wrap > * { position: relative; z-index: 1; }
-
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
+  :root { --page-px: 19.5px; }
   .section-subtitle { font-size: var(--fs-body-mobile); }
+  body { background-image: url('/background-mobile.svg'); }
+}
+@media (max-width: 480px) {
+  .section-subtitle { margin-top: 0; text-wrap: unset; }
+  .section-title { font-size: 36px; margin-bottom: 22px; }
 }

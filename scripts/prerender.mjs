@@ -8,6 +8,11 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 const root = resolve(__dirname, '..')
 
 async function prerender() {
+  if (process.env.VERCEL) {
+    console.log('Skipping prerender on Vercel — Chromium system libs unavailable in build container.')
+    return
+  }
+
   const server = await preview({
     root,
     preview: { port: 4174, strictPort: false, open: false },

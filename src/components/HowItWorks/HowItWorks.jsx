@@ -1,5 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
-import { useFadeIn } from '../../hooks/useScrollAnimation'
+import { useCallback, useEffect, useRef } from 'react'
+import gsap from 'gsap'
+import { useScrollReveal } from '../../hooks/useScrollReveal'
+import { splitLines, lineRevealVars, blockRevealVars, blockRevealFromVars, selfTrigger } from '../../utils/reveal'
+import { PRIMARY_EASE } from '../../utils/eases'
 import useIsMobile from '../../hooks/useIsMobile'
 import { asset } from '../../utils/assetPath'
 import './HowItWorks.css'
@@ -10,9 +13,9 @@ const steps = [
   { title: 'Align everyone', desc: 'Members, brokers, and providers stay in sync.', num: '03' },
 ]
 
-function CenterIcon({ delay = 0 }) {
+function CenterIcon({ refProp }) {
   return (
-    <div className="how-center-icon" style={delay ? { transitionDelay: `${delay}s` } : undefined}>
+    <div className="how-center-icon" ref={refProp}>
       <div className="how-circle">
         <img src={asset('assets/icons/near-logo-coloured.svg')} alt="" className="how-circle-logo" />
       </div>
@@ -20,9 +23,9 @@ function CenterIcon({ delay = 0 }) {
   )
 }
 
-function StepCard({ title, desc, num, delay = 0, refProp }) {
+function StepCard({ title, desc, num, refProp }) {
   return (
-    <div className="how-step-card" ref={refProp} style={delay ? { transitionDelay: `${delay}s` } : undefined}>
+    <div className="how-step-card" ref={refProp}>
       <div className="how-step-top">
         <h3>{title}</h3>
         <span className="how-num">{num}</span>
@@ -33,113 +36,150 @@ function StepCard({ title, desc, num, delay = 0, refProp }) {
 }
 
 export default function HowItWorks() {
-  const fade = useFadeIn()
   const isMobile = useIsMobile()
+  const sectionRef = useRef(null)
   const layoutRef = useRef(null)
+  const labelRef = useRef(null)
+  const titleRef = useRef(null)
+  const descRef = useRef(null)
   const card1Ref = useRef(null)
   const card2Ref = useRef(null)
   const card3Ref = useRef(null)
-  const [curves, setCurves] = useState(null)
+  const centerIconRef = useRef(null)
+  const svgRef = useRef(null)
+  const leftPathRef = useRef(null)
+  const rightPathRef = useRef(null)
+
+  // Measure the connector geometry from layout offsets (transform-agnostic, so the
+  // y:24 pre-reveal offset on cards doesn't pollute the curve targets).
+  const writeCurves = useCallback(() => {
+    const layout = layoutRef.current
+    const c1 = card1Ref.current
+    const c2 = card2Ref.current
+    const c3 = card3Ref.current
+    const svg = svgRef.current
+    const lp = leftPathRef.current
+    const rp = rightPathRef.current
+    if (!layout || !c1 || !c2 || !c3 || !svg || !lp || !rp) return null
+
+    const W = layout.offsetWidth
+    const H = layout.offsetHeight
+    const x1 = c1.offsetLeft + c1.offsetWidth / 2
+    const y1 = c1.offsetTop + c1.offsetHeight
+    const x2L = c2.offsetLeft
+    const y2 = c2.offsetTop + c2.offsetHeight / 2
+    const x2R = c2.offsetLeft + c2.offsetWidth
+    const x3 = c3.offsetLeft + c3.offsetWidth / 2
+    const y3 = c3.offsetTop + c3.offsetHeight
+
+    // Card 01 bottom-center → Card 02 left-middle. Drawn in journey order (M = card1).
+    const lW = x2L - x1
+    const lH = y2 - y1
+    const left = `M ${x1} ${y1} C ${x1} ${y1 + lH * 0.552}, ${x1 + lW * 0.259} ${y2}, ${x1 + lW * 0.576} ${y2} L ${x2L} ${y2}`
+
+    // Card 02 right-middle → Card 03 bottom-center. Reversed from the symmetric form
+    // so the dashoffset draw flows card2 → card3, matching the 01→02→03 reading.
+    const rW = x3 - x2R
+    const rH = y2 - y3
+    const right = `M ${x2R} ${y2} L ${x3 - rW * 0.576} ${y2} C ${x3 - rW * 0.259} ${y2}, ${x3} ${y3 + rH * 0.552}, ${x3} ${y3}`
+
+    svg.setAttribute('width', W)
+    svg.setAttribute('height', H)
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`)
+    lp.setAttribute('d', left)
+    rp.setAttribute('d', right)
+    return { lp, rp, leftLen: lp.getTotalLength(), rightLen: rp.getTotalLength() }
+  }, [])
+
+  useScrollReveal({
+    scopeRef: sectionRef,
+    prepare: () => {
+      const text = [labelRef.current, titleRef.current, descRef.current]
+      const blocks = [card1Ref.current, card2Ref.current, card3Ref.current, centerIconRef.current].filter(Boolean)
+      const paths = [leftPathRef.current, rightPathRef.current].filter(Boolean)
+      gsap.set(text, { autoAlpha: 0 })
+      gsap.set(blocks, blockRevealFromVars())
+      // Step 1 emerges from a smaller offset so it feels softer than the later steps.
+      if (card1Ref.current) gsap.set(card1Ref.current, blockRevealFromVars({ y: 16 }))
+      if (paths.length) gsap.set(paths, { autoAlpha: 0 })
+      return [...text, ...blocks, ...paths]
+    },
+    animate: () => {
+      const labelSplit = splitLines(labelRef.current)
+      const titleSplit = splitLines(titleRef.current)
+      const descSplit = splitLines(descRef.current)
+      gsap.set([labelRef.current, titleRef.current, descRef.current], { autoAlpha: 1 })
+
+      const curves = !isMobile ? writeCurves() : null
+      if (curves) {
+        gsap.set(curves.lp, { autoAlpha: 1, strokeDasharray: curves.leftLen, strokeDashoffset: curves.leftLen })
+        gsap.set(curves.rp, { autoAlpha: 1, strokeDasharray: curves.rightLen, strokeDashoffset: curves.rightLen })
+      }
+
+      // Header lines — each piece triggers as its own element scrolls in.
+      gsap.from(labelSplit.lines, { ...lineRevealVars({ stagger: 0.05 }), scrollTrigger: selfTrigger(labelRef.current) })
+      gsap.from(titleSplit.lines, { ...lineRevealVars(), scrollTrigger: selfTrigger(titleRef.current) })
+      gsap.from(descSplit.lines, { ...lineRevealVars(), scrollTrigger: selfTrigger(descRef.current) })
+
+      if (centerIconRef.current) {
+        gsap.to(centerIconRef.current, { ...blockRevealVars({ stagger: 0 }), scrollTrigger: selfTrigger(centerIconRef.current) })
+      }
+
+      // Journey is a single composed sequence whose three card fades grow
+      // progressively slower — each step takes longer to settle than the last,
+      // so the sequence eases toward resolution rather than hitting a uniform beat.
+      const journey = gsap.timeline({ scrollTrigger: selfTrigger(card1Ref.current) })
+      const cardBase = { autoAlpha: 1, y: 0, ease: 'expo.out' }
+      journey.to(card1Ref.current, { ...cardBase, duration: 0.5 })
+      if (curves) journey.to(curves.lp, { strokeDashoffset: 0, duration: 0.45, ease: PRIMARY_EASE }, '-=0.2')
+      journey.to(card2Ref.current, { ...cardBase, duration: 1.5 }, '-=0.2')
+      if (curves) journey.to(curves.rp, { strokeDashoffset: 0, duration: 0.6, ease: PRIMARY_EASE }, '-=1.05')
+      journey.to(card3Ref.current, { ...cardBase, duration: 2.6 }, '-=0.45')
+    },
+    deps: [isMobile],
+  })
 
   useEffect(() => {
-    if (isMobile) { setCurves(null); return }
-
-    const compute = () => {
-      const layout = layoutRef.current
-      const c1 = card1Ref.current
-      const c2 = card2Ref.current
-      const c3 = card3Ref.current
-      if (!layout || !c1 || !c2 || !c3) return
-
-      const lb = layout.getBoundingClientRect()
-      const r1 = c1.getBoundingClientRect()
-      const r2 = c2.getBoundingClientRect()
-      const r3 = c3.getBoundingClientRect()
-
-      // All positions relative to layout top-left
-      const x1 = r1.left - lb.left + r1.width / 2   // Card 01 bottom-center x
-      const y1 = r1.bottom - lb.top                   // Card 01 bottom y
-      const x2L = r2.left - lb.left                   // Card 02 left edge
-      const y2 = r2.top - lb.top + r2.height / 2     // Card 02 vertical center
-      const x2R = r2.right - lb.left                  // Card 02 right edge
-      const x3 = r3.left - lb.left + r3.width / 2   // Card 03 bottom-center x
-      const y3 = r3.bottom - lb.top                   // Card 03 bottom y
-
-      const W = lb.width
-      const H = lb.height
-
-      // Left curve: Card01 bottom-center → Card02 left-middle
-      // Figma shape: M0.5 0 C 0.5 85 69.45 154 154.5 154 H268.5
-      // Ratios: control1=(0, 0.552h), control2=(0.259w, h), corner=(0.576w, h), end=(w, h)
-      const lW = x2L - x1
-      const lH = y2 - y1
-      const left = `M ${x1} ${y1} C ${x1} ${y1 + lH * 0.552}, ${x1 + lW * 0.259} ${y2}, ${x1 + lW * 0.576} ${y2} L ${x2L} ${y2}`
-
-      // Right curve: Card03 bottom-center → Card02 right-middle
-      // Figma shape: M268 0 C 268 82.29 201.29 149 119 149 H0
-      // Mirror of left: control1=(w, 0.552h), control2=(0.741w, h), corner=(0.444w, h), end=(0, h)
-      const rW = x3 - x2R
-      const rH = y2 - y3
-      const right = `M ${x3} ${y3} C ${x3} ${y3 + rH * 0.552}, ${x3 - rW * 0.259} ${y2}, ${x3 - rW * 0.576} ${y2} L ${x2R} ${y2}`
-
-      setCurves({ W, H, left, right })
-    }
-
-    let timer
-    if (fade.visible) {
-      // Cards animate translateY(16px)→0 over 0.6s — wait for them to settle before measuring
-      timer = setTimeout(() => requestAnimationFrame(compute), 650)
-    } else {
-      requestAnimationFrame(() => requestAnimationFrame(compute))
-    }
-
-    window.addEventListener('resize', compute)
-    return () => {
-      clearTimeout(timer)
-      window.removeEventListener('resize', compute)
-    }
-  }, [isMobile, fade.visible])
+    if (isMobile) return
+    // Always draw the connector geometry, even if useScrollReveal bailed for reduced motion.
+    writeCurves()
+    const onResize = () => writeCurves()
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [isMobile, writeCurves])
 
   return (
-    <section className="how-it-works" id="how-it-works" ref={fade.ref}>
-      <div className={`container ${fade.className}`}>
+    <section className="how-it-works" id="how-it-works" ref={sectionRef}>
+      <div className="container">
         <div className="how-header">
-          <span className="how-label">How it works</span>
-          <h2 className="section-title">From policy to care,<br />in a few steps</h2>
-          <p className="how-desc">Near activates coverage by coordinating brokers, providers, and patients inside one structured system.</p>
+          <span className="how-label" ref={labelRef}>How it works</span>
+          <h2 className="section-title" ref={titleRef}>From policy to care,<br className="mobile-br" />in a few steps</h2>
+          <p className="how-desc" ref={descRef}>Near activates coverage by coordinating brokers, providers, and patients inside one structured system.</p>
         </div>
 
         {isMobile ? (
           <>
-            <CenterIcon delay={0.1} />
+            <CenterIcon refProp={centerIconRef} />
             <div className="how-steps-row">
-              {steps.map((s, i) => (
-                <StepCard key={s.num} {...s} delay={0.15 + i * 0.1} />
-              ))}
+              <StepCard {...steps[0]} refProp={card1Ref} />
+              <StepCard {...steps[1]} refProp={card2Ref} />
+              <StepCard {...steps[2]} refProp={card3Ref} />
             </div>
           </>
         ) : (
           <div className="how-layout" ref={layoutRef}>
             <div className="how-steps-row">
-              <StepCard {...steps[0]} delay={0.1} refProp={card1Ref} />
-              <CenterIcon delay={0.2} />
-              <StepCard {...steps[2]} delay={0.3} refProp={card3Ref} />
+              <StepCard {...steps[0]} refProp={card1Ref} />
+              <CenterIcon refProp={centerIconRef} />
+              <StepCard {...steps[2]} refProp={card3Ref} />
             </div>
             <div className="how-curves-row">
-              <StepCard {...steps[1]} delay={0.4} refProp={card2Ref} />
+              <StepCard {...steps[1]} refProp={card2Ref} />
             </div>
-            {curves && (
-              <svg
-                className="how-curves"
-                width={curves.W}
-                height={curves.H}
-                viewBox={`0 0 ${curves.W} ${curves.H}`}
-                fill="none"
-              >
-                <path d={curves.left}  stroke="#0A1C1E" strokeWidth="1" strokeOpacity="0.2" />
-                <path d={curves.right} stroke="#0A1C1E" strokeWidth="1" strokeOpacity="0.2" />
-              </svg>
-            )}
+            <svg className="how-curves" ref={svgRef} fill="none">
+              <path ref={leftPathRef}  stroke="#0A1C1E" strokeWidth="1" strokeOpacity="0.2" />
+              <path ref={rightPathRef} stroke="#0A1C1E" strokeWidth="1" strokeOpacity="0.2" />
+            </svg>
           </div>
         )}
       </div>

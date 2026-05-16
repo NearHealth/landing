@@ -1,37 +1,25 @@
 /* ── Post-Enrollment (Dark) ── */
-.post-enrollment { padding: 120px 74px 120px 80px; margin: 0 auto; }
+.post-enrollment {
+  padding: var(--space-section-desktop) var(--page-px); margin: 0 auto;
+}
 .post-enrollment > .container {
-  width: 100%; max-width: 100%; height: 717px;
-  padding: clamp(40px, 5.5vw, 80px) clamp(24px, 4vw, 60px);
+  width: 100%; max-width: 1440px; min-height: 717px;
+  padding: clamp(40px, 5.5vw, 80px) 80px;
   border-radius: var(--radius-lg);
   background: var(--dark);
 }
-.post-enrollment .section-title { margin-bottom: calc(var(--space-lg) * 2); color: var(--white); }
+.post-enrollment .section-title { margin-bottom: 10.5rem; color: var(--white); }
 .post-grid {
-  display: flex; flex-wrap: wrap; gap: 29px;
-  padding-top: var(--space-lg);
+  display: flex; flex-wrap: wrap; gap: 32px;
 }
-.post-grid-bottom { margin-top: 0; }
-.post-col { flex: 1 1 min(392px, 30%); padding: 0; }
-.post-col:first-child { padding-left: 0; }
+.post-grid-bottom { margin-top: 5rem; }
+.post-col { flex: 1; padding: 0; display: flex; flex-direction: row; align-items: flex-start; gap: 32px; }
 .post-divider-v { flex-shrink: 0; width: 1px; background: rgba(255,255,255,0.1); }
 .post-divider-hidden { visibility: hidden; }
 .post-col-hidden { visibility: hidden; }
-.post-icon { margin-bottom: var(--space-sm); }
+.post-icon { flex-shrink: 0; margin-bottom: 0; }
+.post-col-body { flex: 1; }
 
-/* ── Reveal ── */
-.post-enrollment .fade-in { opacity: 1; transform: none; transition: none; }
-.post-enrollment .fade-in .section-title,
-.post-enrollment .fade-in .post-col,
-.post-enrollment .fade-in .post-list-item {
-  opacity: 0; transform: translateY(12px);
-  transition: opacity var(--duration-reveal) var(--ease-out), transform var(--duration-reveal) var(--ease-out);
-}
-.post-enrollment .fade-in.visible .section-title,
-.post-enrollment .fade-in.visible .post-col,
-.post-enrollment .fade-in.visible .post-list-item {
-  opacity: 1; transform: translateY(0);
-}
 .post-col h3 { margin-bottom: 8px; font-size: var(--fs-h5); font-weight: 500; color: var(--white); }
 .post-col p  { font-size: var(--fs-body); font-weight: 500; line-height: 1.5; color: rgba(255,255,255,0.7); }
 
@@ -43,17 +31,23 @@
   .post-col-hidden, .post-divider-hidden { display: none; }
 }
 
-/* ── Mobile (≤768px) ── */
-@media (max-width: 768px) {
+/* ── Mobile + Tablet list layout (<1024px) ──
+   Layout-only rules for the list markup the JSX renders below 1024px.
+   Section/card padding stays at the desktop values for tablet (see below)
+   and only collapses at the phone breakpoint. */
+@media (max-width: 1023px) {
+  .post-list-item { display: flex; flex-direction: row; align-items: flex-start; gap: 16px; padding: 24px 0; border-top: 1px solid rgba(255,255,255,0.1); }
+  .post-list-item:first-child { border-top: none; }
+  .post-list-item .post-icon { flex-shrink: 0; margin-top: 2px; }
+  .post-list-item .post-icon img, .post-list-item .post-icon svg { width: 16px; height: 16px; }
+  .post-list-body { display: flex; flex-direction: column; gap: 6px; }
+  .post-list-body h3 { font-size: 22px; font-weight: 500; line-height: 1.13; color: var(--white); }
+  .post-list-body p  { font-size: 16px; font-weight: 500; line-height: 1.42; color: rgba(255,255,255,0.6); padding-right: 56px; }
+}
+
+/* ── Mobile only (≤480px) ── */
+@media (max-width: 480px) {
   .post-enrollment { padding: 71px var(--px); }
-  .post-enrollment > .container { padding: 36px 24px; border-radius: var(--radius-card); }
+  .post-enrollment > .container { padding: 36px 24px; border-radius: var(--radius-card); min-height: unset; }
   .post-enrollment .section-title { margin-bottom: 40px; font-size: 32px; letter-spacing: -0.01em; }
-  .post-list-item { padding: 24px 0; }
-  .post-list-header {
-    display: flex; align-items: center; gap: 12px;
-    margin-bottom: 10px;
-  }
-  .post-list-header .post-icon { flex-shrink: 0; margin-bottom: 0; }
-  .post-list-header h3 { font-size: 22px; font-weight: 500; line-height: 1.13; color: var(--white); }
-  .post-list-item p    { font-size: 16px; font-weight: 500; line-height: 1.42; color: rgba(255,255,255,0.6); }
 }

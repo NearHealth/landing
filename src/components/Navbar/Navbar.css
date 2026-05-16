@@ -1,74 +1,155 @@
-/* ── Navbar ── */
+/* ── Navbar ──
+   The wrapper itself is transparent and just provides positioning + the
+   shared stacking context (via `isolation: isolate`). The glass plate and
+   the nav content are siblings inside it: glass paints first, content paints
+   on top. That sibling order is what lets `mix-blend-mode: difference` on
+   the links/logo actually blend against the glass-rendered page content. */
 .navbar {
   position: fixed; top: 0; left: 0; z-index: 1000;
   display: flex; align-items: center;
-  width: 100%; height: 66px;
-  border: 1px solid rgba(255,255,255,0.16);
-  background: rgba(255,255,255,0.35);
-  box-shadow:
-    0 10px 30px rgba(0,0,0,0.14),
-    inset 0 1px 0 rgba(255,255,255,0.18);
-  backdrop-filter: var(--backdrop-glass-strong);
-  -webkit-backdrop-filter: var(--backdrop-glass-strong);
-  transition: all 0.3s var(--ease);
+  width: 100%; height: var(--navbar-h);
+  isolation: isolate;
+  mix-blend-mode: difference;
+  /* Slide-hide on scroll-down, slide-back on scroll-up. transform is the only
+     animated property on the show/hide path so it stays cheap on the compositor. */
+  transform: translateY(0);
+  transition: transform 0.35s var(--ease);
+  will-change: transform;
 }
-.navbar::before {
-  content: '';
+.navbar--hidden { transform: translateY(-100%); }
+
+/* Sibling blur plate. Rendered just below the navbar (z-index 999 vs
+   navbar's 1000) so it can apply `backdrop-filter` against the page without
+   being trapped inside the navbar's `mix-blend-mode: difference` stacking
+   context. The navbar's content then sits on top and difference-blends
+   against this blurred surface + the page beneath. */
+.navbar-blur {
+  position: fixed; left: 0; top: 0; z-index: 999;
+  width: 100%; height: var(--navbar-h);
+  backdrop-filter: blur(20px);
+  pointer-events: none;
+  transform: translateY(0);
+  transition: transform 0.35s var(--ease);
+  will-change: transform;
+}
+
+/* Real white hairline at the bottom of the navbar. Kept as a sibling of
+   .navbar (see App.jsx) so it sits OUTSIDE the navbar's mix-blend-mode and
+   renders as actual white instead of being inverted to black. Top offset =
+   navbar height - 1px so the line aligns with the navbar's bottom edge. */
+.navbar-edge {
+  position: fixed; left: 0; top: 65px; z-index: 1001;
+  width: 100%; height: 1px;
+  background: #FFFFFF;
+  pointer-events: none;
+  transform: translateY(0);
+  transition: transform 0.35s var(--ease);
+  will-change: transform;
+}
+/* When .navbar gets the hidden class, slide the blur and edge up the
+   navbar's height so they track the bottom edge of the hidden navbar.
+   `~` (general sibling) is required because .navbar-edge is no longer
+   directly adjacent to .navbar — .navbar-blur sits between them. */
+.navbar--hidden ~ .navbar-blur,
+.navbar--hidden ~ .navbar-edge { transform: translateY(calc(-1 * var(--navbar-h))); }
+/* Glass plate — sibling layer that holds the backdrop-filter, base tint,
+   border, shadow, AND the soft highlight gradient (its own ::before). It must
+   stay BELOW the nav content in paint order, so we leave it as the first
+   child without z-index. */
+/* All RGB values inverted (255 - original) so that the parent .navbar's
+   `mix-blend-mode: difference` against the white body renders them as the
+   originals: white→white tint, etc. Alpha values are unchanged.
+   `backdrop-filter` is intentionally NOT here — see .navbar-blur sibling
+   defined below. Putting backdrop-filter on a child of a blended parent
+   forces a separate compositing layer that breaks both the filter and the
+   blend visually. */
+.navbar__glass {
   position: absolute; inset: 0;
-  background: linear-gradient(180deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0) 100%);
+  background: rgba(0, 0, 0, 0.08);
+  /* Real white edge is drawn by .navbar-edge (sibling to .navbar in App.jsx)
+     so it escapes the parent's difference blend. */
+  box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.18);
   pointer-events: none;
 }
-.navbar.scrolled { background: rgba(255,255,255,0.5); }
-
-/* ── Dark variant ── */
-.navbar.navbar--dark {
-  border-color: rgba(255,255,255,0.1);
-  background: rgba(10,28,30,0.65);
-  box-shadow:
-    0 10px 30px rgba(0,0,0,0.25),
-    inset 0 1px 0 rgba(255,255,255,0.1);
+.navbar__glass::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.22) 0%, rgba(0, 0, 0, 0) 60%);
+  pointer-events: none;
 }
-.navbar.navbar--dark::before {
-  background: linear-gradient(180deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0) 100%);
-}
-.navbar.navbar--dark.scrolled { background: rgba(10,28,30,0.82); }
-.navbar.navbar--dark .nav-link { color: var(--white); mix-blend-mode: difference; }
-.navbar.navbar--dark .mobile-menu-btn span { background: var(--white); }
 
-/* ── Layout ── */
+/* ── Layout ──
+   `position: relative` (without z-index) is enough to put nav-container in
+   the normal flow ABOVE the absolutely-positioned .navbar__glass sibling.
+   We deliberately do NOT set z-index here — z-index would create a new
+   stacking context that traps mix-blend-mode children, making them blend
+   only against transparent and read as solid white. */
 .nav-container {
-  position: relative; z-index: 1;
+  position: relative;
   display: flex; align-items: center;
-  width: 100%;
-  padding: 0 80px;
+  width: 100%; height: 100%;
+  max-width: calc(1440px + 2 * var(--page-px));
+  margin: 0 auto;
+  padding: 0 var(--page-px);
 }
-.nav-logo  { display: flex; align-items: center; flex-shrink: 0; }
-.nav-links { display: flex; flex: 1; justify-content: space-evenly; margin: 0 clamp(20px, 3vw, 40px); }
+/* Logo SVGs are inline with fill="currentColor", so the logo inherits the
+   same source value as the nav links and goes through the navbar's
+   mix-blend-mode: difference the same way the text does. */
+.nav-logo  {
+  display: flex; align-items: center; flex-shrink: 0;
+  color: var(--nav-link-color, #ECF5F2);
+}
+.nav-links { display: flex; flex: 1; justify-content: space-evenly; margin: 0; }
+/* Source color is the pre-difference value; the navbar's mix-blend-mode: difference
+   inverts it against whatever paints below (page + blur). Exposed as a CSS var
+   so the dev NavColorTuner can live-tune it. */
 .nav-link {
-  padding: 10px 18px;
   border-radius: var(--radius-pill);
-  font-family: var(--font);
-  font-size: var(--fs-btn); font-weight: 600;
+  font-family: 'Gilroy-Semibold', 'Inter', sans-serif;
+  font-size: var(--fs-btn); font-weight: 600; line-height: 1;
   letter-spacing: 0.08em; text-transform: uppercase;
-  color: var(--dark);
+  padding: 10px 18px;
+  color: var(--nav-link-color, #ECF5F2);
   transition: background 0.25s var(--ease), color 0.3s var(--ease);
 }
-/* Figma hover: #9C9C9C at 15% with mix-blend-mode: difference — single style for light/dark */
 .nav-link:hover, .nav-link:active {
-  mix-blend-mode: difference;
-  background: rgba(156, 156, 156, 0.15);
+  background: #9C9C9C26;
 }
-.nav-cta {
+/* Invisible placeholder — keeps the flex space so the nav-links stay
+   centred. The visible button is .navbar-cta-fixed in App.jsx, a sibling
+   of .navbar that escapes mix-blend-mode: difference. */
+.navbar .nav-cta {
   flex-shrink: 0;
   padding: 10px 18px;
   border-radius: var(--radius-card);
-  font-size: var(--fs-btn); font-weight: 600;
+  font-size: var(--fs-btn); font-weight: 600; line-height: 1;
   letter-spacing: 0.08em; text-transform: uppercase;
-  color: var(--dark);
-  background: var(--accent);
-  transition: background 0.25s var(--ease), color 0.3s var(--ease);
+  visibility: hidden;
 }
-.nav-cta:hover, .nav-cta:active { background: var(--accent-light); }
+
+/* Real CTA — lives outside .navbar in App.jsx so it is not subject to
+   mix-blend-mode: difference. Positioned to overlap the hidden placeholder.
+   Shares the same slide-up transition driven by .navbar--hidden ~. */
+.navbar-cta-fixed {
+  position: fixed;
+  top: 16px; right: max(var(--page-px), calc((100vw - 1440px) / 2));
+  z-index: 1002;
+  display: inline-flex; align-items: center;
+  padding: 10px 18px;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-card);
+  background: var(--accent);
+  color: var(--dark);
+  font-size: var(--fs-btn); font-weight: 600; line-height: 1;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transform: translateY(0);
+  transition: transform 0.35s var(--ease), background 0.25s var(--ease), border-color 0.25s var(--ease);
+  will-change: transform;
+}
+.navbar-cta-fixed:hover { background: var(--accent-light); border-color: var(--accent-light); }
+.navbar--hidden ~ .navbar-cta-fixed { transform: translateY(-100px); }
 .mobile-menu-btn {
   display: none; flex-direction: column; gap: 5px;
   padding: 4px;
@@ -79,14 +160,15 @@
 .mobile-menu-btn span {
   display: block;
   width: 24px; height: 2px;
-  background: var(--dark);
+  background: #F5E3E1;
   transition: all 0.3s;
 }
 
-/* ── Mobile (≤768px) ── */
-@media (max-width: 768px) {
-  .nav-container { justify-content: space-between; padding: 0 20px; }
+/* ── Mobile + Tablet (≤1024px) ── */
+@media (max-width: 1024px) {
+  .nav-container { justify-content: space-between; padding: 0 var(--page-px); }
   .nav-links       { display: none; }
   .mobile-menu-btn { display: none; }
   .nav-cta { display: inline-flex; margin-left: auto; }
+  .navbar-cta-fixed { right: var(--page-px); }
 }

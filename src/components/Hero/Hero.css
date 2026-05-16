@@ -1,13 +1,11 @@
 /* ── Hero ── */
+/* No horizontal padding here — the inner .container handles the 80px page
+   margin so hero content lines up with every other section on the 12-col
+   grid. (Previously this added an extra 8–32px outer chrome that pushed the
+   heading off the grid.) */
 .hero-outer {
-  padding: 0 clamp(8px, 2vw, 32px);
-  border-radius: clamp(16px, 1.5vw, 24px);
-  overflow: hidden;
-  transition: padding 1.1s var(--ease-out), border-radius 1.1s var(--ease-out);
-}
-.hero-outer--expanded {
   padding: 0;
-  border-radius: 0;
+  border-radius: clamp(16px, 1.5vw, 24px);
   overflow: visible;
 }
 .hero {
@@ -15,6 +13,16 @@
   display: flex; align-items: flex-start;
   padding: 165px 0 var(--space-lg);
   overflow: visible;
+}
+/* Desktop only: tail space below the expanded (post-scrub) video card.
+   Calibrated so the visible gap between the card's bottom and CareJourney's
+   top edge lands at 120px — pairing with CareJourney's 120px padding-top to
+   produce a 240px section gap. JS in Hero.jsx (onRefreshInit) recomputes
+   this exactly using the measured slot height; this CSS value is a sane
+   default for first paint. Math: paddingBottom = 100vh − pad − 82 − slotH + 120
+   ≈ 100vh − 80 − 82 − 552 + 120 ≈ 100vh − 594px. */
+@media (min-width: 1025px) {
+  .hero { padding-bottom: calc(100vh - 594px); }
 }
 .hero-container {
   display: flex; flex-direction: column; gap: var(--space-md);
@@ -38,42 +46,66 @@
   flex-shrink: 0;
 }
 
-/* Row 2: subtitle+buttons left, video right */
+/* Row 2: subtitle+buttons left, video right.
+   Sized so the slot unsticks the instant the scrub completes — no extra
+   pinned scroll between the animation finishing and CareJourney coming in.
+   Math: min-height = scrub_distance + slotH_natural + sticky_top
+                    = 130vh + ~552px + 82px ≈ 130vh + 634px.
+   JS in Hero.jsx (onRefreshInit) recomputes this exactly using the measured
+   slot height; this value is the first-paint fallback. */
 .hero-bottom-row {
   display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: nowrap;
   width: 100%;
+  min-height: calc(130vh + 634px);
 }
 .hero-left { flex-shrink: 0; max-width: 420px; }
 .hero-subtitle {
   max-width: 376px;
-  margin-bottom: var(--space-md);
-  font-size: 18px; font-weight: 500; line-height: 1.4;
+  margin-bottom: 16px;
+  font-size: var(--fs-subtitle); font-weight: 500; line-height: 1.4;
 }
 .hero-buttons { display: inline-grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .hero-buttons .btn { justify-content: center; text-align: center; white-space: nowrap; }
 .hero-video-card {
-  position: relative;
+  /* Layout slot only — the visible card lives in .hero-video-card-inner.
+     Sticky offset = navbar height (66px) + 16px breathing room. */
+  position: sticky; top: var(--navbar-sticky-offset);
+  z-index: 2;
   flex: 1;
   width: 100%; max-width: 982px; aspect-ratio: 982/552;
   margin-left: var(--space-lg);
+}
+.hero-video-card-inner {
+  /* Visible card — absolute over the layout slot so we can animate its
+     real width/height past the slot's bounds without affecting flex layout.
+     Animating width/height (instead of non-uniform scale) keeps the inner
+     <video> element's box at the right aspect ratio so object-fit: cover
+     crops correctly instead of stretching. */
+  position: absolute; top: 0; left: 0;
+  width: 100%; height: 100%;
   border-radius: var(--radius-card);
   overflow: hidden;
   background: var(--surface-tint);
-  box-shadow: var(--shadow-card);
+  will-change: width, height, transform;
 }
-.hero-video-card video {
+.hero-video-card-inner video {
   position: absolute; inset: 0;
   display: block;
   width: 100%; height: 100%;
   object-fit: cover;
 }
 
+/* Carousel wrap offset — baked from tuner defaults (X: -32px, Y: 32px) */
+.hero-carousel-wrap { transform: translate(-32px, 32px); }
+
 /* ── Built-for ticker (desktop) ── */
-.built-for-label { font-size: var(--fs-caption); font-weight: 500; white-space: nowrap; }
+/* margin-top offsets account for the viewport's 12% top fade band so the
+   label and divider stay visually aligned with the now-shifted active row. */
+.built-for-label { font-size: 14px; font-weight: 500; white-space: nowrap; margin-top: 56px; }
 /* Pure CSS: divider grows via keyframe, no JS class toggle */
 .built-for-divider {
   flex-shrink: 0;
-  width: 0; height: 1px; margin-top: 9px;
+  width: 0; height: 1px; margin-top: 65px;
   background: var(--dark);
   animation: divider-grow 0.8s var(--ease) 0.25s forwards;
 }
@@ -84,60 +116,62 @@
    which breaks repaint when child track scrolls via translateY) */
 .built-for-viewport {
   position: relative;
-  height: 130px;
+  height: 180px;
   overflow: hidden;
   opacity: 0;
-  mask-image: linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 20%, black 80%, transparent 100%);
+  /* Active item sits at the top (fully opaque), items below fade to transparent.
+     No top fade — the first item should always be fully visible. */
+  /* topEnd=20% → activeEnd=30%: fade in
+     30%→50%: ease-in² ramp from 100% → 20% (nextOpacity)
+     50%→170%: ease-in² tail from 20% → 0% (fadeEnd) */
+  mask-image: linear-gradient(to bottom,
+    transparent 20%, black 30%,
+    rgba(0,0,0,1.000) 30.0%, rgba(0,0,0,0.950) 35.0%,
+    rgba(0,0,0,0.800) 40.0%, rgba(0,0,0,0.550) 45.0%,
+    rgba(0,0,0,0.200) 50.0%,
+    rgba(0,0,0,0.139) 70.0%, rgba(0,0,0,0.089) 90.0%,
+    rgba(0,0,0,0.050) 110.0%, rgba(0,0,0,0.022) 130.0%,
+    rgba(0,0,0,0.006) 150.0%, rgba(0,0,0,0.000) 170.0%);
+  -webkit-mask-image: linear-gradient(to bottom,
+    transparent 20%, black 30%,
+    rgba(0,0,0,1.000) 30.0%, rgba(0,0,0,0.950) 35.0%,
+    rgba(0,0,0,0.800) 40.0%, rgba(0,0,0,0.550) 45.0%,
+    rgba(0,0,0,0.200) 50.0%,
+    rgba(0,0,0,0.139) 70.0%, rgba(0,0,0,0.089) 90.0%,
+    rgba(0,0,0,0.050) 110.0%, rgba(0,0,0,0.022) 130.0%,
+    rgba(0,0,0,0.006) 150.0%, rgba(0,0,0,0.000) 170.0%);
   animation: fade-in-track 0.3s ease 1.05s forwards;
 }
-/* Track ticks like a clock: 7 steps × (1.2s hold + 0.3s slide) = 10.5s loop.
-   Item height = 28px, so each tick advances by one row. */
+/* 7 items × 14px + 6 gaps × 8px = 146px loop distance.
+   translate3d on base + keyframes keeps the element on the same compositor
+   layer across the loop boundary — prevents the 1-frame snap on restart. */
 .built-for-track {
-  display: flex; flex-direction: column;
+  display: flex; flex-direction: column; gap: 8px;
   -webkit-font-smoothing: antialiased;
-  transform: translateZ(0);
-  -webkit-transform: translateZ(0);
+  will-change: transform;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
-  animation: built-for-scroll-v 10.5s ease-out 1.35s infinite;
 }
 .built-for-item {
-  height: 28px;
-  font-size: var(--fs-caption); font-weight: 500; line-height: 28px;
+  height: 14px;
+  font-size: 14px; font-weight: 500; line-height: 1;
   color: inherit;
   white-space: nowrap;
 }
 
-@keyframes built-for-scroll-v {
-  0%,    11.43% { transform: translateY(0); }
-  14.29%        { transform: translateY(-28px); }
-  25.71%        { transform: translateY(-28px); }
-  28.57%        { transform: translateY(-56px); }
-  40.00%        { transform: translateY(-56px); }
-  42.86%        { transform: translateY(-84px); }
-  54.29%        { transform: translateY(-84px); }
-  57.14%        { transform: translateY(-112px); }
-  68.57%        { transform: translateY(-112px); }
-  71.43%        { transform: translateY(-140px); }
-  82.86%        { transform: translateY(-140px); }
-  85.71%        { transform: translateY(-168px); }
-  97.14%        { transform: translateY(-168px); }
-  100%          { transform: translateY(-196px); }
-}
 
 /* ── Hero Mobile ── */
 .hero-mobile-top {
   display: flex; flex-direction: column; align-items: center;
-  padding: var(--space-lg) 0;
+  padding: 0 0 88px;
   text-align: center;
 }
 .hero-heading--mobile {
-  margin-bottom: var(--space-md);
+  margin-bottom: 20px;
   font-family: var(--font-heading);
   /* More aggressive scaling than --fs-hero (14vw vs 6.5vw): mobile heading
      keeps presence on narrow screens. */
-  font-size: clamp(56px, 14vw, 96px); font-weight: 400; line-height: 0.95; letter-spacing: -0.03em;
+  font-size: clamp(54px, 14vw, 96px); font-weight: 400; line-height: 0.95; letter-spacing: -0.03em;
   color: var(--dark);
 }
 .hero-subtitle--mobile {
@@ -150,6 +184,11 @@
   width: 100%;
 }
 .hero-buttons--mobile .btn { justify-content: center; text-align: center; white-space: nowrap; }
+/* Tablet (481px–1024px): narrow the buttons row so the two CTAs don't span
+   the full content width — feels more proportionate at tablet sizes. */
+@media (min-width: 481px) and (max-width: 1024px) {
+  .hero-buttons--mobile { width: 75%; }
+}
 .hero-mobile-built-for {
   display: flex; flex-direction: column; align-items: center; gap: 0;
   margin-bottom: var(--space-md);
@@ -168,32 +207,48 @@
   animation: line-grow 0.8s var(--ease) 0.25s forwards;
 }
 @keyframes line-grow {
-  to { height: 40px; }
+  to { height: 24px; }
 }
-/* Viewport handles the fade-in — one animation only */
+/* Viewport handles the fade-in — one animation only.
+   Width is 100% of the parent (container content area) instead of the
+   prior 100vw breakout — that way the viewport's center is the SAME 50%
+   reference the label/line are already centered to (`align-items: center`
+   on `.hero-mobile-built-for`). No vw math, no scrollbar drift, items
+   guaranteed to sit directly under the label.
+   Mask shape: tight 40-60% opaque band centered on the viewport so the
+   highlighted item reads cleanly; sides start fading at 25% / 75% so
+   off-center labels recede quickly. */
 .built-for-h-viewport {
   position: relative;
-  width: 100vw; max-width: 100vw;
-  margin-left: calc(-50vw + 50%);
+  width: 100%;
   overflow: hidden;
   opacity: 0;
-  mask-image: linear-gradient(to right, transparent 0%, transparent 18%, black 30%, black 70%, transparent 95%, transparent 100%);
-  -webkit-mask-image: linear-gradient(to right, transparent 0%, transparent 18%, black 30%, black 70%, transparent 95%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0%, transparent 5%, black 30%, black 70%, transparent 95%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, transparent 5%, black 30%, black 70%, transparent 95%, transparent 100%);
   animation: fade-in-track 0.3s ease 1.05s forwards;
 }
 @keyframes fade-in-track {
   to { opacity: 1; }
 }
-/* Track ticks like a clock: 7 steps × (1.2s hold + 0.3s slide) = 10.5s loop.
-   Loops seamlessly because -560px lands on the next repeated set in TRIPLED. */
+/* Continuous linear scroll: 7 items × 80px = 560px loop. Loops seamlessly
+   because -560px lands on the next repeated set in TRIPLED. translate3d on
+   the keyframes keeps the layer stable across the loop boundary, removing
+   the 1-frame snap that otherwise reads as an abrupt restart.
+   Centering: items live at x = 0, 80, … from the track's left edge; the
+   `margin-left: calc(50% - 600px)` shift puts item 7's center (7·80 + 40 = 600)
+   exactly on viewport-center (50% of container) — i.e. directly under the
+   centered "Built for" label. Item 7 sits in the middle copy of TRIPLED so
+   there are always enough items both sides to fill the viewport. */
 .built-for-h-track {
   display: flex; align-items: center; gap: 0;
   -webkit-font-smoothing: antialiased;
-  transform: translateZ(0);
-  -webkit-transform: translateZ(0);
+  margin-left: calc(50% - 600px);
+  transform: translate3d(0, 0, 0);
+  -webkit-transform: translate3d(0, 0, 0);
+  will-change: transform;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
-  animation: built-for-scroll 10.5s ease-out 1.35s infinite;
+  animation: built-for-scroll 14.4s linear 1.35s infinite;
 }
 .built-for-h-item {
   flex-shrink: 0;
@@ -202,20 +257,8 @@
   text-align: center;
 }
 @keyframes built-for-scroll {
-  0%,    11.43% { transform: translate3d(0,    0, 0); }
-  14.29%        { transform: translate3d(-80px,  0, 0); }
-  25.71%        { transform: translate3d(-80px,  0, 0); }
-  28.57%        { transform: translate3d(-160px, 0, 0); }
-  40.00%        { transform: translate3d(-160px, 0, 0); }
-  42.86%        { transform: translate3d(-240px, 0, 0); }
-  54.29%        { transform: translate3d(-240px, 0, 0); }
-  57.14%        { transform: translate3d(-320px, 0, 0); }
-  68.57%        { transform: translate3d(-320px, 0, 0); }
-  71.43%        { transform: translate3d(-400px, 0, 0); }
-  82.86%        { transform: translate3d(-400px, 0, 0); }
-  85.71%        { transform: translate3d(-480px, 0, 0); }
-  97.14%        { transform: translate3d(-480px, 0, 0); }
-  100%          { transform: translate3d(-560px, 0, 0); }
+  from { transform: translate3d(0,      0, 0); }
+  to   { transform: translate3d(-560px, 0, 0); }
 }
 .hero-mobile-video {
   position: relative;
@@ -235,11 +278,17 @@
   from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+@keyframes hero-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
 .hero-heading                           { opacity: 0; animation: hero-enter 0.65s var(--ease-out) 0.08s forwards; }
 .hero-built-for, .hero-mobile-built-for { opacity: 0; animation: hero-enter 0.65s var(--ease-out) 0.18s forwards; }
 .hero-subtitle                          { opacity: 0; animation: hero-enter 0.65s var(--ease-out) 0.28s forwards; }
 .hero-buttons                           { opacity: 0; animation: hero-enter 0.65s var(--ease-out) 0.38s forwards; }
-.hero-video-card, .hero-mobile-video    { opacity: 0; animation: hero-enter 0.65s var(--ease-out) 0.50s forwards; }
+.hero-mobile-video                      { opacity: 0; animation: hero-enter 0.65s var(--ease-out) 0.50s forwards; }
+/* Fade-only on the desktop card so GSAP fully owns its transform during scrub */
+.hero-video-card                        { opacity: 0; animation: hero-fade-in 0.65s var(--ease-out) 0.50s forwards; }
 
 @media (prefers-reduced-motion: reduce) {
   .hero-heading,
@@ -264,16 +313,27 @@
 /* ── Responsive ── */
 @media (max-width: 1024px) {
   .hero-top-row { flex-direction: column; align-items: center; gap: var(--space-md); padding-right: 0; }
-  .hero-bottom-row { flex-direction: column; align-items: center; }
+  .hero-bottom-row { flex-direction: column; align-items: center; min-height: 0; }
   .hero-left { max-width: 100%; }
   .hero-heading { white-space: normal; text-align: center; }
   .hero-subtitle { margin: 0 auto var(--space-md); text-align: center; }
   .hero-buttons { justify-content: center; }
   .hero-built-for { flex-direction: row; align-items: center; gap: 12px; }
+  /* Disable sticky scrub on tablet/mobile — column layout doesn't need it. */
+  .hero-video-card { position: relative; top: auto; }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 480px) {
   .hero-outer { padding: 0; border-radius: 0; overflow: visible; }
   .hero { min-height: auto; padding: 143px 0 var(--space-lg); }
   .hero-container { align-items: center; }
+  /* Break out to full screen width so mask percentages are relative to 100vw,
+     not the container's padded content box (which was causing almost no visible fade). */
+  .built-for-h-viewport {
+    width: 100vw;
+    margin-left: calc(-1 * var(--page-px));
+    mask-image: linear-gradient(to right, transparent 0%, black 80%, black 20%, transparent 100%);
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 80%, black 20%, transparent 100%);
+  }
+  .built-for-h-item { font-size: 16px; }
 }

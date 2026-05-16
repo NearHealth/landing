@@ -2,7 +2,7 @@
 .btn, .btn--primary, .btn--secondary, .btn--outline, .btn--ghost {
   display: inline-flex; align-items: center; justify-content: center;
   border: 1.5px solid transparent;
-  font-family: var(--font); font-weight: 600;
+  font-family: 'Gilroy-Semibold', 'Inter', sans-serif; font-weight: 600;
   letter-spacing: 0.08em; text-transform: uppercase;
   cursor: pointer;
   transition: all 0.25s var(--ease);
@@ -19,10 +19,8 @@
   position: relative;
   border: 1px solid var(--glass-border);
   color: var(--dark);
-  background: var(--glass-surface);
-  box-shadow: var(--shadow-glass);
+  background: rgba(255, 255, 255, 0.8);
   backdrop-filter: var(--backdrop-glass);
-  -webkit-backdrop-filter: var(--backdrop-glass);
 }
 .btn--secondary::before, .btn-secondary::before {
   content: '';
@@ -31,7 +29,7 @@
   background: linear-gradient(180deg, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0) 100%);
   pointer-events: none;
 }
-.btn--secondary:hover, .btn-secondary:hover { background: rgba(255,255,255,0.5); }
+.btn--secondary:hover, .btn-secondary:hover { background: #E4D3D3CC; }
 
 .btn--outline { border-color: var(--dark); background: transparent; color: var(--dark); }
 .btn--outline:hover { background: var(--dark); color: var(--white); }

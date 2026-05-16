@@ -4,10 +4,10 @@
  * @param {string} subtitle - optional subtitle text
  * @param {string} className - extra classes
  */
-export default function SectionTitle({ children, subtitle, className = '' }) {
+export default function SectionTitle({ children, subtitle, className = '', titleClassName = '' }) {
   return (
     <div className={`section-header ${className}`.trim()}>
-      <h2 className="section-title">{children}</h2>
+      <h2 className={`section-title ${titleClassName}`.trim()}>{children}</h2>
       {subtitle && <p className="section-subtitle">{subtitle}</p>}
     </div>
   )

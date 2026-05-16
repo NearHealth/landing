@@ -1,14 +1,16 @@
-/* ── NearBrand shared ── */
-.near-brand { display: flex; align-items: center; }
-.near-brand__icon, .near-brand__wordmark img {
-  filter: brightness(0) saturate(100%) invert(8%) sepia(15%) saturate(3000%) hue-rotate(150deg) brightness(95%) contrast(95%);
-  transition: filter 0.3s var(--ease);
+/* ── NearBrand shared ──
+   SVGs are inline and use `fill="currentColor"`, so the brand inherits color
+   from whatever context it's placed in. Body defaults to var(--dark) (footer
+   case); the navbar's .nav-logo sets color to var(--nav-link-color) so the
+   logo follows the tuned nav-link tone. */
+.near-brand {
+  display: flex;
+  align-items: center;
 }
-/* White logo over dark sections — paired with difference blend for adaptive contrast */
-.navbar.navbar--dark .near-brand__icon,
-.navbar.navbar--dark .near-brand__wordmark img {
-  mix-blend-mode: difference;
-  filter: brightness(0) invert(1);
+.near-brand__icon,
+.near-brand__wordmark svg {
+  flex-shrink: 0;
+  transition: color 0.3s var(--ease);
 }
 .near-brand__wordmark { display: flex; align-items: center; }
 
@@ -17,9 +19,16 @@
 .near-brand--sm { gap: 8px; }
 .near-brand--sm .near-brand__icon { width: auto; height: clamp(22px, 1.8vw, 27px); }
 .near-brand--sm .near-brand__wordmark { gap: 2px; }
-.near-brand--sm .near-brand__wordmark img { width: auto; height: clamp(14px, 1.2vw, 18px); }
+.near-brand--sm .near-brand__wordmark svg { width: auto; height: clamp(14px, 1.2vw, 18px); }
+/* sm mobile override — total brand width ≈ 103px */
+@media (max-width: 1024px) {
+  .near-brand--sm { gap: 9px; }
+  .near-brand--sm .near-brand__icon { height: 27px; }
+  .near-brand--sm .near-brand__wordmark svg { height: 18px; }
+}
+
 /* lg = footer */
 .near-brand--lg { gap: clamp(16px, 2vw, 32px); }
 .near-brand--lg .near-brand__icon { width: auto; height: clamp(120px, 25vw, 375px); }
 .near-brand--lg .near-brand__wordmark { gap: clamp(6px, 0.8vw, 12px); }
-.near-brand--lg .near-brand__wordmark img { width: auto; height: clamp(80px, 17vw, 250px); }
+.near-brand--lg .near-brand__wordmark svg { width: auto; height: clamp(80px, 17vw, 250px); }

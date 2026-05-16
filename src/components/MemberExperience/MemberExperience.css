@@ -1,16 +1,18 @@
 /* ── Member Experience ── */
-.member-experience { padding: 120px 0; }
+.member-experience {
+  padding: var(--space-section-desktop) 0;
+}
 .member-experience .container { padding: var(--px-section-x); }
 .member-header {
   display: flex; justify-content: space-between; align-items: flex-start;
   gap: var(--space-lg);
   margin-bottom: var(--space-md);
 }
-.member-header .section-title { flex-shrink: 0; max-width: 527px; font-size: var(--fs-h2); }
+.member-header .section-title { flex-shrink: 0; max-width: 527px; text-wrap: balance; }
 .member-desc {
   max-width: 447px;
   padding-top: 10px;
-  font-size: 18px; font-weight: 500;
+  font-size: var(--fs-subtitle); font-weight: 500;
   line-height: 1.36; letter-spacing: 0.02em;
 }
 .member-video-wrap {
@@ -22,8 +24,8 @@
 .member-video { width: 100%; height: 100%; object-fit: cover; }
 .member-footer {
   display: flex; flex-direction: column; align-items: center;
-  gap: var(--space-sm);
-  margin-top: var(--space-md);
+  gap: 32px;
+  padding-top: 32px;
 }
 .member-footer-text {
   font-size: var(--fs-body-sm); font-weight: 500;
@@ -33,43 +35,31 @@
 .member-footer-btns { display: inline-grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .member-footer-btns .btn { justify-content: center; text-align: center; white-space: nowrap; }
 
-/* ── Reveal ── */
-.member-experience .fade-in { opacity: 1; transform: none; transition: none; }
-.member-experience .fade-in .member-header,
-.member-experience .fade-in .member-video-animate,
-.member-experience .fade-in .member-footer {
-  opacity: 0;
-  transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
-}
-.member-experience .fade-in .member-header        { transform: translateY(16px); }
-/* scale is on the outer animate shell — the video-wrap never gets a scale transform */
-.member-experience .fade-in .member-video-animate { transform: translateY(20px) scale(0.98); transition-duration: 0.85s; }
-.member-experience .fade-in .member-footer        { transform: translateY(16px); }
-.member-experience .fade-in.visible .member-header        { opacity: 1; transform: translateY(0); transition-delay: 0s; }
-.member-experience .fade-in.visible .member-video-animate { opacity: 1; transform: translateY(0) scale(1); transition-delay: 0.14s; }
-.member-experience .fade-in.visible .member-footer        { opacity: 1; transform: translateY(0); transition-delay: 0.26s; }
-
 /* ── Tablet (≤1024px) ── */
 @media (max-width: 1024px) {
-  .member-header { flex-direction: column; gap: var(--space-md); }
+  .member-header { flex-direction: column; align-items: flex-start; gap: 16px; }
+  .member-header .section-title { max-width: 100%; text-align: left; }
+  .member-desc { max-width: 100%; text-align: left; }
+  .member-footer { gap: 24px; padding-top: 24px; }
 }
 
-/* ── Mobile (≤768px) ── */
-@media (max-width: 768px) {
+/* ── Mobile (≤480px) ── */
+@media (max-width: 480px) {
   .member-experience { padding: var(--space-section-mobile) 0; }
   .member-experience .container { padding: 0 19.5px; }
-  .member-header { flex-direction: column; gap: 16px; }
-  .member-header .section-title { letter-spacing: -0.01em; }
-  .member-desc { font-size: var(--fs-body-mobile); line-height: 1.42; }
+  .member-header { flex-direction: column; align-items: flex-start; gap: 0; margin-bottom: 32px; }
+  .member-header .section-title { letter-spacing: -0.01em; max-width: 100%; text-align: left; }
+  .member-desc { font-size: var(--fs-body-mobile); line-height: 1.42; width: 100%; max-width: 100%; text-align: left; padding-top: 0; }
   .member-video-wrap {
     position: relative;
-    max-width: 380px; aspect-ratio: 380/548;
+    width: 100%; max-width: none; aspect-ratio: 380/548;
     border-radius: var(--radius-card);
   }
   .member-video {
     position: absolute; inset: 0;
     width: 100%; height: 100%;
     object-fit: cover;
+    object-position: 0% 50%;
     /* Force the video onto its own GPU compositor layer so parent transforms
        (translateY on .member-video-animate) never destroy its render surface */
     transform: translateZ(0);
@@ -77,9 +67,6 @@
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
   }
-  /* On mobile, drop the scale — translateY alone is safe; scale → 1 transitions
-     tear the compositor layer in iOS Safari and Chrome mobile emulation */
-  .member-experience .fade-in .member-video-animate         { transform: translateY(20px); }
-  .member-experience .fade-in.visible .member-video-animate { transform: translateY(0); }
-  .member-footer { gap: 24px; margin-top: 24px; }
+  .member-footer { gap: 20px; padding-top: 32px; }
+  .member-footer-text { font-size: 16px; }
 }

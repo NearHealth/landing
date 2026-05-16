@@ -2,19 +2,42 @@
 .footer-logo-section .container { padding: var(--px-section-x); }
 
 /* ── Footer ── */
-.footer { padding: var(--space-md) 0; }
-.footer .container {
+.footer {
+  position: relative; padding: var(--space-md) 0;
+  isolation: isolate;
+}
+.footer .container { position: relative; z-index: 1;
   display: flex; flex-wrap: wrap; align-items: center;
-  gap: clamp(12px, 2vw, 24px);
+  gap: 0;
+}
+
+/* ── Cyan gradient: transparent in the top half, ramping to solid cyan at the
+   bottom of the footer (faded in via GSAP). z-index:-1 keeps it behind content. ── */
+/* Registering --gradient-stop so the browser actually interpolates it; without
+   @property GSAP would just snap-set the value (custom props default to
+   <string> and are not animatable). */
+@property --gradient-stop {
+  syntax: '<percentage>';
+  inherits: false;
+  initial-value: 50%;
+}
+.footer-gradient {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0;
+  /* --gradient-stop is animated by GSAP to drift the transparent→cyan handoff
+     point a few percent up/down, giving the gradient a subtle breathing feel. */
+  background: linear-gradient(in oklab to bottom, rgba(94,230,253,0) var(--gradient-stop), #5EE6FD 100%);
+  will-change: opacity, background;
 }
 .footer-brand {
   width: 100%; max-width: 1440px; height: auto;
-  margin-bottom: var(--space-md);
+  margin-bottom: 1.5rem;
   align-items: center;
   justify-content: space-between;
 }
-.footer-brand .near-brand__icon { width: 368px; height: 375px; }
-.footer-brand .near-brand__wordmark img { width: auto; height: 250px; }
 .footer-socials { display: flex; gap: var(--space-sm); margin-left: auto; }
 .footer-item {
   font-size: clamp(10px, 0.76vw, 11px); font-weight: 500;
@@ -25,35 +48,26 @@
 .social-icon {
   display: flex; align-items: center; justify-content: center;
   width: 24px; height: 24px;
-  border: 1px solid rgba(10,28,30,0.1); border-radius: 50%;
+  border-radius: 50%;
   background: var(--white);
-  transition: all 0.2s;
+  color: var(--dark);
+  transition: background 0.2s, color 0.2s;
 }
-.social-icon:hover { background: var(--dark); }
-.social-icon:hover svg path { stroke: var(--white); }
+.social-icon:hover { background: var(--dark); color: var(--white); }
 
-/* ── Mobile (≤768px) ── */
-@media (max-width: 768px) {
-  .footer-brand {
-    width: 100%; max-width: 380px; height: auto;
-    gap: 32.8px;
-    justify-content: flex-start;
-  }
-  .footer-brand .near-brand__icon { width: 97.15px; height: 99px; flex-shrink: 0; }
-  .footer-brand .near-brand__wordmark { gap: 0; flex-shrink: 1; min-width: 0; }
-  /* Exact Figma dimensions + spacing for each N E A R letter */
-  .footer-brand .near-brand__wordmark img:nth-child(1) { width: 56.41px; height: 64.57px; margin-right: 11.74px; }
-  .footer-brand .near-brand__wordmark img:nth-child(2) { width: 62.88px; height: 65.91px; margin-right: 7.83px; }
-  .footer-brand .near-brand__wordmark img:nth-child(3) { width: 64.78px; height: 65.91px; margin-right: 14.16px; }
-  .footer-brand .near-brand__wordmark img:nth-child(4) { width: 32.25px; height: 64.57px; }
+/* ── Mobile (≤480px) ── */
+@media (max-width: 480px) {
+  /* container-type lets children use cqw (% of this element's content width)
+     so the brand fills exactly 100% of the available width at every screen size. */
   .footer .container {
     display: grid;
     grid-template-columns: 1fr auto 1fr;
     grid-template-rows: auto auto auto;
     align-items: center;
-    gap: var(--space-md) 0;
+    gap: 36px 0;
+    container-type: inline-size;
   }
-  .footer-brand     { grid-row: 1; grid-column: 1 / -1; justify-self: start; margin-bottom: 0; }
+  .footer-brand     { grid-row: 1; grid-column: 1 / -1; justify-self: start; margin-bottom: 1.5rem; width: 100%; height: auto; }
   .footer-terms     { grid-row: 2; grid-column: 1; justify-self: start; }
   .footer-socials   { grid-row: 2; grid-column: 2; justify-self: center; margin-left: 0; }
   .footer-privacy   { grid-row: 2; grid-column: 3; justify-self: end; }

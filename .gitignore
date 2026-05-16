@@ -33,3 +33,6 @@ public/assets/originals/
 # Playwright failure artifacts (NOT baselines — *-snapshots/ is committed)
 test-results/
 playwright-report/
+
+# Local Claude Code config (per-developer, not shared)
+CLAUDE.md

@@ -10,11 +10,27 @@ import ShapedSection from './components/ShapedSection/ShapedSection'
 import CareConnected from './components/CareConnected/CareConnected'
 import FooterCta from './components/FooterCta/FooterCta'
 import Footer from './components/Footer/Footer'
+import GridOverlay from './components/ui/GridOverlay/GridOverlay'
+import { useLenis } from './hooks/useLenis'
 
 export default function App() {
+  useLenis()
+
   return (
     <>
       <Navbar />
+      {/* Both layers are siblings AFTER <Navbar/> so the
+          `.navbar--hidden ~ ...` CSS selectors can slide them together.
+          `navbar-blur` carries the `backdrop-filter` (kept outside the
+          navbar so the parent's `mix-blend-mode: difference` doesn't trap
+          it). z-index in CSS keeps it visually below the navbar.
+          `navbar-edge` is the real white hairline that escapes the blend. */}
+      <div className="navbar-blur" aria-hidden="true" />
+      <div className="navbar-edge" aria-hidden="true" />
+      {/* Real CTA button — sibling of .navbar so it escapes mix-blend-mode:
+          difference. The in-navbar button is visibility:hidden (holds flex
+          space). This element tracks the same show/hide animation via CSS. */}
+      <a href="#contact" className="navbar-cta-fixed">Request a demo</a>
       <Hero />
       <CareJourney />
       <MemberExperience />
@@ -28,6 +44,7 @@ export default function App() {
         <FooterCta />
         <Footer />
       </div>
+      {import.meta.env.DEV && <GridOverlay />}
     </>
   )
 }
