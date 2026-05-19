@@ -149,7 +149,14 @@ ul { list-style: none; }
 @media (max-width: 1024px) {
   :root { --page-px: 19.5px; }
   .section-subtitle { font-size: var(--fs-body-mobile); }
-  body { background-image: url('/background-mobile.svg'); }
+  body {
+    background-image: url('/background-mobile.svg');
+    /* The mobile SVG aspect is ~1:20; `cover` (inherited from the base rule)
+       over-stretches it vertically on tall pages and dilutes the gradient.
+       Render at natural aspect and tile down instead. */
+    background-size: 100% auto;
+    background-repeat: repeat-y;
+  }
 }
 @media (max-width: 480px) {
   .section-subtitle { margin-top: 0; text-wrap: unset; }
