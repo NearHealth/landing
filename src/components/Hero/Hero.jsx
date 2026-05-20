@@ -177,7 +177,7 @@ export default function Hero() {
           /* ── Mobile layout ── */
           <>
             <div className="hero-mobile-top">
-              <h1 className="hero-heading hero-heading--mobile">Turning<br />coverage<br />into care</h1>
+              <h1 className="hero-heading hero-heading--mobile">The future of post-<br />enrollment healthcare.</h1>
               <p className="hero-subtitle hero-subtitle--mobile">Where everything connects –<br />and care actually moves.</p>
               <div className="hero-buttons hero-buttons--mobile">
                 <a href="#contact" className="btn btn--primary">Request a demo</a>
@@ -193,7 +193,7 @@ export default function Hero() {
           /* ── Desktop layout ── */
           <>
             <div className="hero-top-row">
-              <h1 ref={headingRef} className="hero-heading">Turning<br />coverage<br />into care</h1>
+              <h1 ref={headingRef} className="hero-heading">The future of post-<br />enrollment healthcare.</h1>
               <div ref={carouselWrapRef} className="hero-carousel-wrap">
                 <BuiltForCarousel />
               </div>
