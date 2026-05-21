@@ -96,7 +96,7 @@
    so the dev NavColorTuner can live-tune it. */
 .nav-link {
   border-radius: var(--radius-pill);
-  font-family: 'Gilroy-Semibold', 'Inter', sans-serif;
+  font-family: 'Gilroy-Semibold', sans-serif;
   font-size: var(--fs-btn); font-weight: 600; line-height: 1;
   letter-spacing: 0.08em; text-transform: uppercase;
   padding: 10px 18px;

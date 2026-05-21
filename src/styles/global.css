@@ -26,8 +26,8 @@
   --surface-tint: rgba(10, 28, 30, 0.03);
 
   /* Fonts */
-  --font: 'Gilroy-Medium', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  --font-heading: 'Gilroy-Regular', 'Inter', -apple-system, sans-serif;
+  --font: 'Gilroy-Medium', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-heading: 'Gilroy-Regular', -apple-system, sans-serif;
 
   /* Motion */
   --ease: cubic-bezier(0.4, 0, 0.2, 1);

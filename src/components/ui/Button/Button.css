@@ -2,7 +2,7 @@
 .btn, .btn--primary, .btn--secondary, .btn--outline, .btn--ghost {
   display: inline-flex; align-items: center; justify-content: center;
   border: 1.5px solid transparent;
-  font-family: 'Gilroy-Semibold', 'Inter', sans-serif; font-weight: 600;
+  font-family: 'Gilroy-Semibold', sans-serif; font-weight: 600;
   letter-spacing: 0.08em; text-transform: uppercase;
   cursor: pointer;
   transition: all 0.25s var(--ease);

@@ -1,8 +1,12 @@
-import { useState, useEffect, useRef } from 'react'
-import { DotLottieReact } from '@lottiefiles/dotlottie-react'
+import { lazy, Suspense, useState, useEffect, useRef } from 'react'
 import useIsMobile from '../../hooks/useIsMobile'
 import { asset } from '../../utils/assetPath'
 import './CareConnected.css'
+
+// Lazy: defers the Lottie runtime to whichever care section mounts first.
+const DotLottieReact = lazy(() =>
+  import('@lottiefiles/dotlottie-react').then((m) => ({ default: m.DotLottieReact }))
+)
 
 export default function CareConnected() {
   const isMobile = useIsMobile()
@@ -36,13 +40,15 @@ export default function CareConnected() {
     <section className="care-connected" id="care-connected" ref={sectionRef}>
       <div className={`container fade-in${visible ? ' visible' : ''}`}>
         <div className="care-connected-card">
-          <DotLottieReact
-            src={asset(isMobile ? 'assets/CTA_Gradient_Mobile.lottie' : 'assets/CTA_Gradient_Desktop.lottie')}
-            loop
-            autoplay={false}
-            dotLottieRefCallback={setDotLottie}
-            className="lottie-bg"
-          />
+          <Suspense fallback={null}>
+            <DotLottieReact
+              src={asset(isMobile ? 'assets/CTA_Gradient_Mobile.lottie' : 'assets/CTA_Gradient_Desktop.lottie')}
+              loop
+              autoplay={false}
+              dotLottieRefCallback={setDotLottie}
+              className="lottie-bg"
+            />
+          </Suspense>
           <h2>Care, connected</h2>
         </div>
       </div>

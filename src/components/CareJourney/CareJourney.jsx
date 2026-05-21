@@ -1,8 +1,14 @@
-import { useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { DotLottieReact } from '@lottiefiles/dotlottie-react'
 import { useScrollReveal } from '../../hooks/useScrollReveal'
+
+// Lazy: keep the Lottie runtime (~50 KB gzip) out of the initial bundle. The
+// chunk is fetched only when the first card crosses the IntersectionObserver
+// gate that sets `mounted`, so the hero paints without waiting on it.
+const DotLottieReact = lazy(() =>
+  import('@lottiefiles/dotlottie-react').then((m) => ({ default: m.DotLottieReact }))
+)
 import { splitLines, lineRevealVars, blockRevealVars, blockRevealFromVars, selfTrigger } from '../../utils/reveal'
 import useIsMobile from '../../hooks/useIsMobile'
 import SectionTitle from '../ui/SectionTitle/SectionTitle'
@@ -80,13 +86,15 @@ function CareCard({ card, refProp, mobileActive }) {
       onMouseLeave={deactivate}
     >
       {mounted && (
-        <DotLottieReact
-          src={lottieSrc}
-          loop
-          autoplay
-          className={`care-card-lottie${visible ? ' is-visible' : ''}`}
-          layout={{ fit: 'fill' }}
-        />
+        <Suspense fallback={null}>
+          <DotLottieReact
+            src={lottieSrc}
+            loop
+            autoplay
+            className={`care-card-lottie${visible ? ' is-visible' : ''}`}
+            layout={{ fit: 'fill' }}
+          />
+        </Suspense>
       )}
       <div className="care-card-photo">
         <picture>
