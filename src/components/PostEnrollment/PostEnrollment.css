@@ -75,5 +75,20 @@
 @media (max-width: 480px) {
   .post-enrollment { padding: 71px var(--px); }
   .post-enrollment > .container { padding: 36px 24px; border-radius: var(--radius-card); min-height: unset; }
-  .post-enrollment .section-title { margin-bottom: 40px; font-size: 32px; letter-spacing: -0.01em; }
+  .post-enrollment .section-title {
+    max-width: 267px;
+    margin-bottom: 52px;
+    font-size: 32px; letter-spacing: -0.01em;
+  }
+  .post-list { gap: 0; }
+  /* Hairline dividers centered in the 28px gap between items: 14px padding
+     on both sides of each border, with the first/last items flush to the
+     list edges. */
+  .post-item { padding: 14px 0; border-top: 1px solid rgba(255,255,255,0.12); gap: 10px; }
+  .post-item:first-child { padding-top: 0; border-top: none; }
+  .post-item:last-child { padding-bottom: 0; }
+  .post-icon { width: 20px; height: 20px; margin-top: 0; }
+  .post-icon img, .post-icon svg { width: 20px; height: 20px; }
+  .post-item-body h3 { font-size: 22px; line-height: 1.13; letter-spacing: 0.02em; }
+  .post-item-body p { font-size: 16px; line-height: 1.42; letter-spacing: 0.02em; }
 }
