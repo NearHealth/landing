@@ -100,8 +100,8 @@
   .care-card-photo { margin: 10px 10px 0; }
   .care-card-photo img { height: 208px; border-radius: 20px; }
   .care-card-overlay { bottom: 14px; left: 24px; }
-  .care-card-overlay h3 { font-size: 32px; letter-spacing: -0.01em; }
-  .care-card-overlay span { font-size: 14px; }
+  .care-card-overlay h3 { font-size: 32px; line-height: 1; letter-spacing: -0.01em; }
+  .care-card-overlay span { font-size: 14px; line-height: 1.32; letter-spacing: 0.02em; }
   .care-card-body { padding: 24px 20px 24px; }
   .care-card-features { gap: 10px; margin-bottom: 20px; }
   .care-card-features li {
