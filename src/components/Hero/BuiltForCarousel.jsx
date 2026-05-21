@@ -24,10 +24,11 @@ export default function BuiltForCarousel() {
     // No snap-back at the loop boundary — eliminates the CSS infinite-animation flash.
     const proxy = { y: 0 }
     const speed = LOOP_H / DURATION  // px per second
+    let mounted = true
 
     const ctx = gsap.context(() => {
       gsap.delayedCall(DELAY, () => {
-        gsap.ticker.add(ticker)
+        if (mounted) gsap.ticker.add(ticker)
       })
     })
 
@@ -37,6 +38,7 @@ export default function BuiltForCarousel() {
     }
 
     return () => {
+      mounted = false
       ctx.revert()
       gsap.ticker.remove(ticker)
     }

@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { useScrollReveal } from '../../hooks/useScrollReveal'
 import { splitLines, lineRevealVars, blockRevealVars, blockRevealFromVars, selfTrigger } from '../../utils/reveal'
+import { BREAKPOINT_TABLET } from '../../utils/layout'
 import { asset } from '../../utils/assetPath'
 import './OnePlatform.css'
 
@@ -123,7 +124,7 @@ export default function OnePlatform() {
       const dt = (time - last) / 1000
       last = time
 
-      tx -= (window.innerWidth <= 768 ? 35 : SPEED) * dt
+      tx -= (window.innerWidth <= BREAKPOINT_TABLET ? 35 : SPEED) * dt
 
       // Wrap tx and rotate smoothT to match. When tx jumps by setWidth, every
       // item visually lands where the item INITIAL.length slots ahead used to

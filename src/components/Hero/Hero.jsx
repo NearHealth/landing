@@ -139,15 +139,15 @@ export default function Hero() {
         return { pagePx, br }
       }
 
-      const { pagePx, br } = getValues()
-
       // Snapshot natural state so GSAP can revert on ScrollTrigger refresh.
       const naturalML = parseFloat(getComputedStyle(el).marginLeft) || 0
       const naturalW  = el.offsetWidth
 
       gsap.to(el, {
-          marginLeft: -pagePx,
-          width: window.innerWidth,
+          // Function-based vars so `invalidateOnRefresh` re-reads them on resize —
+          // plain numbers would freeze to the first-paint viewport dimensions.
+          marginLeft: () => -getValues().pagePx,
+          width: () => window.innerWidth,
           maxWidth: 'none',
           borderRadius: 0,
           ease: 'none',
@@ -158,7 +158,6 @@ export default function Hero() {
             scrub: 0.8,
             invalidateOnRefresh: true,
             onRefresh: () => {
-              const { pagePx: px } = getValues()
               gsap.set(el, { clearProps: 'marginLeft,width,maxWidth,borderRadius' })
             },
           },

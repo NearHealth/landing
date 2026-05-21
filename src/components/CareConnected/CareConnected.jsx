@@ -25,6 +25,7 @@ export default function CareConnected() {
 
   useEffect(() => {
     if (!dotLottie) return
+    if (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
     const tryPlay = () => { if (visible) dotLottie.play() }
     tryPlay()
     dotLottie.addEventListener('load', tryPlay)

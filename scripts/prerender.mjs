@@ -24,22 +24,26 @@ async function prerender() {
   const browser = await chromium.launch()
   const page = await browser.newPage({ viewport: { width: 1280, height: 800 } })
 
-  await page.goto(`${address}landing/`, { waitUntil: 'networkidle', timeout: 15000 })
+  try {
+    await page.goto(`${address}landing/`, { waitUntil: 'networkidle', timeout: 15000 })
 
-  const rootHtml = await page.$eval('#root', (el) => el.innerHTML)
+    const rootHtml = await page.$eval('#root', (el) => el.innerHTML)
 
-  await browser.close()
-  server.httpServer.close()
+    const indexPath = resolve(root, 'dist/index.html')
+    let html = readFileSync(indexPath, 'utf-8')
+    html = html.replace('<div id="root"></div>', `<div id="root">${rootHtml}</div>`)
+    writeFileSync(indexPath, html)
 
-  const indexPath = resolve(root, 'dist/index.html')
-  let html = readFileSync(indexPath, 'utf-8')
-  html = html.replace('<div id="root"></div>', `<div id="root">${rootHtml}</div>`)
-  writeFileSync(indexPath, html)
-
-  console.log(`Pre-rendered dist/index.html (${(Buffer.byteLength(html) / 1024).toFixed(1)} KB)`)
+    console.log(`Pre-rendered dist/index.html (${(Buffer.byteLength(html) / 1024).toFixed(1)} KB)`)
+  } finally {
+    await browser.close()
+    server.httpServer.close()
+  }
 }
 
 prerender().catch((err) => {
-  console.error('Prerender failed:', err)
-  process.exit(1)
+  // Soft-fail: keep the non-prerendered dist/index.html so the deploy can still ship.
+  // A flaky Playwright run shouldn't take down production; the SPA hydrates fine without SSR.
+  console.error('Prerender failed — falling through to non-prerendered dist/index.html.')
+  console.error(err)
 })

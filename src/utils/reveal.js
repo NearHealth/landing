@@ -1,6 +1,5 @@
 import gsap from 'gsap'
 import { SplitText } from 'gsap/SplitText'
-import { PRIMARY_EASE } from './eases'
 
 /**
  * Split a text element into masked lines so a `gsap.from(split.lines, ...)`
