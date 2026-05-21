@@ -36,3 +36,4 @@ playwright-report/
 
 # Local Claude Code config (per-developer, not shared)
 CLAUDE.md
+.mcp.json
