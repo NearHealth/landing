@@ -8,9 +8,9 @@ import { asset } from '../../utils/assetPath'
 import './HowItWorks.css'
 
 const steps = [
-  { title: 'Capture what matters', desc: 'Every request starts with real intent.', num: '01' },
-  { title: 'Guide it forward', desc: 'Turning intent into clear next steps.', num: '02' },
-  { title: 'Align everyone', desc: 'Members, brokers, and providers stay in sync.', num: '03' },
+  { title: 'More clarity', desc: 'Coverage becomes easier to understand.', num: '01' },
+  { title: 'Better access', desc: 'Care and support stay aligned.', num: '02' },
+  { title: 'Less friction', desc: 'Healthcare feels easier to navigate', num: '03' },
 ]
 
 function CenterIcon({ refProp }) {

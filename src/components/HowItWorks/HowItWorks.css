@@ -12,7 +12,7 @@
   text-align: center; text-transform: uppercase;
 }
 .how-header .section-title { max-width: 820px; margin: 0 auto 20px; }
-.how-desc { max-width: 454px; margin: 0 auto; font-size: var(--fs-body-sm); font-weight: 500; line-height: 1.4; }
+.how-desc { max-width: 454px; margin: 0 auto; font-size: var(--fs-body-sm); font-weight: 400; line-height: 1.32; letter-spacing: 0.02em; }
 
 /* ── Layout ── */
 .how-layout { position: relative; }
@@ -20,15 +20,15 @@
 .how-step-card {
   position: relative;
   flex: 0 1 453px; min-width: 0; max-height: 112px;
-  padding: clamp(16px, 1.8vw, 24px) clamp(18px, 2vw, 28px);
+  padding: 21px 32px;
   border: 1px solid rgba(10,28,30,0.08);
   border-radius: clamp(20px, 2vw, 30px);
   overflow: hidden;
   background: var(--white);
 }
 .how-step-top { margin-bottom: 8px; }
-.how-step-card h3 { font-size: var(--fs-h4); font-weight: 400; }
-.how-step-card p  { font-size: var(--fs-body-sm); font-weight: 500; color: var(--text-muted); }
+.how-step-card h3 { font-size: var(--fs-h4); font-weight: 400; line-height: 1.2; letter-spacing: -0.01em; }
+.how-step-card p  { font-size: var(--fs-body-sm); font-weight: 500; line-height: 1.32; letter-spacing: 0.02em; color: var(--text-muted); }
 .how-num {
   position: absolute; top: 17px; right: 16px;
   font-size: clamp(16px, 1.4vw, 20px); font-weight: 500;
@@ -47,8 +47,9 @@
 .how-circle {
   display: flex; align-items: center; justify-content: center;
   width: 104px; height: 104px;
-  border-radius: var(--radius-card);
+  border-radius: 50%;
   background: var(--dark);
+  overflow: hidden;
 }
 .how-circle-logo { width: 104px; height: 104px; }
 
@@ -68,7 +69,7 @@
     background: rgba(10,28,30,0.2);
     transform: translateX(-50%);
   }
-  .how-circle { width: 48px; height: 48px; border-radius: 13.85px; }
+  .how-circle { width: 48px; height: 48px; border-radius: 50%; }
   .how-circle-logo { width: 48px; height: 48px; }
   .how-steps-row {
     position: relative;
@@ -91,8 +92,8 @@
     border-radius: 13px;
   }
   .how-num { top: 9px; right: 14px; font-size: 16px; }
-  .how-step-card h3 { font-size: 24px; letter-spacing: -0.01em; }
-  .how-step-card p  { font-size: 14px; line-height: 1.32; }
+  .how-step-card h3 { font-size: 24px; line-height: 1; letter-spacing: -0.01em; }
+  .how-step-card p  { font-size: 14px; line-height: 1.32; letter-spacing: 0.02em; }
 }
 
 /* ── Mobile (≤480px) ── */
