@@ -10,13 +10,10 @@
   width: 100%; height: var(--navbar-h);
   isolation: isolate;
   mix-blend-mode: difference;
-  /* Slide-hide on scroll-down, slide-back on scroll-up. transform is the only
-     animated property on the show/hide path so it stays cheap on the compositor. */
   transform: translateY(0);
   transition: transform 0.35s var(--ease);
   will-change: transform;
 }
-.navbar--hidden { transform: translateY(-100%); }
 
 /* Sibling blur plate. Rendered just below the navbar (z-index 999 vs
    navbar's 1000) so it can apply `backdrop-filter` against the page without
@@ -46,12 +43,6 @@
   transition: transform 0.35s var(--ease);
   will-change: transform;
 }
-/* When .navbar gets the hidden class, slide the blur and edge up the
-   navbar's height so they track the bottom edge of the hidden navbar.
-   `~` (general sibling) is required because .navbar-edge is no longer
-   directly adjacent to .navbar — .navbar-blur sits between them. */
-.navbar--hidden ~ .navbar-blur,
-.navbar--hidden ~ .navbar-edge { transform: translateY(calc(-1 * var(--navbar-h))); }
 /* Glass plate — sibling layer that holds the backdrop-filter, base tint,
    border, shadow, AND the soft highlight gradient (its own ::before). It must
    stay BELOW the nav content in paint order, so we leave it as the first
@@ -149,7 +140,6 @@
   will-change: transform;
 }
 .navbar-cta-fixed:hover { background: var(--accent-light); border-color: var(--accent-light); }
-.navbar--hidden ~ .navbar-cta-fixed { transform: translateY(-100px); }
 .mobile-menu-btn {
   display: none; flex-direction: column; gap: 5px;
   padding: 4px;

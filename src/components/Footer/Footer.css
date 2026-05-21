@@ -8,7 +8,8 @@
 }
 .footer .container { position: relative; z-index: 1;
   display: flex; flex-wrap: wrap; align-items: center;
-  gap: 0;
+  column-gap: 32px;
+  row-gap: 1.5rem;
 }
 
 /* ── Cyan gradient: transparent in the top half, ramping to solid cyan at the
@@ -34,7 +35,6 @@
 }
 .footer-brand {
   width: 100%; max-width: 1440px; height: auto;
-  margin-bottom: 1.5rem;
   align-items: center;
   justify-content: space-between;
 }

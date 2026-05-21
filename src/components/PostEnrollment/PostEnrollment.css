@@ -3,46 +3,72 @@
   padding: var(--space-section-desktop) var(--page-px); margin: 0 auto;
 }
 .post-enrollment > .container {
+  position: relative;
   width: 100%; max-width: 1440px; min-height: 717px;
-  padding: clamp(40px, 5.5vw, 80px) 80px;
+  padding: 60px;
   border-radius: var(--radius-lg);
   background: var(--dark);
+  overflow: hidden;
 }
-.post-enrollment .section-title { margin-bottom: 10.5rem; color: var(--white); }
-.post-grid {
-  display: flex; flex-wrap: wrap; gap: 32px;
-}
-.post-grid-bottom { margin-top: 5rem; }
-.post-col { flex: 1; padding: 0; display: flex; flex-direction: row; align-items: flex-start; gap: 32px; }
-.post-divider-v { flex-shrink: 0; width: 1px; background: rgba(255,255,255,0.1); }
-.post-divider-hidden { visibility: hidden; }
-.post-col-hidden { visibility: hidden; }
-.post-icon { flex-shrink: 0; margin-bottom: 0; }
-.post-col-body { flex: 1; }
 
-.post-col h3 { margin-bottom: 8px; font-size: var(--fs-h5); font-weight: 500; color: var(--white); }
-.post-col p  { font-size: var(--fs-body); font-weight: 500; line-height: 1.5; color: rgba(255,255,255,0.7); }
+/* Decorative cyan radial glow on the right side */
+.post-glow {
+  position: absolute;
+  width: 1136px;
+  height: 1136px;
+  left: calc(50% - 1136px/2 + 720px);
+  top:  calc(50% - 1136px/2 + 358.5px);
+  border-radius: 50%;
+  pointer-events: none;
+  background: radial-gradient(48.4% 50% at 50% 50%,
+    rgba(157, 236, 249, 0) 0%,
+    rgba(157, 236, 249, 0) 54.33%,
+    #9DECF9 100%);
+  opacity: 0.5;
+}
+
+.post-enrollment .section-title {
+  position: relative;
+  max-width: 593px;
+  margin-bottom: 146px;
+  color: var(--white);
+  font-size: 58px;
+  line-height: 100%;
+  letter-spacing: -0.03em;
+}
+
+.post-list {
+  position: relative;
+  display: flex; flex-direction: column; gap: 56px;
+  width: 369px;
+}
+
+.post-item { display: flex; flex-direction: row; align-items: flex-start; gap: 15px; }
+.post-icon { flex-shrink: 0; width: 26px; height: 26px; display: inline-flex; align-items: center; justify-content: center; }
+.post-icon img, .post-icon svg { width: 26px; height: 26px; display: block; }
+.post-item-body { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+.post-item-body h3 {
+  margin: 0;
+  font-size: 30px; font-weight: 400; line-height: 120%; letter-spacing: -0.01em;
+  color: var(--white);
+}
+.post-item-body p {
+  margin: 0;
+  font-size: 18px; font-weight: 500; line-height: 136%; letter-spacing: 0.02em;
+  color: rgba(255, 255, 255, 0.6);
+}
 
 /* ── Tablet (≤1024px) ── */
 @media (max-width: 1024px) {
-  .post-grid { flex-direction: column; gap: var(--space-md); }
-  .post-divider-v { display: none; }
-  .post-col { padding: 0; }
-  .post-col-hidden, .post-divider-hidden { display: none; }
-}
-
-/* ── Mobile + Tablet list layout (<1024px) ──
-   Layout-only rules for the list markup the JSX renders below 1024px.
-   Section/card padding stays at the desktop values for tablet (see below)
-   and only collapses at the phone breakpoint. */
-@media (max-width: 1023px) {
-  .post-list-item { display: flex; flex-direction: row; align-items: flex-start; gap: 16px; padding: 24px 0; border-top: 1px solid rgba(255,255,255,0.1); }
-  .post-list-item:first-child { border-top: none; }
-  .post-list-item .post-icon { flex-shrink: 0; margin-top: 2px; }
-  .post-list-item .post-icon img, .post-list-item .post-icon svg { width: 16px; height: 16px; }
-  .post-list-body { display: flex; flex-direction: column; gap: 6px; }
-  .post-list-body h3 { font-size: 22px; font-weight: 500; line-height: 1.13; color: var(--white); }
-  .post-list-body p  { font-size: 16px; font-weight: 500; line-height: 1.42; color: rgba(255,255,255,0.6); padding-right: 56px; }
+  .post-enrollment > .container { padding: 56px 40px; }
+  .post-glow { display: none; }
+  .post-enrollment .section-title { font-size: 44px; margin-bottom: 56px; max-width: 100%; }
+  .post-list { width: 100%; gap: 0; }
+  .post-item { padding: 24px 0; border-top: 1px solid rgba(255,255,255,0.1); gap: 16px; }
+  .post-item:first-child { border-top: none; padding-top: 0; }
+  .post-item .post-icon { margin-top: 2px; }
+  .post-item-body h3 { font-size: 22px; line-height: 1.13; }
+  .post-item-body p { font-size: 16px; line-height: 1.42; }
 }
 
 /* ── Mobile only (≤480px) ── */

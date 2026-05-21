@@ -51,11 +51,11 @@ export default function ShapedSection() {
           />
           <div className="shaped-overlay">
             <p className="shaped-overlay-text" ref={textRef}>
-              From intake and scheduling to<br className="mobile-br" />claims and follow-ups, every part<br className="mobile-br" />reflects real operational needs —<br className="mobile-br" />not assumptions. This isn&rsquo;t a top-<br className="mobile-br" />down product. It&rsquo;s built from how<br className="mobile-br" />care actually moves. Because the<br className="mobile-br" />best systems aren&rsquo;t imagined.<br className="mobile-br" />They&rsquo;re shaped by the people who<br className="mobile-br" />rely on them.
+              Near was created from direct exposure to the operational inefficiencies, fragmented systems, and coordination gaps across healthcare.
             </p>
             <div className="shaped-overlay-badge">
               <img src={asset('assets/icons/near-logo.svg')} alt="" className="shaped-badge-icon" />
-              <span ref={badgeRef}>Designed alongside the people who<br />handle these workflows every day.</span>
+              <span ref={badgeRef}>The best systems are shaped by the people who rely on them.</span>
             </div>
           </div>
         </div>
