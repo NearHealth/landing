@@ -200,7 +200,7 @@ export default function Hero() {
             </div>
             <div ref={bottomRowRef} className="hero-bottom-row">
               <div ref={leftRef} className="hero-left">
-                <p className="hero-subtitle">Near coordinates care after enrolment without adding operational burden.</p>
+                <p className="hero-subtitle">The first AI-native infrastructure bridging coverage and care.</p>
                 <div className="hero-buttons">
                   <a href="#contact" className="btn btn--primary">Request a demo</a>
                   <a href="#contact" className="btn btn--secondary">Talk to us</a>

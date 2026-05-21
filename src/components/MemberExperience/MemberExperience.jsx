@@ -46,9 +46,9 @@ export default function MemberExperience() {
       <div className="container">
         <div className="member-header">
           <div ref={titleRef}>
-            <SectionTitle>What your members experience</SectionTitle>
+            <SectionTitle>Healthcare navigation,<br /> simplified.</SectionTitle>
           </div>
-          <p className="member-desc" ref={descRef}>Members can interact via chat or voice for everyday questions after enrollment. Near takes over the request, keeps brokers in the loop, and routes care when needed.</p>
+          <p className="member-desc" ref={descRef}>One AI-powered experience for benefits, care access, scheduling, and support.</p>
         </div>
         <div className="member-video-animate" ref={videoRef}>
           <div className="member-video-wrap">

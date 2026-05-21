@@ -153,7 +153,7 @@ export default function HowItWorks() {
       <div className="container">
         <div className="how-header">
           <span className="how-label" ref={labelRef}>How it works</span>
-          <h2 className="section-title" ref={titleRef}>From policy to care,<br className="mobile-br" />in a few steps</h2>
+          <h2 className="section-title" ref={titleRef}>From coverage<br className="mobile-br" /> to connected care.</h2>
           <p className="how-desc" ref={descRef}>Near activates coverage by coordinating brokers, providers, and patients inside one structured system.</p>
         </div>
 

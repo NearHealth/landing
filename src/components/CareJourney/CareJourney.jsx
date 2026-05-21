@@ -209,8 +209,8 @@ export default function CareJourney() {
     <section className="care-journey" id="built-for" ref={sectionRef}>
       <div className="container">
         <div ref={headerRef}>
-          <SectionTitle subtitle="A coordinated path across brokers, providers, and members." className="care-journey-header" titleClassName="care-journey-header">
-            Serving the full care journey
+          <SectionTitle subtitle="Members struggle to use their coverage. Brokers lose visibility after enrollment. Providers face disconnected patient journeys." className="care-journey-header" titleClassName="care-journey-header">
+            Enrollment got digital. Care coordination didn’t.
           </SectionTitle>
         </div>
         <div className="care-cards">
