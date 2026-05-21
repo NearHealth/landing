@@ -210,7 +210,7 @@ export default function CareJourney() {
       <div className="container">
         <div ref={headerRef}>
           <SectionTitle subtitle="Members struggle to use their coverage. Brokers lose visibility after enrollment. Providers face disconnected patient journeys." className="care-journey-header" titleClassName="care-journey-header">
-            Enrollment got digital. Care coordination didn’t.
+            Enrollment got digital.<br /> Care coordination didn’t.
           </SectionTitle>
         </div>
         <div className="care-cards">
