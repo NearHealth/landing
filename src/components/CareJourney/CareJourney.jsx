@@ -217,7 +217,7 @@ export default function CareJourney() {
     <section className="care-journey" id="built-for" ref={sectionRef}>
       <div className="container">
         <div ref={headerRef}>
-          <SectionTitle subtitle="Members struggle to use their coverage. Brokers lose visibility after enrollment. Providers face disconnected patient journeys." className="care-journey-header" titleClassName="care-journey-header">
+          <SectionTitle subtitle={<>Members struggle to use their coverage. Brokers lose visibility after enrollment.<br /> Providers face disconnected patient journeys.</>} className="care-journey-header" titleClassName="care-journey-header">
             Enrollment got digital.<br /> Care coordination didn’t.
           </SectionTitle>
         </div>
