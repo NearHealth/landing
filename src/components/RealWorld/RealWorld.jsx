@@ -6,14 +6,20 @@ import { asset } from '../../utils/assetPath'
 import './RealWorld.css'
 
 const features = [
-  { title: 'HIPAA-compliant', desc: <>Secure, compliant infrastructure<br />with complete audit trails.</>,
-    icon: <img src={asset('assets/images/hippa-compliant-icon.svg')} alt="" width="19" height="26" /> },
-  { title: 'Role-based access', desc: 'Structured permissions across members, brokers, and providers.',
-    icon: <img src={asset('assets/images/role-access.svg')} alt="" width="20" height="20" /> },
-  { title: 'Deep integrations', desc: <>Scheduling, enrollment, and<br />plan data - fully connected.</>,
-    icon: <img src={asset('assets/images/deep-integration.svg')} alt="" width="22" height="22" /> },
-  { title: 'Multi-tenant ready', desc: 'Supports branded experiences across agencies and provider networks.',
-    icon: <img src={asset('assets/images/Multi-tenant ready-icon.svg')} alt="" width="22" height="22" /> },
+  { title: 'Secure by design',
+    desc: (
+      <>
+        <span className="desktop-only">HIPAA &amp; SOC2-conscious infrastructure built for secure coordination.</span>
+        <span className="mobile-only">HIPAA &amp; SOC2-conscious infrastructure with traceable workflows.</span>
+      </>
+    ),
+    icon: <img src={asset('assets/images/shield-check.svg')} alt="" width="32" height="32" /> },
+  { title: 'Seamless integration', desc: 'Designed to fit existing broker and provider operations.',
+    icon: <img src={asset('assets/images/plugs-fill.svg')} alt="" width="32" height="32" /> },
+  { title: 'AI that drives action', desc: 'Text and voice experiences that move requests forward.',
+    icon: <img src={asset('assets/images/star-four-fill.svg')} alt="" width="32" height="32" /> },
+  { title: 'Built for scale', desc: 'From growing teams to complex operational networks.',
+    icon: <img src={asset('assets/images/steps-fill.svg')} alt="" width="32" height="32" /> },
 ]
 
 export default function RealWorld() {
@@ -44,7 +50,7 @@ export default function RealWorld() {
   return (
     <section className="real-world" id="real-world" ref={sectionRef}>
       <div className="container">
-        <h2 className="section-title" ref={titleRef}>Built for real-world operations</h2>
+        <h2 className="section-title" ref={titleRef}>Designed for modern healthcare operations.</h2>
         <div className="features-grid">
           {features.map((f, i) => (
             <div
