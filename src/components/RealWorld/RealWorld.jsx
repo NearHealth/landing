@@ -9,7 +9,7 @@ const features = [
   { title: 'Secure by design',
     desc: (
       <>
-        <span className="desktop-only">HIPAA &amp; SOC2-conscious infrastructure built for secure coordination.</span>
+        <span className="desktop-only">HIPAA &amp; SOC2 infrastructure for secure coordination.</span>
         <span className="mobile-only">HIPAA &amp; SOC2-conscious infrastructure with traceable workflows.</span>
       </>
     ),
