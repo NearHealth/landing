@@ -32,11 +32,14 @@ export function useScrollReveal({ scopeRef, prepare, animate, deps = [] }) {
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
     if (reduceMotion) return
 
-    // Skip the reveal if the section is already in or past the viewport at mount —
+    // Skip the reveal only if the section is fully scrolled past at mount —
     // e.g. on reload after the browser restored scroll to mid-page. Otherwise
-    // prepare() hides everything and the ScrollTrigger never fires (its start was
-    // crossed before the trigger existed), leaving the section invisible.
-    if (scope.getBoundingClientRect().top < window.innerHeight) return
+    // prepare() would hide already-visible content and the ScrollTrigger might
+    // not re-fire (its start was crossed before the trigger existed). Using
+    // `bottom < 0` keeps the reveal active for sections that are merely
+    // partially in view at mount, which matters on mobile where the hero
+    // shrinks below 100vh and leaves the next section partly visible.
+    if (scope.getBoundingClientRect().bottom < 0) return
 
     const hidden = prepare?.() || []
 
