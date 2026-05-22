@@ -54,7 +54,7 @@ export default function ShapedSection() {
               Near was created from direct exposure to the operational inefficiencies, fragmented systems, and coordination gaps across healthcare.
             </p>
             <div className="shaped-overlay-badge">
-              <img src={asset('assets/icons/near-logo.svg')} alt="" className="shaped-badge-icon" />
+              <img src={asset('assets/icons/near-logo.svg')} alt="Near Health logo" className="shaped-badge-icon" />
               <span ref={badgeRef}>The best systems are shaped by the people who rely on them.</span>
             </div>
           </div>

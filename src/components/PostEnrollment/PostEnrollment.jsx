@@ -64,7 +64,7 @@ export default function PostEnrollment() {
               ref={(el) => { cardsRef.current[i] = el }}
             >
               <div className="post-icon">
-                <img src={a.icon} alt="" width="26" height="26" />
+                <img src={a.icon} alt={`${a.title} icon`} width="26" height="26" />
               </div>
               <div className="post-item-body">
                 <h3>{a.title}</h3>
