@@ -4,16 +4,16 @@ import { useScrollReveal } from '../../hooks/useScrollReveal'
 import { splitLines, lineRevealVars, blockRevealVars, blockRevealFromVars, selfTrigger } from '../../utils/reveal'
 import { BREAKPOINT_TABLET } from '../../utils/layout'
 import { asset } from '../../utils/assetPath'
-import './OnePlatform.css'
+import './ConnectedCoverage.css'
 
-const INITIAL = ['Vision', 'Dental', 'Medicare', 'ACA', 'Employer']
+const INITIAL = ['Vision', 'Dental', 'Medicare', 'Individual', 'Employer']
 const COPIES = 4
 const items = Array.from({ length: COPIES }, () => INITIAL).flat()
 
 // px per second — slow enough that the eye can read each label as it passes.
 const SPEED = 70
 
-export default function OnePlatform() {
+export default function ConnectedCoverage() {
   const sectionRef = useRef(null)
   const titleRef = useRef(null)
   const subtitleRef = useRef(null)
@@ -176,10 +176,10 @@ export default function OnePlatform() {
   }, [])
 
   return (
-    <section className="one-platform" id="one-platform" ref={sectionRef}>
-      <div className="container one-platform-inner">
+    <section className="connected-coverage" id="connected-coverage" ref={sectionRef}>
+      <div className="container connected-coverage-inner">
         <div className="platform-text">
-          <h2 className="section-title" ref={titleRef}>One platform.<br />All coverage.</h2>
+          <h2 className="section-title" ref={titleRef}>Connected across<br /> coverage lines.</h2>
           <p className="platform-subtitle" ref={subtitleRef}>Supporting the coverage types brokers and providers work with every day.</p>
         </div>
         <div className="platform-phone" ref={phoneRef}>

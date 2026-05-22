@@ -1,12 +1,12 @@
-/* ── One Platform ── */
-.one-platform {
+/* ── Connected Coverage ── */
+.connected-coverage {
   padding: var(--space-section-desktop) 0; overflow: hidden;
 }
-.one-platform .section-title {
+.connected-coverage .section-title {
   font-family: var(--font-heading);
   text-align: center;
 }
-.one-platform-inner { display: flex; flex-direction: column; align-items: center; text-align: center; }
+.connected-coverage-inner { display: flex; flex-direction: column; align-items: center; text-align: center; }
 .platform-text { max-width: 600px; }
 .platform-subtitle { margin: var(--space-sm) auto 0; font-size: var(--fs-subtitle); font-weight: 500; line-height: 1.5; text-wrap: balance; }
 .platform-phone { margin-top: 32px; border-radius: var(--radius-lg); overflow: hidden; line-height: 0; }
@@ -47,8 +47,8 @@
 
 /* ── Mobile/Tablet (≤1024px) ── */
 @media (max-width: 1024px) {
-  .one-platform { padding: var(--space-section-mobile) 0; }
-  .one-platform .section-title {
+  .connected-coverage { padding: var(--space-section-mobile) 0; }
+  .connected-coverage .section-title {
     width: 380px; max-width: 100%; height: 72px;
     margin-left: auto; margin-right: auto;
     font-size: 36px; line-height: 1; letter-spacing: -0.01em;

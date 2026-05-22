@@ -4,7 +4,7 @@ import CareJourney from './components/CareJourney/CareJourney'
 import MemberExperience from './components/MemberExperience/MemberExperience'
 import HowItWorks from './components/HowItWorks/HowItWorks'
 import PostEnrollment from './components/PostEnrollment/PostEnrollment'
-import OnePlatform from './components/OnePlatform/OnePlatform'
+import ConnectedCoverage from './components/ConnectedCoverage/ConnectedCoverage'
 import RealWorld from './components/RealWorld/RealWorld'
 import ShapedSection from './components/ShapedSection/ShapedSection'
 import CareConnected from './components/CareConnected/CareConnected'
@@ -36,7 +36,7 @@ export default function App() {
       <MemberExperience />
       <HowItWorks />
       <PostEnrollment />
-      <OnePlatform />
+      <ConnectedCoverage />
       <RealWorld />
       <ShapedSection />
       <CareConnected />

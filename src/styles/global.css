@@ -78,8 +78,8 @@
   --bg-stop-2:        #f2e5df;     /* CareJourney bottom ↔ MemberExperience top */
   --bg-stop-3:        #efe2dc;     /* MemberExperience bottom ↔ HowItWorks top */
   --bg-stop-4:        #f1e4dd;     /* HowItWorks bottom ↔ PostEnrollment top */
-  --bg-stop-5:        #eadad1;     /* PostEnrollment bottom ↔ OnePlatform top */
-  --bg-stop-6:        #e2d3cf;     /* OnePlatform bottom ↔ RealWorld top */
+  --bg-stop-5:        #eadad1;     /* PostEnrollment bottom ↔ ConnectedCoverage top */
+  --bg-stop-6:        #e2d3cf;     /* ConnectedCoverage bottom ↔ RealWorld top */
   --bg-stop-7:        #ded0cd;     /* RealWorld bottom ↔ ShapedSection top */
   --bg-stop-8:        #d9cccb;     /* ShapedSection bottom ↔ CareConnected top */
   --bg-stop-9:        #d8cccd;     /* CareConnected bottom ↔ FooterCta ↔ Footer top */
