@@ -4,14 +4,14 @@
 }
 .member-experience .container { padding: var(--px-section-x); }
 .member-header {
-  display: flex; justify-content: space-between; align-items: flex-start;
+  display: flex; justify-content: space-between; align-items: last baseline;
   gap: var(--space-lg);
   margin-bottom: var(--space-md);
 }
 .member-header .section-title { flex-shrink: 0; max-width: 680px; text-wrap: balance; }
+.member-header .section-header { margin-bottom: 0; }
 .member-desc {
   max-width: 447px;
-  padding-top: 10px;
   font-size: var(--fs-subtitle); font-weight: 500;
   line-height: 1.36; letter-spacing: 0.02em;
 }
