@@ -192,7 +192,7 @@ export default function Hero() {
           /* ── Desktop layout ── */
           <>
             <div className="hero-top-row">
-              <h1 ref={headingRef} className="hero-heading">The future of post-<br />enrollment healthcare.</h1>
+              <h1 ref={headingRef} className="hero-heading">The future of<br />post-enrollment<br />healthcare.</h1>
               <div ref={carouselWrapRef} className="hero-carousel-wrap">
                 <BuiltForCarousel />
               </div>
