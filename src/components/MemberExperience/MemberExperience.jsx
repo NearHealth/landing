@@ -53,8 +53,8 @@ export default function MemberExperience() {
         <div className="member-video-animate" ref={videoRef}>
           <div className="member-video-wrap">
             <ScrollPlayVideo
-              desktop="assets/AI_Chat_Desktop.mp4"
-              mobile="assets/AI_Chat_Mobile.mp4"
+              desktopWebm="assets/AI_Chat_Desktop.webm"
+              mobileWebm="assets/AI_Chat_Mobile.webm"
               desktopPoster="assets/AI_Chat_Desktop_poster.jpg"
               mobilePoster="assets/AI_Chat_Mobile_poster.jpg"
               className="member-video"
