@@ -46,7 +46,9 @@ npm run build:spa
 
 **Prerender.** After `vite build`, `scripts/prerender.mjs` boots Vite preview, opens the built site with Playwright, snapshots the rendered `#root` HTML, and inlines it into `dist/index.html`. Skipped automatically when `VERCEL=1` (build container lacks Chromium system libs).
 
-**Vercel.** `vercel.json` rewrites `/landing/:path*` to `/:path*` so the same bundle works under either path.
+**Vercel.** `vercel.json` rewrites `/landing/:path*` to `/:path*` and sets long-lived `Cache-Control` headers — 1yr `immutable` for hashed JS/CSS/fonts, 30d for media (`mp4`/`webm`/`lottie`/images), and 1h `must-revalidate` for HTML and `fonts.css`.
+
+**Bundle splitting.** `vite.config.js` defines `manualChunks` to emit GSAP, Lenis, and React as named parallel chunks; `@lottiefiles/dotlottie-react` is intentionally left unnamed so Vite emits it as a true async chunk that `React.lazy()` can defer past first paint.
 
 ---
 
@@ -65,7 +67,7 @@ src/
 │   │   ├── SectionTitle/            #   Heading + optional subtitle
 │   │   ├── NearBrand/               #   Logo icon + n/e/a/r wordmark (inline SVGs)
 │   │   ├── ResponsiveVideo/         #   Desktop/mobile video source switching
-│   │   ├── ScrollPlayVideo/         #   Plays video while in viewport, pauses out
+│   │   ├── ScrollPlayVideo/         #   WebM-first + MP4 iOS fallback, autoplay in viewport
 │   │   └── GridOverlay/             #   Dev-only 12-col layout grid (DEV builds only)
 │   │
 │   ├── Navbar/                      # Glass navbar + mix-blend-mode auto-invert
@@ -75,7 +77,7 @@ src/
 │   ├── MemberExperience/            # Chat demo video section
 │   ├── HowItWorks/                  # 3-step flow with arrows
 │   ├── PostEnrollment/              # Dark card with feature grid
-│   ├── OnePlatform/                 # Phone image + coverage ticker
+│   ├── ConnectedCoverage/           # Phone image + coverage ticker (formerly OnePlatform)
 │   ├── RealWorld/                   # 4 feature cards
 │   ├── ShapedSection/               # Photo with text overlay
 │   ├── CareConnected/               # Lottie animation card
@@ -103,7 +105,8 @@ public/
     ├── fonts/                       # Gilroy-{Regular,Medium,Semibold,Bold}.woff2 + .woff
     ├── icons/                       # near-logo.svg, n.svg, e.svg, a.svg, r.svg
     ├── images/                      # Photos, platform screenshots
-    ├── *.mp4                        # Hero + AI Chat videos (desktop + mobile variants)
+    ├── {Hero,AI_Chat}_*.{webm,mp4}  # VP9 WebM preferred, H264 MP4 fallback for iOS Safari
+    ├── AI_Chat_*_poster.jpg         # First-frame posters for AI Chat videos
     └── CTA_Gradient_*.lottie        # Lottie gradient backgrounds
 
 scripts/
@@ -136,7 +139,7 @@ Reusable building blocks used across multiple sections:
 - `SectionTitle` — consistent heading typography everywhere
 - `NearBrand` — inline-SVG logo + wordmark; retintable via `color` (uses `currentColor`)
 - `ResponsiveVideo` — swaps desktop/mobile video sources automatically
-- `ScrollPlayVideo` — auto-plays video while in viewport
+- `ScrollPlayVideo` — auto-plays video while in viewport; selects between WebM (Chrome/Firefox) and MP4 (Safari/iOS) via `<source media>` ordering
 - `GridOverlay` — dev-only 12-column overlay (rendered only when `import.meta.env.DEV`)
 
 **3. Responsive by default**
@@ -147,7 +150,7 @@ Reusable building blocks used across multiple sections:
 - **CSS breakpoints only for layout shifts** (1024px: stack columns, 768px: mobile nav)
 
 **4. Mobile/desktop asset switching**
-The `useIsMobile()` hook provides a single source of truth for the 768px breakpoint. Components use it to swap video sources (`ResponsiveVideo`), images (`OnePlatform`), and Lottie files (`CareConnected`).
+The `useIsMobile()` hook provides a single source of truth for the 768px breakpoint. Components use it to swap video sources (`ResponsiveVideo`), images (`ConnectedCoverage`), and Lottie files (`CareConnected`).
 
 **5. Asset path resolution**
 All assets in `public/` are referenced via the `asset()` helper, which prepends `import.meta.env.BASE_URL`. Paths work both on GitHub Pages (`/landing/`) and generic hosts (`/`).
