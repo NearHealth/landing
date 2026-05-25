@@ -5,6 +5,9 @@ import { splitLines, lineRevealVars, selfTrigger } from '../../utils/reveal'
 import { asset } from '../../utils/assetPath'
 import './ShapedSection.css'
 
+const BADGE_TEXT_MOBILE = 'Designed alongside the people who handle these workflows every day.'
+const BADGE_TEXT_DESKTOP = 'The best systems are shaped by the people who rely on them.'
+
 export default function ShapedSection() {
   const [isMobile, setIsMobile] = useState(
     typeof window !== 'undefined' ? window.innerWidth <= 480 : false
@@ -55,7 +58,9 @@ export default function ShapedSection() {
             </p>
             <div className="shaped-overlay-badge">
               <img src={asset('assets/icons/near-logo.svg')} alt="Near Health logo" className="shaped-badge-icon" />
-              <span ref={badgeRef}>The best systems are shaped by the people who rely on them.</span>
+              <span ref={badgeRef}>
+                {isMobile ? BADGE_TEXT_MOBILE : BADGE_TEXT_DESKTOP}
+              </span>
             </div>
           </div>
         </div>

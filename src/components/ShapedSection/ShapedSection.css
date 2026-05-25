@@ -77,7 +77,13 @@
     position: static;
     width: 100%; max-width: 100%;
     left: auto; top: auto;
-    font-size: 20px; line-height: 1.25;
+    color: var(--white);
+    font-family: var(--font-heading);
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 1.2;
+    letter-spacing: -0.2px;
   }
   .shaped-overlay-badge {
     position: static;
@@ -87,5 +93,15 @@
     width: 100%; max-width: 100%;
   }
   .shaped-overlay-badge .shaped-badge-icon { width: 29px; height: 30px; flex-shrink: 0; }
-  .shaped-overlay-badge span { max-width: 276px; font-size: 12px; line-height: 14px; }
+  .shaped-overlay-badge span {
+    flex: 1;
+    color: var(--white);
+    font-family: 'Gilroy-Semibold', var(--font-heading);
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 600;
+    line-height: normal;
+    letter-spacing: 0.96px;
+    text-transform: uppercase;
+  }
 }
