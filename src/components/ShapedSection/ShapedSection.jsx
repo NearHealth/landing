@@ -6,7 +6,9 @@ import { asset } from '../../utils/assetPath'
 import './ShapedSection.css'
 
 const BADGE_TEXT_MOBILE = 'Designed alongside the people who handle these workflows every day.'
-const BADGE_TEXT_DESKTOP = 'The best systems are shaped by the people who rely on them.'
+const BADGE_TEXT_DESKTOP = (
+  <>The best systems are shaped by the<br />people who rely on them.</>
+)
 
 export default function ShapedSection() {
   const [isMobile, setIsMobile] = useState(

@@ -10,10 +10,18 @@
   border-radius: var(--radius-lg);
   overflow: hidden;
 }
-.shaped-photo > img { display: block; width: 100%; height: 100%; object-fit: cover; transform: scale(1.2) translate(-80px, 48px); }
+.shaped-photo > img {
+  display: block;
+  position: absolute;
+  width: 116.46%;   /* 1677 / 1440 — Figma Group width */
+  height: 132.28%;  /* 959 / 725 — Figma Group height */
+  left: -16.11%;    /* -232 / 1440 — Group x offset */
+  top: -14.62%;     /* -106 / 725 — Group y offset */
+  object-fit: cover;
+}
 /* Right-half darkening gradient — Figma's gradient was drawn on a 986×764
-   sub-rectangle starting at container x=459, so the in-Figma 38%/61% stops
-   map to ~58%/74% of the full container width. */
+   sub-rectangle at card x=459, so the in-Figma 38%/61% stops along the
+   88deg axis map to ~58%/74% of the full 1440px card width. */
 .shaped-photo::after {
   content: '';
   position: absolute;
@@ -30,8 +38,8 @@
 
 .shaped-overlay-text {
   position: absolute;
-  top: 10.6%;     /* (-106 + 183) / 725  */
-  left: 60%;      /* (-232 + 1095) / 1440 */
+  top: 13.7%;     /* (-106 + 205) / 725 */
+  left: 60%;      /* (-232 + 1097) / 1440 */
   width: 34.4%;   /* 495 / 1440 */
   max-width: 495px;
   margin: 0;
@@ -42,16 +50,16 @@
 }
 .shaped-overlay-badge {
   position: absolute;
-  top: 86.6%;     /* (-106 + 734) / 725  */
-  left: 60%;      /* (-232 + 1095) / 1440 */
+  top: 87.45%;    /* (-106 + 740) / 725 */
+  left: 60%;      /* (-232 + 1097) / 1440 */
   display: flex; align-items: center; gap: 24px;
   margin: 0;
 }
 .shaped-overlay-badge .shaped-badge-icon { width: 31px; height: 32px; }
 .shaped-overlay-badge span {
-  font-family: 'Gilroy-Bold', var(--font-heading);
-  font-size: 12px; font-weight: 700;
-  line-height: 1.5; letter-spacing: 0.08em;
+  font-family: 'Gilroy-Semibold', var(--font-heading);
+  font-size: 12px; font-style: normal; font-weight: 600;
+  line-height: normal; letter-spacing: 0.96px;
   text-transform: uppercase;
   color: var(--white);
 }
