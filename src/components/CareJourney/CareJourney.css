@@ -30,14 +30,30 @@
 .care-card-lottie.is-visible { opacity: 1; }
 .care-card-lottie canvas { width: 100% !important; height: 100% !important; background: transparent !important; }
 .care-card > *:not(.care-card-lottie) { position: relative; z-index: 2; }
-.care-card-photo { position: relative; margin: clamp(10px, 1.2vw, 18px) clamp(10px, 1.2vw, 17px) 0; }
+.care-card-photo { position: relative; margin: clamp(10px, 1.2vw, 18px) clamp(10px, 1.2vw, 17px) 0; border-radius: clamp(16px, 2vw, 30px); overflow: hidden; }
 .care-card-photo img {
   display: block;
   width: 100%; height: clamp(220px, 26vw, 384px);
   border-radius: clamp(16px, 2vw, 30px);
   object-fit: cover;
 }
-.care-card-overlay { position: absolute; bottom: 20px; left: 28px; }
+/* 59° diagonal vignette — adds depth on the left edge and reinforces text contrast. */
+.care-card-photo::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(59deg, rgba(0,0,0,1) 14%, rgba(0,0,0,0) 41%);
+  pointer-events: none;
+  z-index: 1;
+}
+/* Bottom-fade scrim so the white headline/subtitle stays readable over the photo. */
+.care-card-photo::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(10,28,30,0) 45%, rgba(10,28,30,0.58) 85%, rgba(10,28,30,1) 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+.care-card-overlay { position: absolute; bottom: 20px; left: 28px; z-index: 2; }
 .care-card-overlay h3 {
   font-family: var(--font-heading);
   font-size: var(--fs-h3); font-weight: 400;

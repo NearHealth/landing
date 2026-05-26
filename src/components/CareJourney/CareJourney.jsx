@@ -19,8 +19,8 @@ const cards = [
   {
     title: 'For Brokers',
     subtitle: 'Agents · Agencies · FMOs · GAs',
-    image: asset('assets/images/person1.jpg'),
-    imageWebp: asset('assets/images/person1.webp'),
+    image: asset('assets/images/broker-desktop.jpg'),
+    imageWebp: asset('assets/images/broker-desktop.webp'),
     imageMobile: asset('assets/images/broker-mobile.jpg'),
     features: [
       'Stay connected after enrollment',
@@ -32,8 +32,8 @@ const cards = [
   {
     title: 'For Providers',
     subtitle: 'Clinics · Groups · MSOs',
-    image: asset('assets/images/person2.jpg'),
-    imageWebp: asset('assets/images/person2.webp'),
+    image: asset('assets/images/provider-desktop-overlay.jpg'),
+    imageWebp: asset('assets/images/provider-desktop-overlay.webp'),
     imageMobile: asset('assets/images/provider-mobile.jpg'),
     features: [
       'Increase patient flow',
