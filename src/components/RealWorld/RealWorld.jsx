@@ -15,11 +15,11 @@ const features = [
     ),
     icon: <img src={asset('assets/images/shield-check.svg')} alt="Secure by design" width="32" height="32" /> },
   { title: 'Seamless integration', desc: 'Designed to fit existing broker and provider operations.',
-    icon: <img src={asset('assets/images/plugs-fill.svg')} alt="Seamless integration" width="32" height="32" /> },
+    icon: <img src={asset('assets/images/seamless-integration.svg')} alt="Seamless integration" width="32" height="32" /> },
   { title: 'AI that drives action', desc: 'Text and voice experiences that move requests forward.',
     icon: <img src={asset('assets/images/star-four-fill.svg')} alt="AI that drives action" width="32" height="32" /> },
   { title: 'Built for scale', desc: 'From growing teams to complex operational networks.',
-    icon: <img src={asset('assets/images/steps-fill.svg')} alt="Built for scale" width="32" height="32" /> },
+    icon: <img src={asset('assets/images/built-for-scale.svg')} alt="Built for scale" width="32" height="32" /> },
 ]
 
 export default function RealWorld() {
