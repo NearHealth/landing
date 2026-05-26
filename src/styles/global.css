@@ -139,6 +139,10 @@ ul { list-style: none; }
   font-family: var(--font-heading); font-size: var(--fs-h2);
   font-weight: 400; line-height: 1; letter-spacing: -0.03em;
 }
+/* GSAP SplitText `mask: 'lines'` clips each line to its line-box, which cuts
+   descenders (g, j, p, q, y) on tight line-heights. Reserve extra room below
+   the baseline so the mask doesn't crop them. */
+.reveal-line { padding-bottom: 0.15em; }
 .section-subtitle {
   font-size: var(--fs-subtitle); font-weight: 500;
   line-height: 1.36; letter-spacing: 0.02em; margin-top: var(--space-sm);
