@@ -8,7 +8,17 @@
       "Bash(npm run:*)",
       "Bash(curl -s http://localhost:5175/)",
       "Bash(curl -s http://localhost:5175/landing/src/components/HowItWorks.jsx)",
-      "Bash(curl -s \"http://localhost:5175/landing/src/components/HowItWorks.jsx\")"
+      "Bash(curl -s \"http://localhost:5175/landing/src/components/HowItWorks.jsx\")",
+      "Bash(ffprobe -v quiet -print_format json -show_streams /Users/davecaos/repos/nearhealth/nearhealth_web/public/assets/Hero_Desktop.webm)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); vs=[s for s in d['streams'] if s['codec_type']=='video'][0]; print\\('webm width:', vs['width'], 'height:', vs['height']\\)\")",
+      "Bash(ffprobe -v quiet -print_format json -show_streams /Users/davecaos/repos/nearhealth/nearhealth_web/public/assets/AI_Chat_Desktop.mp4)",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); [print\\(s.get\\('width','?'\\),'x',s.get\\('height','?'\\), s.get\\('codec_type',''\\)\\) for s in d.get\\('streams',[]\\)]\")",
+      "Bash(ffprobe -v quiet -print_format json -show_streams /Users/davecaos/repos/nearhealth/nearhealth_web/public/assets/AI_Chat_Desktop.webm)",
+      "Bash(ffprobe -v error -select_streams v:0 -show_entries stream=width,height,r_frame_rate,duration,codec_name,bit_rate -of default=noprint_wrappers=1 /Users/davecaos/repos/nearhealth/nearhealth_web/public/assets/AI_Chat_Desktop.mp4)",
+      "Bash(ffprobe -v error -select_streams v:0 -show_entries stream=width,height,r_frame_rate,duration,codec_name,bit_rate -of default=noprint_wrappers=1 /Users/davecaos/repos/nearhealth/nearhealth_web/public/assets/AI_Chat_Desktop.webm)",
+      "Bash(ffmpeg -y -ss 9 -i '/Users/davecaos/Downloads/AI Chat_Desktop_Export new photo v2.mp4' -frames:v 1 -update 1 -q:v 3 /tmp/v2_mid.jpg)",
+      "Bash(ffmpeg -y -ss 9 -i public/assets/AI_Chat_Desktop.mp4 -frames:v 1 -update 1 -q:v 3 /tmp/v1_mid.jpg)",
+      "Bash(ffmpeg -y -i '/Users/davecaos/repos/nearhealth/nearhealth_web/AI Chat_Desktop_Export new photo v3.mp4' -frames:v 1 -update 1 -q:v 3 public/assets/AI_Chat_Desktop_poster.jpg)"
     ]
   }
 }
