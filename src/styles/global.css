@@ -2,14 +2,13 @@
    Near Health Landing Page — Global Styles
    ============================================ */
 
-
 :root {
   /* Colors */
   --dark: #0A1C1E;
   --accent: #5EE6FD;
   --accent-light: #A6F2FF;
   --white: #FFFFFF;
-  --warm: #EEE0DB;
+  --warm: #EFE1DC;
   --warm-light: #FAF4F1;
   --text-muted: rgba(10, 28, 30, 0.7);
 
@@ -25,13 +24,22 @@
   --glass-border:  rgba(255, 255, 255, 0.4);
   --surface-tint: rgba(10, 28, 30, 0.03);
 
+  /* Background mesh (Figma "Manhattan Ice" — node 2084:1766). White base with a
+     warm peach bloom (Manhattan #F8CA9E) and a cool lavender-grey (Mercury
+     #D4CAD3), originally a 50%-opacity raster. Recreated as RGB triples so the
+     mesh below can tune alpha per layer. */
+  --mesh-warm: 248, 202, 158;
+  --mesh-cool: 212, 202, 211;
+
   /* Fonts */
   --font: 'Gilroy-Medium', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-heading: 'Gilroy-Regular', -apple-system, sans-serif;
 
   /* Motion */
-  --ease: cubic-bezier(0.4, 0, 0.2, 1);
-  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);       /* soft — color/background crossfades only */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);  /* strong — entrances + press release */
+  --ease-press: cubic-bezier(0.16, 1, 0.3, 1);/* press feedback */
+  --dur-press: 140ms;                          /* button press feedback */
   --duration: 0.7s;
   --duration-reveal: 0.6s;
 
@@ -118,7 +126,32 @@ html.lenis, html.lenis body { height: auto; }
 body {
   font-family: var(--font); color: var(--dark); overflow-x: clip;
   position: relative; font-size: var(--fs-body);
-  background: url('/background.svg') center top / cover no-repeat;
+}
+/* React mount point = the full-document flow container. Positioned (relative)
+   so the absolute .site-bg child sizes to the ENTIRE site height + width, not
+   just the viewport. */
+#root { position: relative; }
+/* Background mesh — pure-CSS port of the Figma "Manhattan Ice" SVG (node
+   2084:1766). A real full-document-height layer (.site-bg in App.jsx), absolute
+   over the position:relative body so it spans the whole page exactly like the
+   old SVG (which was preserveAspectRatio="none" stretched edge-to-edge).
+   The SVG was a white base + 4 heavily-blurred ellipses at group opacity 0.5;
+   each ellipse becomes one radial-gradient layer here. Vectorial paint (no
+   raster, no filter) → cheap in Safari even stretched over a tall document. */
+/* The Figma background SVG, stretched over the ENTIRE site (full width + full
+   document height) as an <img>. object-fit: fill distorts it edge-to-edge to
+   cover any aspect; the SVG carries preserveAspectRatio="none" so its blurred
+   blobs stretch with it. <img> (not CSS background) so Safari rasterises the
+   feGaussianBlur reliably. Static filter → rasterised once, no per-frame cost. */
+.site-bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  pointer-events: none;
+  background: #FFFFFF;   /* base shows through any transparent SVG edges */
 }
 img { max-width: 100%; height: auto; display: block; }
 a { text-decoration: none; color: inherit; }
@@ -131,21 +164,25 @@ ul { list-style: none; }
 @media (max-width: 480px) { .mobile-br { display: block; } }
 
 /* ── Section shared ── */
-.section-header { margin-bottom: 32px; }
-/* SplitText clones the h2 per line — zero out margin on clones inside .section-header
-   so only the wrapper's margin-bottom controls spacing, not each cloned line. */
-.section-header .section-title { margin-bottom: 0; }
 .section-title {
   font-family: var(--font-heading); font-size: var(--fs-h2);
-  font-weight: 400; line-height: 1; letter-spacing: -0.03em;
+  font-weight: 400; line-height: 0.75; letter-spacing: 0em;
+  margin-bottom: 32px;
 }
 /* GSAP SplitText `mask: 'lines'` clips each line to its line-box, which cuts
    descenders (g, j, p, q, y) on tight line-heights. Reserve extra room below
    the baseline so the mask doesn't crop them. */
 .reveal-line { padding-bottom: 0.15em; }
+/* Section-title line masks: prevent auto-wrapping into extra lines and
+   keep glyph ascenders/descenders visible inside overflow-clipped masks. */
+.section-title .reveal-line {
+  white-space: nowrap;
+  padding-top: 0.06em;
+  padding-bottom: 0.22em;
+}
 .section-subtitle {
-  font-size: var(--fs-subtitle); font-weight: 500;
-  line-height: 1.36; letter-spacing: 0.02em; margin-top: var(--space-sm);
+  font-size: var(--fs-subtitle); font-weight: 400;
+  line-height: 1.36; letter-spacing: 0; margin-top: var(--space-sm);
   text-wrap: balance;
 }
 .footer-wrap { position: relative; }
@@ -153,14 +190,8 @@ ul { list-style: none; }
 @media (max-width: 1024px) {
   :root { --page-px: 19.5px; }
   .section-subtitle { font-size: var(--fs-body-mobile); }
-  body {
-    background-image: url('/background-mobile.svg');
-    /* The mobile SVG aspect is ~1:20; `cover` (inherited from the base rule)
-       over-stretches it vertically on tall pages and dilutes the gradient.
-       Render at natural aspect and tile down instead. */
-    background-size: 100% auto;
-    background-repeat: repeat-y;
-  }
+  /* Mobile reuses the same stretched vector background (the base body rule) —
+     no separate 4.6MB background-mobile.svg needed. */
 }
 @media (max-width: 480px) {
   .section-subtitle { margin-top: 0; text-wrap: unset; }

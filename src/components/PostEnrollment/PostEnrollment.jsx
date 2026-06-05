@@ -1,9 +1,7 @@
-import React, { useRef } from 'react'
-import gsap from 'gsap'
-import { useScrollReveal } from '../../hooks/useScrollReveal'
-import { splitLines, lineRevealVars, blockRevealVars, blockRevealFromVars, selfTrigger } from '../../utils/reveal'
-import useIsMobile from '../../hooks/useIsMobile'
+import { motion, useReducedMotion } from 'motion/react'
 import { asset } from '../../utils/assetPath'
+import { softVariants } from '../../utils/motion'
+import SectionH2 from '../ui/SectionH2/SectionH2'
 import './PostEnrollment.css'
 
 const audiences = [
@@ -24,45 +22,32 @@ const audiences = [
   },
 ]
 
+// Motion entrance (scroll-triggered, staggered fade-up). Replaces the GSAP reveal.
+const fadeUp = {
+  hidden: { opacity: 0, y: 24 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } },
+}
+const stagger = { visible: { transition: { staggerChildren: 0.08 } } }
+
 export default function PostEnrollment() {
-  const sectionRef = useRef(null)
-  const titleRef = useRef(null)
-  const cardsRef = useRef([])
-  const isMobile = useIsMobile()
-
-  useScrollReveal({
-    scopeRef: sectionRef,
-    prepare: () => {
-      const cards = cardsRef.current.filter(Boolean)
-      gsap.set(titleRef.current, { autoAlpha: 0 })
-      if (cards.length) gsap.set(cards, blockRevealFromVars())
-      return [titleRef.current, ...cards]
-    },
-    animate: () => {
-      const cards = cardsRef.current.filter(Boolean)
-      const titleSplit = splitLines(titleRef.current)
-      gsap.set(titleRef.current, { autoAlpha: 1 })
-
-      gsap.from(titleSplit.lines, { ...lineRevealVars(), scrollTrigger: selfTrigger(titleRef.current) })
-      if (cards.length) {
-        gsap.to(cards, { ...blockRevealVars({ stagger: 0.08 }), scrollTrigger: selfTrigger(cards[0]) })
-      }
-    },
-    deps: [isMobile],
-  })
+  const reduce = useReducedMotion()
+  const listReveal = { initial: 'hidden', whileInView: 'visible', viewport: { once: true, amount: 0.3 }, variants: softVariants(reduce, stagger) }
 
   return (
-    <section className="post-enrollment" id="why-near" ref={sectionRef}>
+    <section className="post-enrollment" id="why-near">
       <div className="container">
-        <div className="post-glow" aria-hidden="true"></div>
-        <h2 className="section-title" ref={titleRef}>Designed for the<br />post-enrollment reality</h2>
-        <div className="post-list">
-          {audiences.map((a, i) => (
-            <div
-              className="post-item"
-              key={a.title}
-              ref={(el) => { cardsRef.current[i] = el }}
-            >
+        <div className="post-glow" aria-hidden="true">
+          <div className="post-glow-sphere post-glow-sphere--1" />
+          <div className="post-glow-sphere post-glow-sphere--2" />
+        </div>
+        <SectionH2
+          lines={['Designed for the', 'post-enrollment reality']}
+          marginBottom={146}
+          mobileMarginBottom={52}
+        />
+        <motion.div className="post-list" {...listReveal}>
+          {audiences.map((a) => (
+            <motion.div className="post-item" key={a.title} variants={softVariants(reduce, fadeUp)}>
               <div className="post-icon">
                 <img src={a.icon} alt={`${a.title} icon`} width="26" height="26" />
               </div>
@@ -70,9 +55,9 @@ export default function PostEnrollment() {
                 <h3>{a.title}</h3>
                 <p>{a.desc}</p>
               </div>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   )

@@ -1,0 +1,62 @@
+.nh-h2 {
+  --nh-h2-mb: 16px;
+  --nh-h2-mb-mobile: 22px;
+  margin: 0 0 var(--nh-h2-mb);
+  font-family: var(--font-heading);
+  font-size: var(--fs-h2);
+  font-weight: 400;
+  line-height: 0.75;
+  letter-spacing: -0.03em;
+}
+
+.nh-h2__set {
+  display: block;
+}
+
+.nh-h2__mask {
+  position: relative;
+  display: block;
+  overflow: clip;
+}
+
+.nh-h2__line {
+  position: relative;
+  display: block;
+  white-space: nowrap;
+  padding-top: 0.06em;
+  padding-bottom: 0.22em;
+  /* No permanent `will-change` here: Motion adds it only while the reveal runs
+     and clears it afterwards. A hard-coded one leaves a compositing layer alive
+     inside the `overflow: clip` mask, which iOS Safari intermittently drops
+     (text vanishes after the animation settles). */
+}
+
+.nh-h2__set--mobile {
+  display: none;
+}
+
+@media (max-width: 480px) {
+  /* Care-era mobile h2 sizing/metrics */
+  .nh-h2 {
+    font-size: 36px;
+    line-height: 1;
+    letter-spacing: -0.01em;
+    margin-bottom: var(--nh-h2-mb-mobile);
+  }
+
+  .nh-h2__line {
+    line-height: 1;
+    letter-spacing: -0.01em;
+    padding-bottom: 0;
+    white-space: normal;
+    text-wrap: balance;
+  }
+
+  .nh-h2--has-mobile-lines .nh-h2__set--desktop {
+    display: none;
+  }
+
+  .nh-h2--has-mobile-lines .nh-h2__set--mobile {
+    display: block;
+  }
+}

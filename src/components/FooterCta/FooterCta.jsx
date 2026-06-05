@@ -1,39 +1,29 @@
-import { useRef } from 'react'
-import gsap from 'gsap'
-import { useScrollReveal } from '../../hooks/useScrollReveal'
-import { splitLines, lineRevealVars, blockRevealVars, blockRevealFromVars, selfTrigger } from '../../utils/reveal'
+import { motion, useReducedMotion } from 'motion/react'
 import Button from '../ui/Button/Button'
+import { usePlayInView } from '../../hooks/usePlayInView'
+import { softVariants } from '../../utils/motion'
 import './FooterCta.css'
 
+// Motion entrance (scroll-triggered fade-up). Replaces the GSAP reveal.
+const fadeUp = {
+  hidden: { opacity: 0, y: 24 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } },
+}
+
 export default function FooterCta() {
-  const sectionRef = useRef(null)
-  const textRef = useRef(null)
-  const buttonsRef = useRef(null)
-
-  useScrollReveal({
-    scopeRef: sectionRef,
-    prepare: () => {
-      gsap.set(textRef.current, { autoAlpha: 0 })
-      gsap.set(buttonsRef.current, blockRevealFromVars())
-      return [textRef.current, buttonsRef.current]
-    },
-    animate: () => {
-      const split = splitLines(textRef.current)
-      gsap.set(textRef.current, { autoAlpha: 1 })
-
-      gsap.from(split.lines, { ...lineRevealVars(), scrollTrigger: selfTrigger(textRef.current) })
-      gsap.to(buttonsRef.current, { ...blockRevealVars({ stagger: 0 }), scrollTrigger: selfTrigger(buttonsRef.current) })
-    },
-  })
+  const reduce = useReducedMotion()
+  const [sectionRef, paused] = usePlayInView()
+  const reveal = (amount = 0.5) =>
+    ({ initial: 'hidden', whileInView: 'visible', viewport: { once: true, amount }, variants: softVariants(reduce, fadeUp) })
 
   return (
-    <section className="footer-cta" id="contact" ref={sectionRef}>
+    <section ref={sectionRef} className={`footer-cta${paused ? ' is-paused' : ''}`} id="contact">
       <div className="container">
-        <p className="footer-cta-text" ref={textRef}>Near brings coverage, care, and support together.</p>
-        <div className="footer-cta-buttons" ref={buttonsRef}>
+        <motion.p className="footer-cta-text" {...reveal(0.6)}>Near brings coverage, care, and support together.</motion.p>
+        <motion.div className="footer-cta-buttons" {...reveal(0.6)}>
           <Button variant="primary" href="#">Request a demo</Button>
           <Button variant="secondary" href="#">Talk to us</Button>
-        </div>
+        </motion.div>
       </div>
     </section>
   )

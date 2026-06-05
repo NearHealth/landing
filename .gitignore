@@ -30,6 +30,9 @@ yarn-error.log*
 # Video originals (uncompressed backups)
 public/assets/originals/
 
+# Uncompressed master videos / source exports (backups, not shipped)
+video-masters/
+
 # Playwright failure artifacts (NOT baselines — *-snapshots/ is committed)
 test-results/
 playwright-report/

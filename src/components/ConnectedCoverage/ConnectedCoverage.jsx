@@ -1,10 +1,16 @@
 import { useEffect, useRef } from 'react'
-import gsap from 'gsap'
-import { useScrollReveal } from '../../hooks/useScrollReveal'
-import { splitLines, lineRevealVars, blockRevealVars, blockRevealFromVars, selfTrigger } from '../../utils/reveal'
+import { motion, useReducedMotion } from 'motion/react'
 import { BREAKPOINT_TABLET } from '../../utils/layout'
 import { asset } from '../../utils/assetPath'
+import { softVariants } from '../../utils/motion'
+import SectionH2 from '../ui/SectionH2/SectionH2'
 import './ConnectedCoverage.css'
+
+// Motion entrance (scroll-triggered fade-up). Replaces the GSAP reveal.
+const fadeUp = {
+  hidden: { opacity: 0, y: 24 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } },
+}
 
 const INITIAL = ['Vision', 'Dental', 'Medicare', 'Individual', 'Employer']
 const COPIES = 4
@@ -14,30 +20,10 @@ const items = Array.from({ length: COPIES }, () => INITIAL).flat()
 const SPEED = 70
 
 export default function ConnectedCoverage() {
-  const sectionRef = useRef(null)
-  const titleRef = useRef(null)
-  const subtitleRef = useRef(null)
-  const phoneRef = useRef(null)
+  const reduce = useReducedMotion()
   const trackRef = useRef(null)
   const containerRef = useRef(null)
-
-  useScrollReveal({
-    scopeRef: sectionRef,
-    prepare: () => {
-      gsap.set([titleRef.current, subtitleRef.current], { autoAlpha: 0 })
-      gsap.set(phoneRef.current, blockRevealFromVars())
-      return [titleRef.current, subtitleRef.current, phoneRef.current]
-    },
-    animate: () => {
-      const titleSplit = splitLines(titleRef.current)
-      const subSplit = splitLines(subtitleRef.current)
-      gsap.set([titleRef.current, subtitleRef.current], { autoAlpha: 1 })
-
-      gsap.from(titleSplit.lines, { ...lineRevealVars(), scrollTrigger: selfTrigger(titleRef.current) })
-      gsap.from(subSplit.lines, { ...lineRevealVars(), scrollTrigger: selfTrigger(subtitleRef.current) })
-      gsap.to(phoneRef.current, { ...blockRevealVars({ stagger: 0 }), scrollTrigger: selfTrigger(phoneRef.current) })
-    },
-  })
+  const reveal = { initial: 'hidden', whileInView: 'visible', viewport: { once: true, amount: 0.4 }, variants: softVariants(reduce, fadeUp) }
 
   /* Continuous horizontal flow.
      - tx decreases linearly each frame at SPEED px/s
@@ -80,15 +66,16 @@ export default function ConnectedCoverage() {
     let last = 0
     let raf = 0
 
-    // Asymmetric time constants: darkening (inactive→active) feels abrupt
-    // at the same speed as lightening, so we ease it in more slowly.
-    const TAU_DARKEN = 0.08
-    const TAU_LIGHTEN = 0.04
+    // Symmetric: the reverse transition (black→white, leaving centre) uses the
+    // exact same timing/easing as the forward (white→black, reaching centre) —
+    // client request. Same tau both directions.
+    const TAU_DARKEN = 0.045
+    const TAU_LIGHTEN = 0.045
 
     // Winner-take-all highlight: only the single item nearest the centre is
-    // ever darkened. As soon as another item becomes the closest, the
-    // highlight hands off — there's no moment where two items are both
-    // partially dark, and no white-only gap between consecutive actives.
+    // ever darkened — and only once it's genuinely near the centre (narrow
+    // band below), so the active state reads as "this one is centred", with a
+    // brief neutral beat between items rather than a continuous smear.
     const paint = (dt) => {
       let minDist = Infinity
       let minIdx = -1
@@ -100,18 +87,17 @@ export default function ConnectedCoverage() {
       for (let i = 0; i < els.length; i++) {
         const el = els[i]
         const dist = Math.abs(centers[i] + tx - containerCenter)
-        // Active item: smoothstep dark→white over its half of the spacing.
-        // It hits ~white right as the next item takes over (dist ≈ spacing/2),
-        // so the swap is visually continuous despite being a hard logical flip.
-        // Inactive items: forced to white.
+        // Active item: smoothstep dark→white over a NARROW central band so it
+        // only goes black when actually centred (was spacing*0.5 — half a slot
+        // early, which read as delayed/smeared). 0.30 → fully white once it's
+        // ~30% of a slot past centre. Inactive items: forced to white.
         let t = 1
         if (i === minIdx) {
-          const x = Math.min(1, dist / (spacing * 0.5))
+          const x = Math.min(1, dist / (spacing * 0.30))
           t = x * x * (3 - 2 * x)
         }
-        // Direction-dependent tau: darkening (t < smoothT) eases in slowly so
-        // the active colour builds gradually; lightening stays snappy.
-        // dt=0 (reduced-motion) snaps immediately.
+        // Direction-dependent tau: both snappy; darkening a touch slower so the
+        // activation reads intentional. dt=0 (reduced-motion) snaps immediately.
         const darkening = t < smoothT[i]
         const lerpFactor = dt > 0 ? 1 - Math.exp(-dt / (darkening ? TAU_DARKEN : TAU_LIGHTEN)) : 1
         smoothT[i] += (t - smoothT[i]) * lerpFactor
@@ -176,20 +162,24 @@ export default function ConnectedCoverage() {
   }, [])
 
   return (
-    <section className="connected-coverage" id="connected-coverage" ref={sectionRef}>
+    <section className="connected-coverage" id="connected-coverage">
       <div className="container connected-coverage-inner">
         <div className="platform-text">
-          <h2 className="section-title" ref={titleRef}>Connected across<br /> coverage lines.</h2>
-          <p className="platform-subtitle" ref={subtitleRef}>Supporting the coverage types brokers and providers work with every day.</p>
+          <SectionH2
+            lines={['Connected across', 'coverage lines.']}
+            marginBottom={18}
+            mobileMarginBottom={18}
+          />
+          <motion.p className="platform-subtitle" {...reveal}>Supporting the coverage types brokers and providers work with every day.</motion.p>
         </div>
-        <div className="platform-phone" ref={phoneRef}>
+        <motion.div className="platform-phone" {...reveal}>
           <img
-            src={asset('activate-care.jpg')}
-            alt="Near Health - Activate Care"
+            src={asset('assets/images/hand-smartphone.webp')}
+            alt="Hand holding a smartphone with the Near Health app"
             loading="lazy"
             className="platform-phone-img"
           />
-        </div>
+        </motion.div>
       </div>
 
       <div className="coverage-carousel" ref={containerRef}>

@@ -1,8 +1,7 @@
-import { useRef } from 'react'
-import gsap from 'gsap'
-import { useScrollReveal } from '../../hooks/useScrollReveal'
-import { splitLines, lineRevealVars, blockRevealVars, blockRevealFromVars, selfTrigger } from '../../utils/reveal'
+import { motion, useReducedMotion } from 'motion/react'
 import { asset } from '../../utils/assetPath'
+import { softVariants } from '../../utils/motion'
+import SectionH2 from '../ui/SectionH2/SectionH2'
 import './RealWorld.css'
 
 const features = [
@@ -22,48 +21,34 @@ const features = [
     icon: <img src={asset('assets/images/built-for-scale.svg')} alt="Built for scale" width="32" height="32" /> },
 ]
 
+// Motion entrance (scroll-triggered, staggered fade-up). Replaces the GSAP reveal.
+const fadeUp = {
+  hidden: { opacity: 0, y: 24 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } },
+}
+const stagger = { visible: { transition: { staggerChildren: 0.1 } } }
+
 export default function RealWorld() {
-  const sectionRef = useRef(null)
-  const titleRef = useRef(null)
-  const cardsRef = useRef([])
-
-  useScrollReveal({
-    scopeRef: sectionRef,
-    prepare: () => {
-      const cards = cardsRef.current.filter(Boolean)
-      gsap.set(titleRef.current, { autoAlpha: 0 })
-      gsap.set(cards, blockRevealFromVars())
-      return [titleRef.current, ...cards]
-    },
-    animate: () => {
-      const cards = cardsRef.current.filter(Boolean)
-      const titleSplit = splitLines(titleRef.current)
-      gsap.set(titleRef.current, { autoAlpha: 1 })
-
-      gsap.from(titleSplit.lines, { ...lineRevealVars(), scrollTrigger: selfTrigger(titleRef.current) })
-      if (cards.length) {
-        gsap.to(cards, { ...blockRevealVars({ stagger: 0.1 }), scrollTrigger: selfTrigger(cards[0]) })
-      }
-    },
-  })
+  const reduce = useReducedMotion()
+  const gridReveal = { initial: 'hidden', whileInView: 'visible', viewport: { once: true, amount: 0.3 }, variants: softVariants(reduce, stagger) }
 
   return (
-    <section className="real-world" id="real-world" ref={sectionRef}>
+    <section className="real-world" id="real-world">
       <div className="container">
-        <h2 className="section-title" ref={titleRef}>Designed for modern healthcare operations.</h2>
-        <div className="features-grid">
+        <SectionH2
+          lines={['Designed for modern healthcare operations.']}
+          marginBottom={32}
+          mobileMarginBottom={28}
+        />
+        <motion.div className="features-grid" {...gridReveal}>
           {features.map((f, i) => (
-            <div
-              className="feature-card"
-              key={i}
-              ref={(el) => { cardsRef.current[i] = el }}
-            >
+            <motion.div className="feature-card" key={i} variants={softVariants(reduce, fadeUp)}>
               <div className="feature-icon">{f.icon}</div>
               <h3>{f.title}</h3>
               <p>{f.desc}</p>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   )

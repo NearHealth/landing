@@ -3,13 +3,13 @@
 
 /* ── Footer ── */
 .footer {
-  position: relative; padding: var(--space-md) 0;
+  position: relative; padding: 133px 0 32px;   /* Figma: pt-133 pb-32 */
   isolation: isolate;
 }
 .footer .container { position: relative; z-index: 1;
   display: flex; flex-wrap: wrap; align-items: center;
   column-gap: 32px;
-  row-gap: 1.5rem;
+  row-gap: 78px;   /* gap between the wordmark and the links/socials row (Figma) */
 }
 
 /* ── Cyan gradient: transparent in the top half, ramping to solid cyan at the
@@ -27,11 +27,23 @@
   inset: 0;
   pointer-events: none;
   z-index: -1;
-  opacity: 0;
-  /* --gradient-stop is animated by GSAP to drift the transparent→cyan handoff
-     point a few percent up/down, giving the gradient a subtle breathing feel. */
-  background: linear-gradient(in oklab to bottom, rgba(94,230,253,0) var(--gradient-stop), #5EE6FD 100%);
-  will-change: opacity, background;
+  /* Figma: transparent top → 0.51 cyan at 85% → solid cyan at the bottom.
+     --gradient-stop drifts to give a subtle breathing feel (pure CSS now). */
+  background: linear-gradient(in oklab to bottom,
+    rgba(94,230,253,0) var(--gradient-stop),
+    rgba(94,230,253,0.51) 85%,
+    #5EE6FD 100%);
+  will-change: opacity;
+  animation: footer-breathe 5s ease-in-out infinite alternate;
+}
+@keyframes footer-breathe {
+  from { --gradient-stop: 50%; opacity: 0.9; }
+  to   { --gradient-stop: 30%; opacity: 1; }
+}
+/* Pause the breathing gradient (a per-frame gradient repaint) while off-screen. */
+.footer.is-paused .footer-gradient { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) {
+  .footer-gradient { animation: none; opacity: 1; }
 }
 .footer-brand {
   width: 100%; max-width: 1440px; height: auto;
@@ -57,6 +69,7 @@
 
 /* ── Mobile (≤480px) ── */
 @media (max-width: 480px) {
+  .footer { padding: 64px 0 24px; }   /* desktop pt-133 is too tall on phones */
   /* container-type lets children use cqw (% of this element's content width)
      so the brand fills exactly 100% of the available width at every screen size. */
   .footer .container {

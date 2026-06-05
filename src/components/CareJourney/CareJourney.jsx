@@ -1,19 +1,17 @@
-import { lazy, Suspense, useEffect, useRef, useState } from 'react'
-import gsap from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import { useScrollReveal } from '../../hooks/useScrollReveal'
-
-// Lazy: keep the Lottie runtime (~50 KB gzip) out of the initial bundle. The
-// chunk is fetched only when the first card crosses the IntersectionObserver
-// gate that sets `mounted`, so the hero paints without waiting on it.
-const DotLottieReact = lazy(() =>
-  import('@lottiefiles/dotlottie-react').then((m) => ({ default: m.DotLottieReact }))
-)
-import { splitLines, lineRevealVars, blockRevealVars, blockRevealFromVars, selfTrigger } from '../../utils/reveal'
+import { useEffect, useRef, useState } from 'react'
+import { motion, useReducedMotion } from 'motion/react'
 import useIsMobile from '../../hooks/useIsMobile'
-import SectionTitle from '../ui/SectionTitle/SectionTitle'
+import SectionH2 from '../ui/SectionH2/SectionH2'
 import { asset } from '../../utils/assetPath'
+import { softVariants } from '../../utils/motion'
 import './CareJourney.css'
+
+// Motion entrance (scroll-triggered fade-up). Mirrors the old GSAP blockReveal.
+const fadeUp = {
+  hidden: { opacity: 0, y: 24 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.16, 1, 0.3, 1] } },
+}
+const cardsStagger = { visible: { transition: { staggerChildren: 0.12 } } }
 
 const cards = [
   {
@@ -44,89 +42,59 @@ const cards = [
   },
 ]
 
-function CareCard({ card, refProp, mobileActive }) {
+function CareCard({ card, variants }) {
   const isMobile = useIsMobile()
+  const reduce = useReducedMotion()
   const [hovered, setHovered] = useState(false)
-  const [mounted, setMounted] = useState(false)
-  const [visible, setVisible] = useState(false)
-  const cardRef = useRef(null)
+  // Hover glow is a desktop-only flourish (no hover on touch; skipped under
+  // reduced motion). Pure CSS port of Hover_Gradient.lottie — fades in on hover.
+  const showGlow = !isMobile && !reduce
 
-  const lottieSrc = asset(isMobile
-    ? 'assets/Hover_Gradient_Mobile.lottie'
-    : 'assets/Hover_Gradient_Desktop.lottie'
-  )
-
-  const active = isMobile ? mobileActive : hovered
-
-  // Cross-fade based on active state (drives both desktop hover and mobile scroll exclusivity)
-  useEffect(() => {
-    if (!active) { setVisible(false); return }
-    setMounted(true)
-    const id = requestAnimationFrame(() => setVisible(true))
-    return () => cancelAnimationFrame(id)
-  }, [active])
-
-  const activate = () => {
-    if (isMobile) return
-    setHovered(true)
-  }
-  const deactivate = () => {
-    if (isMobile) return
-    setHovered(false)
-  }
+  const onEnter = showGlow ? () => setHovered(true) : undefined
+  const onLeave = showGlow ? () => setHovered(false) : undefined
 
   return (
-    <div
-      className="care-card"
-      ref={(el) => {
-        cardRef.current = el
-        if (typeof refProp === 'function') refProp(el)
-      }}
-      onMouseEnter={activate}
-      onMouseLeave={deactivate}
-    >
-      {mounted && (
-        <Suspense fallback={null}>
-          <DotLottieReact
-            src={lottieSrc}
-            loop
-            autoplay
-            className={`care-card-lottie${visible ? ' is-visible' : ''}`}
-            layout={{ fit: 'fill' }}
-          />
-        </Suspense>
-      )}
-      <div className="care-card-photo">
-        <picture>
-          <source srcSet={card.imageWebp} type="image/webp" />
-          <img src={isMobile && card.imageMobile ? card.imageMobile : card.image} alt={card.title} loading="lazy" />
-        </picture>
-        <div className="care-card-overlay">
-          <h3>{card.title}</h3>
-          <span>{card.subtitle}</span>
+    <motion.a href="#contact" className="care-card" variants={variants} onMouseEnter={onEnter} onMouseLeave={onLeave}>
+      <div className="care-card-surface">
+        {/* Hover glow — exact CSS port of Hover_Gradient.lottie. Two cyan spheres
+            inside the surface clip (z-index 0), below content; fades in on hover. */}
+        {showGlow && (
+          <div className={`care-card-glow-css${hovered ? ' is-on' : ''}`} aria-hidden="true">
+            <div className="gsphere gsphere--1" />
+            <div className="gsphere gsphere--2" />
+          </div>
+        )}
+        <div className="care-card-photo">
+          <picture>
+            <source srcSet={card.imageWebp} type="image/webp" />
+            <img src={isMobile && card.imageMobile ? card.imageMobile : card.image} alt={card.title} loading="lazy" />
+          </picture>
+          <div className="care-card-overlay">
+            <h3>{card.title}</h3>
+            <span>{card.subtitle}</span>
+          </div>
+        </div>
+        <div className="care-card-body">
+          <ul className="care-card-features">
+            {card.features.map((f, j) => (
+              <li key={j}>{f}</li>
+            ))}
+          </ul>
+          <div className="care-card-divider"></div>
+          <p className="care-card-text">{card.desc}</p>
+          {/* Space reserved; only the button's appearance animates on hover. */}
+          <span className="care-card-btn">Learn more</span>
         </div>
       </div>
-      <div className="care-card-body">
-        <ul className="care-card-features">
-          {card.features.map((f, j) => (
-            <li key={j}>{f}</li>
-          ))}
-        </ul>
-        <div className="care-card-divider"></div>
-        <p className="care-card-text">{card.desc}</p>
-        <a href="#contact" className="care-card-btn">Learn more</a>
-      </div>
-    </div>
+    </motion.a>
   )
 }
 
 export default function CareJourney() {
   const sectionRef = useRef(null)
-  const headerRef = useRef(null)
-  const cardsRef = useRef([])
-  const isMobile = useIsMobile()
-  const [activeIndex, setActiveIndex] = useState(-1)
+  const reduce = useReducedMotion()
 
+  // Equalize feature/text block heights across the two cards.
   useEffect(() => {
     const section = sectionRef.current
     if (!section) return
@@ -144,93 +112,38 @@ export default function CareJourney() {
     return () => ro.disconnect()
   }, [])
 
-  // Mobile: only the card closest to viewport center is the primary focus —
-  // guarantees one active card at a time so the gradient never doubles up.
-  useEffect(() => {
-    if (!isMobile) { setActiveIndex(-1); return }
-    const section = sectionRef.current
-    if (!section) return
-
-    let current = -1
-    const update = () => {
-      const cards = cardsRef.current.filter(Boolean)
-      if (!cards.length) return
-      const viewportCenter = window.innerHeight / 2
-      let bestIdx = -1
-      let bestDist = Infinity
-      cards.forEach((el, i) => {
-        const rect = el.getBoundingClientRect()
-        // Card must overlap the viewport to be eligible.
-        if (rect.bottom <= 0 || rect.top >= window.innerHeight) return
-        const dist = Math.abs(rect.top + rect.height / 2 - viewportCenter)
-        if (dist < bestDist) { bestDist = dist; bestIdx = i }
-      })
-      if (bestIdx !== current) {
-        current = bestIdx
-        setActiveIndex(bestIdx)
-      }
-    }
-
-    const st = ScrollTrigger.create({
-      trigger: section,
-      start: 'top bottom',
-      end: 'bottom top',
-      onUpdate: update,
-      onLeave: () => { current = -1; setActiveIndex(-1) },
-      onLeaveBack: () => { current = -1; setActiveIndex(-1) },
-    })
-    update()
-    return () => st.kill()
-  }, [isMobile])
-
-  useScrollReveal({
-    scopeRef: sectionRef,
-    prepare: () => {
-      const cards = cardsRef.current.filter(Boolean)
-      gsap.set(headerRef.current, { autoAlpha: 0 })
-      gsap.set(cards, blockRevealFromVars())
-      return [headerRef.current, ...cards]
-    },
-    animate: () => {
-      const cards = cardsRef.current.filter(Boolean)
-      const heading = headerRef.current.querySelector('.section-title')
-      const subtitle = headerRef.current.querySelector('.section-subtitle')
-      const headingSplit = splitLines(heading)
-      const subtitleSplit = subtitle ? splitLines(subtitle) : null
-      gsap.set(headerRef.current, { autoAlpha: 1 })
-
-      gsap.from(headingSplit.lines, { ...lineRevealVars(), scrollTrigger: selfTrigger(heading) })
-      if (subtitleSplit) {
-        gsap.from(subtitleSplit.lines, { ...lineRevealVars(), scrollTrigger: selfTrigger(subtitle) })
-      }
-      if (cards.length) {
-        gsap.to(cards, {
-          ...blockRevealVars({ stagger: 0.12 }),
-          clearProps: 'transform,opacity,visibility',
-          scrollTrigger: selfTrigger(cards[0]),
-        })
-      }
-    },
-  })
+  // Scroll-triggered entrance (fade-up); fade-only (no movement) under reduced motion.
+  const inView = { initial: 'hidden', whileInView: 'visible', viewport: { once: true, amount: 0.2 } }
+  const itemVariants = softVariants(reduce, fadeUp)
 
   return (
     <section className="care-journey" id="built-for" ref={sectionRef}>
       <div className="container">
-        <div ref={headerRef}>
-          <SectionTitle subtitle={<>Members struggle to use their coverage. Brokers lose visibility after enrollment.<br /> Providers face disconnected patient journeys.</>} className="care-journey-header" titleClassName="care-journey-header">
-            Enrollment got digital.<br /> Care coordination didn’t.
-          </SectionTitle>
+        <div className="care-journey-header">
+          <SectionH2
+            lines={['Enrollment got digital.', 'Care coordination didn’t.']}
+            marginBottom={16}
+            mobileMarginBottom={22}
+          />
+          <motion.p
+            className="section-subtitle"
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.6 }}
+            variants={itemVariants}
+          >
+            Members struggle to use their coverage. Brokers lose visibility after enrollment.<br /> Providers face disconnected patient journeys.
+          </motion.p>
         </div>
-        <div className="care-cards">
+        <motion.div
+          className="care-cards"
+          {...inView}
+          variants={softVariants(reduce, cardsStagger)}
+        >
           {cards.map((card, i) => (
-            <CareCard
-              key={i}
-              card={card}
-              mobileActive={activeIndex === i}
-              refProp={(el) => { cardsRef.current[i] = el }}
-            />
+            <CareCard key={i} card={card} variants={itemVariants} />
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   )

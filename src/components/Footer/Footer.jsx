@@ -1,91 +1,31 @@
-import { useEffect, useRef } from 'react'
-import gsap from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { motion, useReducedMotion } from 'motion/react'
+import { usePlayInView } from '../../hooks/usePlayInView'
+import { softVariants } from '../../utils/motion'
 import './Footer.css'
 
+// Motion entrance for the big wordmark (was a GSAP fade-up). The cyan gradient
+// + its breathing are now pure CSS (see Footer.css) — no GSAP.
+const brandReveal = {
+  hidden: { opacity: 0, y: 40 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } },
+}
+
 export default function Footer() {
-  const footerRef = useRef(null)
-  const brandRef = useRef(null)
-  const gradientRef = useRef(null)
-
-  useEffect(() => {
-    const footer = footerRef.current
-    const brand = brandRef.current
-    const gradient = gradientRef.current
-    if (!footer || !brand || !gradient) return
-
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    if (reduceMotion) {
-      gsap.set([brand, gradient], { opacity: 1 })
-      return
-    }
-
-    // Proxy object animated by GSAP; we write its value back to the CSS
-    // custom property each frame. This sidesteps any unit-parsing quirks of
-    // GSAP's direct CSS-var handling and guarantees a smooth, visible drift.
-    const stopProxy = { v: 50 }
-    const writeStop = () => gradient.style.setProperty('--gradient-stop', `${stopProxy.v}%`)
-    writeStop()
-
-    const ctx = gsap.context(() => {
-      gsap.set(brand, { opacity: 0, y: 90 })
-      gsap.set(gradient, { opacity: 0 })
-
-      gsap.to(brand, {
-        opacity: 1,
-        y: 0,
-        duration: 2.4,
-        ease: 'expo.out',
-        scrollTrigger: { trigger: footer, start: 'top 95%', once: true },
-      })
-
-      // Slower fade-in for the cyan gradient. The breathing (opacity dip +
-      // stop drift) starts in parallel, so motion is visible during the
-      // fade-in itself instead of waiting for it to finish.
-      gsap.to(gradient, {
-        opacity: 1,
-        duration: 3.6,
-        ease: 'power2.out',
-        scrollTrigger: {
-          trigger: footer,
-          start: 'top bottom',
-          once: true,
-          onEnter: () => {
-            gsap.to(stopProxy, {
-              v: 24,
-              duration: 2.2,
-              ease: 'sine.inOut',
-              yoyo: true,
-              repeat: -1,
-              onUpdate: writeStop,
-            })
-            gsap.to(gradient, {
-              opacity: 0.45,
-              duration: 2.5,
-              delay: 3.6,
-              ease: 'sine.inOut',
-              yoyo: true,
-              repeat: -1,
-            })
-          },
-        },
-      })
-    }, footer)
-
-    return () => ctx.revert()
-  }, [])
+  const reduce = useReducedMotion()
+  const [footerRef, paused] = usePlayInView()
+  const reveal = { initial: 'hidden', whileInView: 'visible', viewport: { once: true, amount: 0.4 }, variants: softVariants(reduce, brandReveal) }
 
   return (
-    <footer className="footer" ref={footerRef}>
-      <div className="footer-gradient" ref={gradientRef} aria-hidden="true" />
+    <footer ref={footerRef} className={`footer${paused ? ' is-paused' : ''}`}>
+      <div className="footer-gradient" aria-hidden="true" />
       <div className="container">
-        <svg ref={brandRef} className="footer-brand" width="100%" viewBox="0 0 1440 376" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Near Health">
+        <motion.svg {...reveal} className="footer-brand" width="100%" viewBox="0 0 1440 376" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Near Health">
           <path d="M246.703 375.181L180.636 276.651L248.589 144.418H248.457C215.522 144.418 185.679 162.715 170.55 192.16L102.597 324.438H66.0885L0 225.908L79.2668 71.6018C101.961 27.4356 146.737 0 196.139 0H228.043C258.916 0 286.917 15.8478 302.968 42.3784C314.896 62.1108 318.58 85.0658 313.844 106.873C330.794 113.87 345.331 126.208 355.264 142.652C371.315 169.182 372.433 201.518 358.246 229.108L283.212 375.181H246.703ZM231.551 273.672L262.381 319.648L319.304 208.846C326.386 195.051 325.838 178.894 317.813 165.629C312.704 157.175 305.183 150.907 296.412 147.464L231.551 273.694V273.672ZM50.9149 222.928L81.7446 268.904L131.585 171.875C154.28 127.709 199.055 100.273 248.457 100.273H270.296C273.607 88.5753 271.985 76.0163 265.538 65.3334C257.513 52.068 243.501 44.1442 228.087 44.1442H196.183C163.248 44.1442 133.405 62.4419 118.275 91.8861L50.9588 222.928H50.9149Z" fill="currentColor"/>
           <path d="M988.478 207.886H804.384C811.556 244.647 837.628 266.11 872.401 266.11C901.56 266.11 919.961 255.893 930.19 235.985L973.222 258.359C953.293 293.182 915.61 313.089 872.93 313.089C801.356 313.089 750.71 262 750.71 188.449C750.71 114.898 800.798 63.3389 872.401 63.3389C937.862 63.3389 988.978 116.983 988.978 188.478C988.978 196.142 988.978 200.223 988.478 207.886ZM804.384 167.015H935.804C932.747 136.361 906.645 110.318 872.401 110.318C838.157 110.318 811.556 132.809 804.384 167.015Z" fill="currentColor"/>
           <path d="M1264.08 188.478V308.01H1216.52L1212.43 271.219C1195.03 298.291 1164.87 313.118 1133.69 313.118C1069.25 313.118 1018.64 262.029 1018.64 188.478C1018.64 114.927 1071.81 63.3389 1141.89 63.3389C1211.96 63.3389 1264.11 109.319 1264.11 188.478H1264.08ZM1210.9 188.478C1210.9 139.943 1178.69 111.345 1141.86 111.345C1103 111.345 1072.31 142.498 1072.31 188.478C1072.31 234.459 1101.47 265.112 1141.86 265.112C1176.63 265.112 1210.9 238.041 1210.9 188.478Z" fill="currentColor"/>
           <path d="M1317.78 308.01V160.908C1317.78 101.656 1353.58 63.3389 1411.37 63.3389C1422.1 63.3389 1430.8 64.8657 1440 66.921V115.955C1430.8 114.927 1425.19 115.456 1421.6 115.456C1389.88 115.456 1371.48 129.755 1371.48 170.098V308.01H1317.78Z" fill="currentColor"/>
           <path d="M706.178 211.119V307.983H652.475V170.071C652.475 140.739 628.666 116.956 599.301 116.956C569.937 116.956 546.128 140.739 546.128 170.071V307.983H492.425V170.071C492.425 111.113 540.278 63.312 599.301 63.312C658.324 63.312 706.178 111.113 706.178 170.071V211.119Z" fill="currentColor"/>
-        </svg>
+        </motion.svg>
         <span className="footer-item footer-copyright">&copy; Near Health LLC. 2026</span>
         <a href="mailto:hello@near.health" className="footer-item footer-email">hello@near.health</a>
         <a href="#" className="footer-item footer-terms">Terms</a>

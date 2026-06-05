@@ -1,7 +1,9 @@
 /* ── Footer CTA — soft gradient presence ── */
 .footer-cta {
   position: relative;
-  padding: 1.5rem 0 255px;
+  /* Bottom 78px + the footer's 133px top padding = 211px between the CTA
+     buttons and the footer wordmark (per design). */
+  padding: 1.5rem 0 78px;
   text-align: center;
   overflow: hidden;
   isolation: isolate;
@@ -21,9 +23,30 @@
   );
   animation: footer-cta-drift-b 22s var(--ease) infinite;
 }
+/* Second, slower, offset glow — layered depth for "slightly more presence".
+   Lower alpha + counter-phase drift so the field feels alive but stays calm. */
+.footer-cta::before {
+  content: "";
+  position: absolute;
+  inset: -25% -15%;
+  z-index: -1;
+  pointer-events: none;
+  will-change: transform, opacity;
+  background: radial-gradient(
+    50% 50% at 38% 60%,
+    rgba(var(--accent-warm-pearl-rgb), 0.22) 0%,
+    rgba(var(--accent-warm-pearl-rgb), 0.08) 45%,
+    rgba(var(--accent-warm-pearl-rgb), 0) 72%
+  );
+  animation: footer-cta-drift-a 30s var(--ease) infinite;
+}
 @keyframes footer-cta-drift-b {
   0%, 100% { transform: translate3d(3%, -2%, 0) scale(1.04); opacity: 0.9; }
   50%      { transform: translate3d(-3%, 2%, 0) scale(1); opacity: 0.7; }
+}
+@keyframes footer-cta-drift-a {
+  0%, 100% { transform: translate3d(-4%, 3%, 0) scale(1); opacity: 0.7; }
+  50%      { transform: translate3d(4%, -3%, 0) scale(1.06); opacity: 0.95; }
 }
 .footer-cta .container { position: relative; z-index: 1; }
 .footer-cta-text {
@@ -40,6 +63,9 @@
   .footer-cta-text { font-size: 16px; }
 }
 
+/* Pause the drifting gradients while off-screen (continuous repaint otherwise). */
+.footer-cta.is-paused::after, .footer-cta.is-paused::before { animation-play-state: paused; }
+
 @media (prefers-reduced-motion: reduce) {
-  .footer-cta::after { animation: none; }
+  .footer-cta::after, .footer-cta::before { animation: none; }
 }

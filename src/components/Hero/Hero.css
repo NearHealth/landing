@@ -37,13 +37,19 @@
 .hero-heading {
   flex-shrink: 0;
   font-family: var(--font-heading);
-  font-size: var(--fs-hero); font-weight: 400; line-height: 0.95; letter-spacing: -0.03em;
+  font-weight: 400; 
+  line-height: 0.95; 
+  letter-spacing: -0.03em;
   color: var(--dark);
   white-space: nowrap;
+}
+.hero-heading:not(.hero-heading--mobile) {
+  font-size: var(--fs-hero);
 }
 .hero-built-for {
   display: flex; align-items: flex-start; gap: 20px;
   flex-shrink: 0;
+  margin-top: 20px;            /* desktop breathing room above the ticker */
 }
 
 /* Row 2: subtitle+buttons left, video right.
@@ -60,9 +66,9 @@
 }
 .hero-left { flex-shrink: 0; max-width: 420px; }
 .hero-subtitle {
-  max-width: 376px;
+  max-width: 296px;
   margin-bottom: 16px;
-  font-size: var(--fs-subtitle); font-weight: 500; line-height: 1.4;
+  font-size: var(--fs-subtitle); font-weight: 400; line-height: 1.4;
 }
 .hero-buttons { display: inline-grid; grid-template-columns: 1fr 1fr; gap: 12px; }
 .hero-buttons .btn { justify-content: center; text-align: center; white-space: nowrap; }
@@ -86,7 +92,10 @@
   border-radius: var(--radius-card);
   overflow: hidden;
   background: var(--surface-tint);
-  will-change: width, height, transform;
+  /* width/height can't be GPU-composited, so listing them in will-change just
+     wastes a layer's worth of memory (heavy in Safari). Only transform is
+     compositable. */
+  will-change: transform;
 }
 .hero-video-card-inner video {
   position: absolute; inset: 0;
@@ -95,8 +104,9 @@
   object-fit: cover;
 }
 
-/* Carousel wrap offset — baked from tuner defaults (X: -32px, Y: 32px) */
-.hero-carousel-wrap { transform: translate(-32px, 32px); }
+/* Carousel wrap offset — baked from tuner defaults (X: -32px), block nudged
+   24px lower per client (Y: 32 → 56px). */
+.hero-carousel-wrap { transform: translate(-32px, 56px); }
 
 /* ── Built-for ticker (desktop) ── */
 /* margin-top offsets account for the viewport's 12% top fade band so the
@@ -125,16 +135,16 @@
      30%→50%: ease-in² ramp from 100% → 20% (nextOpacity)
      50%→170%: ease-in² tail from 20% → 0% (fadeEnd) */
   mask-image: linear-gradient(to bottom,
-    transparent 20%, black 30%,
-    rgba(0,0,0,1.000) 30.0%, rgba(0,0,0,0.950) 35.0%,
+    transparent 44px, black 62px,
+    rgba(0,0,0,1.000) 62px, rgba(0,0,0,0.950) 35.0%,
     rgba(0,0,0,0.800) 40.0%, rgba(0,0,0,0.550) 45.0%,
     rgba(0,0,0,0.200) 50.0%,
     rgba(0,0,0,0.139) 70.0%, rgba(0,0,0,0.089) 90.0%,
     rgba(0,0,0,0.050) 110.0%, rgba(0,0,0,0.022) 130.0%,
     rgba(0,0,0,0.006) 150.0%, rgba(0,0,0,0.000) 170.0%);
   -webkit-mask-image: linear-gradient(to bottom,
-    transparent 20%, black 30%,
-    rgba(0,0,0,1.000) 30.0%, rgba(0,0,0,0.950) 35.0%,
+    transparent 44px, black 62px,
+    rgba(0,0,0,1.000) 62px, rgba(0,0,0,0.950) 35.0%,
     rgba(0,0,0,0.800) 40.0%, rgba(0,0,0,0.550) 45.0%,
     rgba(0,0,0,0.200) 50.0%,
     rgba(0,0,0,0.139) 70.0%, rgba(0,0,0,0.089) 90.0%,
@@ -169,14 +179,23 @@
 .hero-heading--mobile {
   margin-bottom: 20px;
   font-family: var(--font-heading);
-  /* More aggressive scaling than --fs-hero (14vw vs 6.5vw): mobile heading
-     keeps presence on narrow screens. */
-  font-size: clamp(54px, 14vw, 96px); font-weight: 400; line-height: 0.95; letter-spacing: -0.03em;
+  /* Fluid up to the Figma cap of 54px: 13vw hits 54px at ~415px wide (the
+     ~420px design frame), and scales down on narrower phones. Never exceeds
+     54px on phones (tablet ≥768 overrides to a larger clamp). */
+  font-size: clamp(40px, 13vw, 54px);
+  font-weight: 400;
+  line-height: 0.9;
+  letter-spacing: -0.03em;
   color: var(--dark);
 }
+
+.hero-heading--mobile br {
+  display: none;
+}
+
 .hero-subtitle--mobile {
-  margin-bottom: var(--space-md);
-  font-size: var(--fs-body-mobile); font-weight: 500; line-height: 1.4;
+  margin-bottom: 20px;
+  font-size: var(--fs-body-mobile); font-weight: 400; line-height: 1.42;
   color: var(--dark);
 }
 .hero-buttons--mobile {
@@ -248,7 +267,8 @@
   will-change: transform;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
-  animation: built-for-scroll 14.4s linear 1.35s infinite;
+  /* 18s = 14.4s × 1.25 → 20% slower on mobile (client request). */
+  animation: built-for-scroll 18s linear 1.35s infinite;
 }
 .built-for-h-item {
   flex-shrink: 0;
@@ -316,7 +336,7 @@
   .hero-bottom-row { flex-direction: column; align-items: center; min-height: 0; }
   .hero-left { max-width: 100%; }
   .hero-heading { white-space: normal; text-align: center; }
-  .hero-subtitle { margin: 0 auto var(--space-md); text-align: center; }
+  .hero-subtitle:not(.hero-subtitle--mobile) { margin: 0 auto var(--space-md); text-align: center; }
   .hero-buttons { justify-content: center; }
   .hero-built-for { flex-direction: row; align-items: center; gap: 12px; }
   /* Disable sticky scrub on tablet/mobile — column layout doesn't need it. */
@@ -327,6 +347,7 @@
   .hero-outer { padding: 0; border-radius: 0; overflow: visible; }
   .hero { min-height: auto; padding: 143px 0 var(--space-lg); }
   .hero-container { align-items: center; }
+  /* Heading font-size handled by the base rule (clamp capped at 54px). */
   /* Break out to full screen width so mask percentages are relative to 100vw,
      not the container's padded content box (which was causing almost no visible fade). */
   .built-for-h-viewport {
@@ -336,4 +357,106 @@
     -webkit-mask-image: linear-gradient(to right, transparent 0%, black 80%, black 20%, transparent 100%);
   }
   .built-for-h-item { font-size: 16px; }
+}
+
+/* ── Two-column desktop layout (Figma 2057:663) ──────────────────────────────
+   Left column = heading → subtitle → buttons (Motion entrance).
+   Right column = built-for ticker above a sticky video (the scrub runway).
+   These only apply >1024px (the mobile branch renders ≤1024px, so none of these
+   selectors match there). */
+.hero-grid {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+}
+.hero-left-col {
+  /* Design proportion 493 : 947 (≈34% : 66%), not 50/50. flex-basis 0 + grow
+     ratio splits the row in that proportion at any width. */
+  flex: 493 1 0;
+  /* min-width:0 lets the nowrap <h1> overflow the column instead of forcing it
+     wider — the heading keeps its current width and spills past the boundary. */
+  min-width: 0;
+  display: flex; flex-direction: column;
+  gap: 32px;
+}
+/* Motion owns the desktop entrance — disable the CSS keyframe entrances so the
+   two don't double-animate (mobile keeps its CSS entrance). opacity:1 is the
+   graceful fallback; Motion's inline initial sets it to 0 then animates up. */
+.hero-left-col .hero-heading,
+.hero-left-col .hero-subtitle,
+.hero-left-col .hero-buttons,
+.hero-right-col .hero-built-for,
+.hero-right-col .hero-video-card { animation: none; opacity: 1; }
+
+/* Heading a touch smaller than --fs-hero (6.5vw → 6vw, ~7%) so the widest line
+   clears the video in the two-column layout. Tune the vw value to taste. */
+.hero-left-col .hero-heading { font-size: clamp(54px, 6vw, 96px); }
+
+/* Desktop built-for marquee — pure CSS (replaces the GSAP ticker). Translate by
+   exactly one ITEMS set (7 × (14px item + 8px gap) = 154px); the repeat in
+   TRIPLED makes the loop seamless. translate3d keeps it on one compositor layer
+   across the boundary, avoiding the 1-frame snap a plain loop would show. */
+.built-for-track { animation: built-for-scroll-v 14.4s linear 1.35s infinite; }
+@keyframes built-for-scroll-v {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(0, -154px, 0); }
+}
+.hero-left {
+  display: flex; flex-direction: column; gap: 20px;
+  max-width: 296px;
+}
+.hero-left .hero-subtitle { margin-bottom: 0; max-width: 296px; }
+.hero-left-col .hero-buttons { grid-template-columns: 142px 142px; }
+/* +1px top padding nudges the label down to optical-center (it sits high). */
+.hero-left-col .hero-buttons .btn { padding: 13px 18px 12px; }
+
+.hero-right-col {
+  position: relative;          /* offsetParent for the video slot's offsetTop */
+  flex: 947 1 0;               /* design proportion 493 : 947 */
+  min-width: 0;
+  display: flex; flex-direction: column; align-items: flex-end;
+  /* Scrub runway. JS (onRefreshInit) overwrites this with the exact measured
+     value on ScrollTrigger refresh; this is the first-paint fallback. */
+  min-height: calc(130vh + 634px);
+}
+.hero-right-col .hero-carousel-wrap {
+  transform: none;             /* drop the old top-row offset */
+  width: 298px;
+  flex-shrink: 0;
+}
+.hero-right-col .hero-video-card {
+  flex: 0 0 auto;
+  align-self: stretch;         /* full width of the right column (was right-aligned) */
+  width: 100%; max-width: 947px;
+  aspect-ratio: 947 / 532;
+  margin-left: 0;
+  margin-top: 0;               /* flush under the built-for ticker, no gap */
+}
+
+/* ── Tablet (768–1024px, e.g. portrait iPad) ──────────────────────────────
+   Mobile branch renders here. Side page padding stays mobile (--page-px), but
+   the Hero's internal spacing uses the desktop values, the heading scales
+   fluidly with width, and the video keeps the DESKTOP aspect (16:9-ish 947/532)
+   full-width. Only below 768px does it return to the square phone aspect. */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .hero-heading--mobile {
+    font-size: clamp(54px, 8vw, 96px);  /* fluid — stretches with width */
+    line-height: 0.85;
+    margin-bottom: 32px;                /* desktop heading → content gap */
+    width: 100%;                        /* span full width — drop the
+                                           align-items:center shrink-to-content */
+  }
+  /* Show the heading's line breaks on tablet → 3 lines:
+     "The future of" / "post-enrollment" / "healthcare." (hidden on phone). */
+  .hero-heading--mobile br { display: inline; }
+  .hero-subtitle--mobile {
+    margin-bottom: 20px;   /* desktop subtitle → buttons gap */
+    max-width: none;       /* drop the base .hero-subtitle 296px cap on tablet */
+  }
+  .hero-subtitle--mobile br { display: none; }  /* let it flow on full width */
+  .hero-mobile-video {
+    max-width: none;
+    aspect-ratio: 947 / 532;
+  }
 }

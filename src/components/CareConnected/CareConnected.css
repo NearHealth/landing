@@ -5,49 +5,281 @@
 .care-connected-card {
   position: relative;
   display: flex; align-items: center; justify-content: center;
-  width: min(1183px, 100%); aspect-ratio: 946 / 408;
+  /* Desktop 946×408; tablet shrinks proportionally with the screen. */
+  width: min(946px, calc(100vw - 2 * var(--page-px))); aspect-ratio: 946 / 408;
   margin: 0 auto;
   border-radius: var(--radius-pill);
   overflow: hidden;
-  background: transparent;
+  background: transparent;   /* centre is transparent — page bg shows through */
 }
-.care-connected-card h2 {
+.care-connected-card .nh-h2 {
   position: relative; z-index: 2;
-  font-family: var(--font-heading);
   font-size: 58px; font-weight: 400; letter-spacing: -0.03em;
+  text-align: center;
+  color: var(--dark);   /* dark text on the transparent centre (Figma) */
 }
-.lottie-bg {
+
+/* ── CTA gradient — CSS recreation of CTA_Gradient_*.lottie ──
+   In the Lottie the dark blobs were a MASK: transparent alpha in the centre,
+   leaving the cyan visible only as a halo around the edge. So here each blob is
+   a cyan RING (transparent centre → cyan → transparent), blurred, rotating
+   0→360° and pulsing (wide-short ↔ narrow-tall) over a 6s loop; blob B is half
+   a loop out of phase. The card centre stays transparent for the dark headline.
+   Pure GPU transforms — no canvas/WASM. */
+/* CTA pill glow — exact CSS port of CTA_Gradient.lottie (replaces the dotLottie).
+   Two cyan spheres sized 191.12% of the pill width (861 × pill-scale 2.10 / 946
+   ref), centred via negative margins, rotating + pulsing around their own centre
+   with the Lottie bezier baked into the cta-l1/cta-l2 keyframes. */
+.cta-pill-glow {
   position: absolute; inset: 0; z-index: 1;
-  width: 100%; height: 100%;
+  border-radius: inherit;
   overflow: hidden;
+  pointer-events: none;
 }
-.lottie-bg canvas {
-  width: 100% !important; height: 100% !important;
-  max-width: none !important; max-height: none !important;
-  background: transparent !important;
+.cta-pill-glow .cta-sphere {
+  position: absolute;
+  left: 50%; top: 50%;
+  /* width = 861/946 (=91.0148%) × scale. Vars are driven by the dev
+     GradientTuner; fallbacks are the baked production values. */
+  width: calc(91.0148% * var(--pg-scale, 1.59));
+  aspect-ratio: 1;
+  margin-left: calc(91.0148% * var(--pg-scale, 1.59) / -2);
+  margin-top: calc(91.0148% * var(--pg-scale, 1.59) / -2);
+  border-radius: 50%;
+  transform-origin: 50% 50%;
+  background: radial-gradient(50% 50% at 50% 50%,
+    rgba(94, 230, 253, 0) var(--pg-s1, 53%),
+    rgba(160, 240, 254, var(--pg-mid, 0.81)) var(--pg-s2, 78%),
+    #5EE6FD var(--pg-s3, 86%));
+  will-change: transform;
+}
+.cta-sphere--1 { animation: cta-l1 6s linear infinite; }
+.cta-sphere--2 { animation: cta-l2 6s linear infinite; }
+.care-connected.is-paused .cta-sphere { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) { .cta-sphere { animation: none; } }
+.cta-blob {
+  position: absolute; z-index: 1;
+  left: 50%; top: 50%;
+  width: 100%; aspect-ratio: 1;
+  pointer-events: none;
+  background: radial-gradient(circle,
+    rgba(94, 230, 253, 0) 0%,
+    rgba(94, 230, 253, 0) 50%,
+    rgba(94, 230, 253, 0.9) 76%,
+    rgba(94, 230, 253, 0) 100%);
+  filter: blur(40px);   /* soft glow; banding broken up by the noise dither below */
+  transform: translate(-50%, -50%) rotate(0deg) scale(1.32, 0.46);
+  will-change: transform;
+  animation: cta-blob 6s linear infinite;
+}
+.cta-blob--b { animation-delay: -3s; }
+@keyframes cta-blob {
+  0%   { transform: translate(-50%, -50%) rotate(0deg)   scale(1.32, 0.46); }
+  25%  { transform: translate(-50%, -50%) rotate(90deg)  scale(0.86, 1.12); }
+  50%  { transform: translate(-50%, -50%) rotate(180deg) scale(1.32, 0.46); }
+  75%  { transform: translate(-50%, -50%) rotate(270deg) scale(0.86, 1.12); }
+  100% { transform: translate(-50%, -50%) rotate(360deg) scale(1.32, 0.46); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cta-blob { animation: none; }
+}
+/* Stop the blurred rotating blobs from painting while the section is off-screen
+   (Safari keeps compositing a blur(40px) animation otherwise). */
+.care-connected.is-paused .cta-blob { animation-play-state: paused; }
+
+/* Dither — a tiny tiling SVG-noise overlay that breaks up the colour banding
+   the blurred radial gradients show on 8-bit displays. Sits over the blobs
+   (z-index 1) but under the headline (z-index 2). */
+.care-connected-card::after {
+  content: '';
+  position: absolute; inset: 0; z-index: 1;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 140px 140px;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
 }
 
-/* ── Mobile + Tablet (≤1024px) ── */
-@media (max-width: 1024px) {
-  .care-connected-card {
-    width: calc(100vw - 16px);
-    max-width: none;
-    height: auto;
-    aspect-ratio: 946 / 408;
-    border-radius: var(--radius-pill);
-    margin-left: calc(-1 * var(--page-px) + 8px);
-    margin-right: calc(-1 * var(--page-px) + 8px);
-  }
-}
+/* Tablet shrinks proportionally via the base width: min(946px, 100vw − gutters).
+   No separate tablet rule needed. */
 
-/* ── Mobile (≤480px) ── */
+/* ── Mobile (≤480px) — fixed 380×208 pill. ── */
 @media (max-width: 480px) {
   .care-connected { padding: var(--space-section-mobile) 0 0; }
   .care-connected .container { padding: 0; }
   .care-connected-card {
+    width: 380px;
+    max-width: calc(100vw - 32px);
+    aspect-ratio: 380 / 208;
     margin: 0 auto;
-    transform: scale(1.4);
-    transform-origin: center;
   }
-  .care-connected-card h2 { font-size: 32px; transform: scale(calc(1/1.4)); }
+  .care-connected-card .nh-h2 { font-size: 32px; }
+
+  /* Mobile pill glow — baked production values below; tunable independently of
+     desktop via the dev GradientTuner's "Pill · mobile" group (--pgm-*). */
+  .cta-pill-glow .cta-sphere {
+    width: calc(91.0148% * var(--pgm-scale, 1.39));
+    margin-left: calc(91.0148% * var(--pgm-scale, 1.39) / -2);
+    margin-top: calc(91.0148% * var(--pgm-scale, 1.39) / -2);
+    background: radial-gradient(50% 50% at 50% 50%,
+      rgba(94, 230, 253, 0) var(--pgm-s1, 53%),
+      rgba(160, 240, 254, var(--pgm-mid, 0.32)) var(--pgm-s2, 75%),
+      #5EE6FD var(--pgm-s3, 94%));
+  }
+  /* Dim the mobile pill glow to match the toned-down hover glow (opacity 0.5). */
+  .cta-pill-glow { opacity: 0.5; }
+}
+
+
+/* ── CTA pill keyframes (baked from CTA_Gradient.lottie layers 2 & 4) ── */
+@keyframes cta-l1 {
+  0.0% { transform: rotate(59.08deg) scale(1.0140, 0.9051); }
+  1.389% { transform: rotate(72.13deg) scale(0.9770, 0.9579); }
+  2.778% { transform: rotate(84.64deg) scale(0.9427, 1.0068); }
+  4.167% { transform: rotate(96.01deg) scale(0.9126, 1.0499); }
+  5.556% { transform: rotate(106.09deg) scale(0.8881, 1.0848); }
+  6.944% { transform: rotate(114.95deg) scale(0.8711, 1.1090); }
+  8.333% { transform: rotate(122.74deg) scale(0.8635, 1.1199); }
+  9.722% { transform: rotate(129.61deg) scale(0.8658, 1.1166); }
+  11.111% { transform: rotate(135.69deg) scale(0.8762, 1.1018); }
+  12.5% { transform: rotate(141.10deg) scale(0.8946, 1.0756); }
+  13.889% { transform: rotate(145.94deg) scale(0.9204, 1.0387); }
+  15.278% { transform: rotate(150.27deg) scale(0.9529, 0.9923); }
+  16.667% { transform: rotate(154.17deg) scale(0.9906, 0.9385); }
+  18.056% { transform: rotate(157.69deg) scale(1.0319, 0.8796); }
+  19.444% { transform: rotate(160.86deg) scale(1.0747, 0.8184); }
+  20.833% { transform: rotate(163.73deg) scale(1.1174, 0.7575); }
+  22.222% { transform: rotate(166.33deg) scale(1.1582, 0.6994); }
+  23.611% { transform: rotate(168.68deg) scale(1.1957, 0.6459); }
+  25.0% { transform: rotate(170.81deg) scale(1.2290, 0.5983); }
+  26.389% { transform: rotate(172.73deg) scale(1.2575, 0.5577); }
+  27.778% { transform: rotate(174.46deg) scale(1.2808, 0.5243); }
+  29.167% { transform: rotate(176.02deg) scale(1.2990, 0.4984); }
+  30.556% { transform: rotate(177.43deg) scale(1.3120, 0.4799); }
+  31.944% { transform: rotate(178.68deg) scale(1.3199, 0.4685); }
+  33.333% { transform: rotate(179.79deg) scale(1.3232, 0.4639); }
+  34.722% { transform: rotate(180.88deg) scale(1.3213, 0.4666); }
+  36.111% { transform: rotate(182.10deg) scale(1.3136, 0.4775); }
+  37.5% { transform: rotate(183.45deg) scale(1.3004, 0.4964); }
+  38.889% { transform: rotate(184.96deg) scale(1.2820, 0.5226); }
+  40.278% { transform: rotate(186.62deg) scale(1.2588, 0.5557); }
+  41.667% { transform: rotate(188.47deg) scale(1.2314, 0.5948); }
+  43.056% { transform: rotate(190.50deg) scale(1.2003, 0.6393); }
+  44.444% { transform: rotate(192.74deg) scale(1.1660, 0.6881); }
+  45.833% { transform: rotate(195.21deg) scale(1.1294, 0.7404); }
+  47.222% { transform: rotate(197.93deg) scale(1.0913, 0.7949); }
+  48.611% { transform: rotate(200.93deg) scale(1.0524, 0.8503); }
+  50.0% { transform: rotate(204.24deg) scale(1.0139, 0.9052); }
+  51.389% { transform: rotate(207.91deg) scale(0.9769, 0.9581); }
+  52.778% { transform: rotate(211.97deg) scale(0.9426, 1.0070); }
+  54.167% { transform: rotate(216.49deg) scale(0.9125, 1.0500); }
+  55.556% { transform: rotate(221.53deg) scale(0.8881, 1.0848); }
+  56.944% { transform: rotate(227.19deg) scale(0.8711, 1.1090); }
+  58.333% { transform: rotate(233.55deg) scale(0.8635, 1.1199); }
+  59.722% { transform: rotate(240.76deg) scale(0.8658, 1.1166); }
+  61.111% { transform: rotate(248.96deg) scale(0.8764, 1.1015); }
+  62.5% { transform: rotate(258.32deg) scale(0.8952, 1.0747); }
+  63.889% { transform: rotate(269.01deg) scale(0.9219, 1.0366); }
+  65.278% { transform: rotate(281.03deg) scale(0.9555, 0.9886); }
+  66.667% { transform: rotate(294.08deg) scale(0.9946, 0.9328); }
+  68.056% { transform: rotate(307.31deg) scale(1.0372, 0.8720); }
+  69.444% { transform: rotate(319.55deg) scale(1.0812, 0.8092); }
+  70.833% { transform: rotate(329.94deg) scale(1.1244, 0.7475); }
+  72.222% { transform: rotate(338.24deg) scale(1.1652, 0.6894); }
+  73.611% { transform: rotate(344.67deg) scale(1.2022, 0.6366); }
+  75.0% { transform: rotate(349.55deg) scale(1.2345, 0.5904); }
+  76.389% { transform: rotate(353.21deg) scale(1.2618, 0.5515); }
+  77.778% { transform: rotate(355.88deg) scale(1.2839, 0.5199); }
+  79.167% { transform: rotate(357.76deg) scale(1.3009, 0.4957); }
+  80.556% { transform: rotate(359.01deg) scale(1.3129, 0.4785); }
+  81.944% { transform: rotate(359.72deg) scale(1.3202, 0.4681); }
+  83.333% { transform: rotate(359.99deg) scale(1.3232, 0.4639); }
+  84.722% { transform: rotate(360.44deg) scale(1.3209, 0.4672); }
+  86.111% { transform: rotate(362.17deg) scale(1.3112, 0.4810); }
+  87.5% { transform: rotate(365.14deg) scale(1.2937, 0.5059); }
+  88.889% { transform: rotate(369.26deg) scale(1.2686, 0.5417); }
+  90.278% { transform: rotate(374.45deg) scale(1.2363, 0.5878); }
+  91.667% { transform: rotate(380.57deg) scale(1.1980, 0.6425); }
+  93.056% { transform: rotate(387.49deg) scale(1.1557, 0.7030); }
+  94.444% { transform: rotate(395.00deg) scale(1.1124, 0.7647); }
+  95.833% { transform: rotate(402.80deg) scale(1.0722, 0.8221); }
+  97.222% { transform: rotate(410.36deg) scale(1.0397, 0.8684); }
+  98.611% { transform: rotate(416.65deg) scale(1.0194, 0.8975); }
+  100.0% { transform: rotate(419.00deg) scale(1.0140, 0.9051); }
+}
+
+@keyframes cta-l2 {
+  0.0% { transform: rotate(0.00deg) scale(1.3232, 0.4638); }
+  1.389% { transform: rotate(0.19deg) scale(1.3202, 0.4681); }
+  2.778% { transform: rotate(0.82deg) scale(1.3114, 0.4807); }
+  4.167% { transform: rotate(1.95deg) scale(1.2971, 0.5011); }
+  5.556% { transform: rotate(3.69deg) scale(1.2777, 0.5287); }
+  6.944% { transform: rotate(6.19deg) scale(1.2537, 0.5631); }
+  8.333% { transform: rotate(9.60deg) scale(1.2255, 0.6033); }
+  9.722% { transform: rotate(14.14deg) scale(1.1937, 0.6487); }
+  11.111% { transform: rotate(20.11deg) scale(1.1589, 0.6983); }
+  12.5% { transform: rotate(27.78deg) scale(1.1219, 0.7511); }
+  13.889% { transform: rotate(37.41deg) scale(1.0835, 0.8059); }
+  15.278% { transform: rotate(48.91deg) scale(1.0447, 0.8614); }
+  16.667% { transform: rotate(61.69deg) scale(1.0064, 0.9160); }
+  18.056% { transform: rotate(74.70deg) scale(0.9698, 0.9682); }
+  19.444% { transform: rotate(87.01deg) scale(0.9362, 1.0161); }
+  20.833% { transform: rotate(98.13deg) scale(0.9071, 1.0576); }
+  22.222% { transform: rotate(107.96deg) scale(0.8841, 1.0906); }
+  23.611% { transform: rotate(116.59deg) scale(0.8688, 1.1124); }
+  25.0% { transform: rotate(124.18deg) scale(0.8632, 1.1203); }
+  26.389% { transform: rotate(130.88deg) scale(0.8672, 1.1146); }
+  27.778% { transform: rotate(136.82deg) scale(0.8793, 1.0974); }
+  29.167% { transform: rotate(142.11deg) scale(0.8992, 1.0690); }
+  30.556% { transform: rotate(146.84deg) scale(0.9264, 1.0301); }
+  31.944% { transform: rotate(151.09deg) scale(0.9601, 0.9821); }
+  33.333% { transform: rotate(154.91deg) scale(0.9986, 0.9271); }
+  34.722% { transform: rotate(158.35deg) scale(1.0404, 0.8675); }
+  36.111% { transform: rotate(161.46deg) scale(1.0834, 0.8061); }
+  37.5% { transform: rotate(164.28deg) scale(1.1258, 0.7456); }
+  38.889% { transform: rotate(166.82deg) scale(1.1660, 0.6883); }
+  40.278% { transform: rotate(169.13deg) scale(1.2027, 0.6358); }
+  41.667% { transform: rotate(171.21deg) scale(1.2351, 0.5896); }
+  43.056% { transform: rotate(173.09deg) scale(1.2626, 0.5504); }
+  44.444% { transform: rotate(174.79deg) scale(1.2849, 0.5185); }
+  45.833% { transform: rotate(176.32deg) scale(1.3020, 0.4941); }
+  47.222% { transform: rotate(177.69deg) scale(1.3140, 0.4771); }
+  48.611% { transform: rotate(178.91deg) scale(1.3210, 0.4671); }
+  50.0% { transform: rotate(180.00deg) scale(1.3232, 0.4638); }
+  51.389% { transform: rotate(181.11deg) scale(1.3202, 0.4681); }
+  52.778% { transform: rotate(182.36deg) scale(1.3114, 0.4807); }
+  54.167% { transform: rotate(183.74deg) scale(1.2971, 0.5011); }
+  55.556% { transform: rotate(185.28deg) scale(1.2777, 0.5287); }
+  56.944% { transform: rotate(186.98deg) scale(1.2537, 0.5631); }
+  58.333% { transform: rotate(188.86deg) scale(1.2255, 0.6033); }
+  59.722% { transform: rotate(190.93deg) scale(1.1937, 0.6487); }
+  61.111% { transform: rotate(193.21deg) scale(1.1589, 0.6983); }
+  62.5% { transform: rotate(195.73deg) scale(1.1219, 0.7511); }
+  63.889% { transform: rotate(198.51deg) scale(1.0835, 0.8059); }
+  65.278% { transform: rotate(201.57deg) scale(1.0447, 0.8614); }
+  66.667% { transform: rotate(204.95deg) scale(1.0064, 0.9160); }
+  68.056% { transform: rotate(208.69deg) scale(0.9698, 0.9682); }
+  69.444% { transform: rotate(212.84deg) scale(0.9362, 1.0161); }
+  70.833% { transform: rotate(217.46deg) scale(0.9071, 1.0577); }
+  72.222% { transform: rotate(222.61deg) scale(0.8841, 1.0906); }
+  73.611% { transform: rotate(228.40deg) scale(0.8688, 1.1124); }
+  75.0% { transform: rotate(234.92deg) scale(0.8632, 1.1203); }
+  76.389% { transform: rotate(242.31deg) scale(0.8673, 1.1145); }
+  77.778% { transform: rotate(250.73deg) scale(0.8795, 1.0971); }
+  79.167% { transform: rotate(260.35deg) scale(0.8999, 1.0679); }
+  80.556% { transform: rotate(271.31deg) scale(0.9281, 1.0278); }
+  81.944% { transform: rotate(283.57deg) scale(0.9629, 0.9780); }
+  83.333% { transform: rotate(296.75deg) scale(1.0029, 0.9209); }
+  84.722% { transform: rotate(309.88deg) scale(1.0460, 0.8595); }
+  86.111% { transform: rotate(321.79deg) scale(1.0900, 0.7967); }
+  87.5% { transform: rotate(331.76deg) scale(1.1328, 0.7355); }
+  88.889% { transform: rotate(339.66deg) scale(1.1729, 0.6783); }
+  90.278% { transform: rotate(345.76deg) scale(1.2090, 0.6268); }
+  91.667% { transform: rotate(350.37deg) scale(1.2404, 0.5821); }
+  93.056% { transform: rotate(353.81deg) scale(1.2666, 0.5446); }
+  94.444% { transform: rotate(356.31deg) scale(1.2877, 0.5145); }
+  95.833% { transform: rotate(358.06deg) scale(1.3037, 0.4917); }
+  97.222% { transform: rotate(359.19deg) scale(1.3147, 0.4759); }
+  98.611% { transform: rotate(359.81deg) scale(1.3212, 0.4668); }
+  100.0% { transform: rotate(360.00deg) scale(1.3232, 0.4638); }
 }

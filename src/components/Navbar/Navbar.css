@@ -8,11 +8,46 @@
   position: fixed; top: 0; left: 0; z-index: 1000;
   display: flex; align-items: center;
   width: 100%; height: var(--navbar-h);
+  /* Whole-bar difference blend: .navbar is position:fixed → it forms a stacking
+     context, so the blend MUST live here, not on the text — a blend on the
+     children would only blend against the bar's own contents and read white.
+     The light look (Figma 70:481) is achieved by tinting .navbar-blur white
+     (a sibling OUTSIDE this blend), which lifts the backdrop the bar inverts
+     against. The cyan CTA escapes the blend by living outside .navbar entirely
+     (see .navbar-cta-fixed). */
   isolation: isolate;
   mix-blend-mode: difference;
   transform: translateY(0);
-  transition: transform 0.35s var(--ease);
-  will-change: transform;
+  transition: transform 0.35s var(--ease-out);
+}
+
+/* ── Hide on scroll-down / reveal on scroll-up (client 0206 item 5) ──
+   `navbar--hidden` is toggled on .navbar in Navbar.jsx. The three fixed sibling
+   layers (.navbar-blur, .navbar-edge, .navbar-cta-fixed) are rendered right
+   after .navbar in App.jsx, so the `~` combinator slides them up together.
+   One uniform translate by the bar height clears every layer (the edge hairline
+   and the CTA both sit within that band). */
+.navbar.navbar--hidden,
+.navbar--hidden ~ .navbar-blur,
+.navbar--hidden ~ .navbar-edge,
+.navbar--hidden ~ .navbar-cta-fixed {
+  transform: translateY(calc(var(--navbar-h) * -1));
+}
+
+/* Reduced motion: no slide. Fade the bar out in place and drop pointer events
+   on the (now-invisible) CTA so it isn't clickable while hidden. */
+@media (prefers-reduced-motion: reduce) {
+  .navbar, .navbar-blur, .navbar-edge, .navbar-cta-fixed {
+    transition: opacity 0.2s var(--ease);
+  }
+  .navbar.navbar--hidden,
+  .navbar--hidden ~ .navbar-blur,
+  .navbar--hidden ~ .navbar-edge,
+  .navbar--hidden ~ .navbar-cta-fixed {
+    transform: none;
+    opacity: 0;
+    pointer-events: none;
+  }
 }
 
 /* Sibling blur plate. Rendered just below the navbar (z-index 999 vs
@@ -23,49 +58,76 @@
 .navbar-blur {
   position: fixed; left: 0; top: 0; z-index: 999;
   width: 100%; height: var(--navbar-h);
-  backdrop-filter: blur(20px);
+  /* Frosted glass (agency reference, 0206 item 6): blur + saturation boosts the
+     colour of the page showing through. Lives here, OUTSIDE the difference blend,
+     so it renders literally. */
+  -webkit-backdrop-filter: blur(20px) saturate(150%);
+  backdrop-filter: blur(20px) saturate(150%);
+  /* Glass top edge: inset hairline = the bright glass kerb. No drop shadow
+     (removed per client). A real all-side border would draw artefacts on a
+     full-bleed bar; the bottom edge stays the existing .navbar-edge hairline. */
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
+  /* Near-zero fill (Figma nav frames 2132:3768 / 2132:3381 use rgba(255,255,255,
+     0.01)). A heavier white tint here lifts the backdrop the navbar difference-
+     blends against, so on DARK sections difference(white-text, grey) → grey →
+     the links blend into the bar. Keeping it ~transparent lets the blend read
+     the real page: dark text on light sections, light text on dark sections.
+     The frost comes from backdrop-filter (blur+saturate), not a white wash. */
+  background: rgba(255, 255, 255, 0.01);
   pointer-events: none;
   transform: translateY(0);
-  transition: transform 0.35s var(--ease);
-  will-change: transform;
+  transition: transform 0.35s var(--ease-out);
 }
 
-/* Real white hairline at the bottom of the navbar. Kept as a sibling of
-   .navbar (see App.jsx) so it sits OUTSIDE the navbar's mix-blend-mode and
-   renders as actual white instead of being inverted to black. Top offset =
-   navbar height - 1px so the line aligns with the navbar's bottom edge. */
+/* Soft glass sheen — a light gradient over the top of the frosted plate
+   (agency highlight overlay). Outside the difference blend, so it renders as a
+   literal highlight rather than inverting. */
+.navbar-blur::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom,
+    rgba(255, 255, 255, 0.18) 0%,
+    rgba(255, 255, 255, 0.04) 45%,
+    rgba(255, 255, 255, 0) 100%);
+  pointer-events: none;
+}
+
+/* Bottom edge = two stacked hairlines, both siblings of .navbar (see App.jsx)
+   so they sit OUTSIDE the navbar's mix-blend-mode and render as literal colours
+   (no inversion). White 1px sits just above a dark 0.5px line; the dark line is
+   flush against the navbar's bottom edge (the border in Figma 70:481). */
 .navbar-edge {
-  position: fixed; left: 0; top: 65px; z-index: 1001;
+  /* white 1px line, just above the dark bottom line (64.5–65.5px) */
+  position: fixed; left: 0; top: 64.5px; z-index: 1001;
   width: 100%; height: 1px;
   background: #FFFFFF;
   pointer-events: none;
   transform: translateY(0);
-  transition: transform 0.35s var(--ease);
-  will-change: transform;
+  transition: transform 0.35s var(--ease-out);
 }
-/* Glass plate — sibling layer that holds the backdrop-filter, base tint,
-   border, shadow, AND the soft highlight gradient (its own ::before). It must
-   stay BELOW the nav content in paint order, so we leave it as the first
-   child without z-index. */
-/* All RGB values inverted (255 - original) so that the parent .navbar's
-   `mix-blend-mode: difference` against the white body renders them as the
-   originals: white→white tint, etc. Alpha values are unchanged.
-   `backdrop-filter` is intentionally NOT here — see .navbar-blur sibling
-   defined below. Putting backdrop-filter on a child of a blended parent
-   forces a separate compositing layer that breaks both the filter and the
-   blend visually. */
+/* dark 0.5px line directly BELOW the white line. With the white line at
+   top:64.5px, `top: 100%` puts this at 65.5–66px — flush against the navbar's
+   bottom edge (Figma 70:481 border, rgba(10,28,30,0.2)). Drawn as a ::before so
+   no extra DOM sibling is needed; inherits the slide transition via its host. */
+.navbar-edge::before {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  top: 100%;
+  height: 0.5px;
+  background: rgba(10, 28, 30, 0.2);
+}
+/* Glass plate — sibling layer below the nav content (first child, no z-index).
+   Flat, near-transparent surface per the glass-effect Figma frame. Pre-inverted
+   (rgba(0,0,0,0.01)) because the whole bar is difference-blended; the frost /
+   lightness comes from .navbar-blur, where the blur also lives (backdrop-filter
+   on a child of a blended parent would force a separate layer and break both
+   the filter and the blend). */
 .navbar__glass {
   position: absolute; inset: 0;
-  background: rgba(0, 0, 0, 0.08);
-  /* Real white edge is drawn by .navbar-edge (sibling to .navbar in App.jsx)
-     so it escapes the parent's difference blend. */
-  box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.18);
-  pointer-events: none;
-}
-.navbar__glass::before {
-  content: '';
-  position: absolute; inset: 0;
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0.22) 0%, rgba(0, 0, 0, 0) 60%);
+  background: rgba(0, 0, 0, 0.01);
+  box-shadow: none;
   pointer-events: none;
 }
 
@@ -88,7 +150,8 @@
    mix-blend-mode: difference the same way the text does. */
 .nav-logo  {
   display: flex; align-items: center; flex-shrink: 0;
-  color: var(--nav-link-color, #ECF5F2);
+  /* pure white source (Figma text-white); inverts via the whole-bar blend */
+  color: var(--nav-link-color, #FFFFFF);
 }
 .nav-links { display: flex; flex: 1; justify-content: space-evenly; margin: 0; }
 /* Source color is the pre-difference value; the navbar's mix-blend-mode: difference
@@ -99,19 +162,25 @@
   font-family: 'Gilroy-Semibold', sans-serif;
   font-size: var(--fs-btn); font-weight: 600; line-height: 1;
   letter-spacing: 0.08em; text-transform: uppercase;
-  padding: 10px 18px;
-  color: var(--nav-link-color, #ECF5F2);
+  /* +1.5px top padding (vs 10/18) nudges the hover-pill / label down */
+  padding: 11.5px 18px 10px;
+  color: var(--nav-link-color, #FFFFFF);
   transition: background 0.25s var(--ease), color 0.3s var(--ease);
 }
 .nav-link:hover, .nav-link:active {
-  background: #9C9C9C26;
+  /* 15% white (Figma nav 2132:3397) instead of the faint 7.5% grey — under the
+     whole-bar difference blend this reads as a visible pill on BOTH light and
+     dark sections (the old grey vanished on dark backgrounds). */
+  background: rgba(255, 255, 255, 0.15);
 }
 /* Invisible placeholder — keeps the flex space so the nav-links stay
    centred. The visible button is .navbar-cta-fixed in App.jsx, a sibling
    of .navbar that escapes mix-blend-mode: difference. */
 .navbar .nav-cta {
   flex-shrink: 0;
-  padding: 10px 18px;
+  /* match the visible .navbar-cta-fixed padding so the reserved flex slot
+     equals the real button width */
+  padding: 12px 13px 13px 13px;
   border-radius: var(--radius-card);
   font-size: var(--fs-btn); font-weight: 600; line-height: 1;
   letter-spacing: 0.08em; text-transform: uppercase;
@@ -125,9 +194,13 @@
   position: fixed;
   top: 16px; right: max(var(--page-px), calc((100vw - 1440px) / 2));
   z-index: 1002;
-  display: inline-flex; align-items: center;
-  padding: 10px 18px;
-  border: 1px solid var(--accent);
+  display: inline-flex; align-items: center; justify-content: center;
+  text-align: center;
+  /* padding top/right/bottom/left = 12/13/11.5/13 */
+  padding: 12px 13px 11.5px 13px;
+  /* flat cyan fill (Figma) — no border; box-sizing:border-box keeps the
+     outer height unchanged */
+  border: none;
   border-radius: var(--radius-card);
   background: var(--accent);
   color: var(--dark);
@@ -136,10 +209,13 @@
   text-decoration: none;
   cursor: pointer;
   transform: translateY(0);
-  transition: transform 0.35s var(--ease), background 0.25s var(--ease), border-color 0.25s var(--ease);
+  /* transform at 0.35s ease-out so the CTA slides up in lockstep with the
+     rest of the bar (the :active press scale shares this timing). */
+  transition: transform 0.35s var(--ease-out), background 0.25s var(--ease), border-color 0.25s var(--ease);
   will-change: transform;
 }
 .navbar-cta-fixed:hover { background: var(--accent-light); border-color: var(--accent-light); }
+.navbar-cta-fixed:active { transform: translateY(0) scale(0.97); }
 .mobile-menu-btn {
   display: none; flex-direction: column; gap: 5px;
   padding: 4px;
@@ -151,8 +227,16 @@
   display: block;
   width: 24px; height: 2px;
   background: #F5E3E1;
-  transition: all 0.3s;
+  transition: transform 0.3s var(--ease), background 0.2s var(--ease), opacity 0.2s var(--ease);
 }
+
+/* Pin the logo to the Figma desktop size (103×27px) instead of the fluid clamp
+   in NearBrand.css, for pixel-accuracy at the 1440 design width. Scoped to
+   .navbar so the shared NearBrand primitive (footer `lg`, etc.) is untouched.
+   Matches the values NearBrand already uses at ≤1024px. */
+.navbar .near-brand--sm { gap: 9px; }
+.navbar .near-brand--sm .near-brand__icon { height: 27px; }
+.navbar .near-brand--sm .near-brand__wordmark svg { height: 18px; }
 
 /* ── Mobile + Tablet (≤1024px) ── */
 @media (max-width: 1024px) {

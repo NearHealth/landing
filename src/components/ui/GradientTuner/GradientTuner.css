@@ -1,0 +1,108 @@
+/* Dev gradient tuner — toggle button (bottom, left of the Grid button) + panel. */
+.gt-toggle {
+  position: fixed;
+  bottom: 16px;
+  right: 92px;
+  z-index: 9999;
+  padding: 8px 14px;
+  border: 1px solid rgba(10, 28, 30, 0.15);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(8px);
+  font: 600 11px/1 var(--font-heading, system-ui, sans-serif);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #0a1c1e;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+.gt-toggle:hover { transform: translateY(-1px); }
+.gt-toggle.is-on { background: #5ee6fd; border-color: #5ee6fd; }
+
+.gt-panel {
+  position: fixed;
+  bottom: 56px;
+  right: 16px;
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 240px;
+  max-height: 70vh;
+  overflow-y: auto;
+  padding: 16px;
+  border-radius: 14px;
+  background: rgba(10, 28, 30, 0.92);
+  backdrop-filter: blur(10px);
+  color: #fff;
+  font-family: system-ui, sans-serif;
+}
+.gt-group {
+  display: flex; flex-direction: column; gap: 9px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+/* ── Collapsible group header: title toggle on the left, Copy on the right ── */
+.gt-group-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.gt-group-toggle {
+  display: flex; align-items: center; gap: 6px;
+  flex: 1;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #fff;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  text-align: left;
+  cursor: pointer;
+}
+.gt-caret {
+  display: inline-block;
+  font-size: 9px;
+  opacity: 0.55;
+  transition: transform 0.15s ease;
+}
+.gt-group.is-open .gt-caret { transform: rotate(90deg); }
+.gt-copy {
+  flex: none;
+  padding: 4px 9px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 7px;
+  background: transparent;
+  color: #fff;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.gt-copy:hover { background: rgba(255, 255, 255, 0.08); }
+.gt-group-body { display: flex; flex-direction: column; gap: 9px; margin-top: 2px; }
+.gt-row { display: flex; flex-direction: column; gap: 4px; font-size: 12px; }
+.gt-row span { display: flex; justify-content: space-between; opacity: 0.75; }
+.gt-row b { font-weight: 700; opacity: 1; }
+.gt-row input[type='range'] { width: 100%; accent-color: #5ee6fd; }
+.gt-reset {
+  padding: 7px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  background: transparent;
+  color: #fff;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.gt-reset:hover { background: rgba(255, 255, 255, 0.08); }
+
+/* ── Mobile — keep the panel within the viewport so the pill can be tuned
+   on a phone (collapsed dropdowns keep it short). ── */
+@media (max-width: 480px) {
+  .gt-panel {
+    left: 16px;
+    right: 16px;
+    width: auto;
+    max-height: 60vh;
+  }
+}

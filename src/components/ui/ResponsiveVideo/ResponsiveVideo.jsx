@@ -1,7 +1,9 @@
 import { asset } from '../../../utils/assetPath'
 
-const MOBILE_MEDIA = '(max-width: 767px)'
-const DESKTOP_MEDIA = '(min-width: 768px)'
+// Mobile video is phones-only (≤480); tablets and up get the desktop clip
+// (client 0206 item 4 — "use the desktop video on tablets in both cases").
+const MOBILE_MEDIA = '(max-width: 480px)'
+const DESKTOP_MEDIA = '(min-width: 481px)'
 
 /**
  * Video that switches source based on viewport via native <source media>.

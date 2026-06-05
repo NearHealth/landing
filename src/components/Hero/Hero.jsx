@@ -1,182 +1,187 @@
-import { useEffect, useRef } from 'react'
-import gsap from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useLayoutEffect, useRef } from 'react'
+import { motion, useScroll, useTransform, useReducedMotion } from 'motion/react'
 import useIsMobile from '../../hooks/useIsMobile'
 import { BREAKPOINT_TABLET, NAVBAR_STICKY_OFFSET } from '../../utils/layout'
+import { softVariants } from '../../utils/motion'
 import ResponsiveVideo from '../ui/ResponsiveVideo/ResponsiveVideo'
 import BuiltForCarousel from './BuiltForCarousel'
 import './Hero.css'
 
-gsap.registerPlugin(ScrollTrigger)
+// ── Motion entrance (staggered fade-up). Same variants drive BOTH columns so
+// the right side appears exactly like the left. ──
+const heroContainer = { visible: { transition: { staggerChildren: 0.1, delayChildren: 0.08 } } }
+const heroItem = {
+  hidden: { opacity: 0, y: 8 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.65, ease: [0.16, 1, 0.3, 1] } },
+}
+
+// Scrub tuning (mirrors the previous GSAP values).
+const SCRUB_VH = 0.6      // scrub scroll distance as a fraction of viewport height
+const EXPAND_FRAC = 0.538 // expand over this fraction of the scrub, then hold
+const TAIL_GAP = 120      // px gap below the expanded card before CareJourney
+const clamp01 = (v) => (v < 0 ? 0 : v > 1 ? 1 : v)
 
 export default function Hero() {
   const isMobile = useIsMobile()
-  const bottomRowRef = useRef(null)
-  const cardRef = useRef(null)
-  const headingRef = useRef(null)
-  const carouselWrapRef = useRef(null)
-  const leftRef = useRef(null)
+  const reduce = useReducedMotion()
+
+  const heroRef = useRef(null)
+  const rightColRef = useRef(null)   // scrub runway (was bottomRowRef)
+  const slotRef = useRef(null)       // .hero-video-card — never transformed; measured for geometry
   const mobileVideoRef = useRef(null)
 
-  useEffect(() => {
-    if (isMobile) return
-    if (typeof window === 'undefined') return
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    // Skip the scrub on tablet width: layout collapses to a column at <=1024px
-    if (window.innerWidth <= BREAKPOINT_TABLET) return
+  // Geometry recomputed on layout + resize; the transforms read it each frame
+  // (function form), so resizing needs no transform re-creation.
+  const geom = useRef(null)
+  const mgeom = useRef(null)
 
-    const row = bottomRowRef.current
-    const card = cardRef.current
-    if (!row || !card) return
-    const heroEl = row.closest('.hero')
+  const { scrollY } = useScroll()
 
-    const targets = { dx: 0, dy: 0, w: 0, h: 0, w0: 0, h0: 0 }
-    const fadeTargets = [headingRef.current, carouselWrapRef.current, leftRef.current].filter(Boolean)
+  // ── Desktop: expand the video from its natural box → a centered,
+  // viewport-filling box, and fade the surrounding text out in parallel. ──
+  const dExpand = (y) => {
+    const g = geom.current
+    return g ? clamp01((y - g.start) / (g.expandEnd - g.start)) : 0
+  }
+  // Always return a CONCRETE size once geometry is measured — never undefined.
+  // Returning undefined at rest left a STALE inline width on the element: Framer
+  // skips applying an undefined motion value, so the last EXPANDED width stuck
+  // instead of clearing. On a fast scroll back to top the width jumps from a large
+  // value straight past p=0 in one frame, that big width stays, and the left-
+  // anchored inner overflows to the RIGHT ("video won't take the container width").
+  // At rest dExpand=0 → width=w0 / height=h0, exactly the slot box, so the inner
+  // always lands flush with zero reliance on a CSS 100% fallback. g.w0/g.h0 are
+  // refreshed by measure() on resize (the slot is never transformed, so its size
+  // only changes on resize), so this stays responsive; reading geom instead of a
+  // per-frame getBoundingClientRect avoids a forced reflow on the hottest scroll
+  // animation on the page.
+  const cardW = useTransform(scrollY, (y) => {
+    const g = geom.current
+    return g ? g.w0 + (g.wFull - g.w0) * dExpand(y) : undefined
+  })
+  const cardH = useTransform(scrollY, (y) => {
+    const g = geom.current
+    return g ? g.h0 + (g.hFull - g.h0) * dExpand(y) : undefined
+  })
+  const cardX = useTransform(scrollY, (y) => { const g = geom.current; return g ? g.dx * dExpand(y) : 0 })
+  const cardY = useTransform(scrollY, (y) => { const g = geom.current; return g ? g.dy * dExpand(y) : 0 })
+  // Left block (heading + subtitle/buttons) dissolves by opacity from the very
+  // start of scroll — fully faded after half a viewport, before the card sticks.
+  const textFade = useTransform(scrollY, (y) => {
+    const g = geom.current
+    return g ? 1 - clamp01(y / g.fadeLen) : 1
+  })
 
-    const ctx = gsap.context(() => {
-      // The visible inner card grows from its natural pixel size → a viewport-
-      // sized rect with equal padding on all four sides. We animate real
-      // width/height (not transform: scale) so the inner <video>'s box ends
-      // up at the right aspect ratio — object-fit: cover then crops cleanly
-      // instead of the entire scaled box being stretched.
-      // The first 0.7 of the timeline runs the resize; the remaining 0.6
-      // is an empty hold that keeps the scrub pinned at full size.
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: row,
-          start: 'top top',
-          end: () => '+=' + window.innerHeight * 0.6,
-          scrub: 0.6,
-          invalidateOnRefresh: true,
-          onRefreshInit: () => {
-            // Read the inner card's natural geometry (no transform, no
-            // animated width/height). It sits absolutely positioned over the
-            // outer layout slot, so its rect matches the slot's natural size.
-            // NAVBAR_STICKY_OFFSET mirrors the CSS `position: sticky; top` on
-            // the outer slot — we can't read getBoundingClientRect().top because
-            // onRefreshInit fires at scroll = 0 (card not yet stuck).
-            const SCRUB_VH = 0.6 // matches scrollTrigger end above (0.7 scale + 0.6 hold)
-            const TAIL_GAP = 120 // empty space below the expanded video; pairs with CareJourney's 120px top padding for a 240px section gap
-            const vw = window.innerWidth
-            const vh = window.innerHeight
-            const pad = Math.max(72, Math.min(96, 0.05 * vw)) // ≥72px keeps the expanded card clear of the 66px navbar
-            gsap.set(card, { clearProps: 'width,height,transform' })
-            const r = card.getBoundingClientRect()
-            targets.w0 = r.width
-            targets.h0 = r.height
-            targets.w = Math.min(vw - 2 * pad, 1440)
-            targets.h = vh - 2 * pad
-            // Center the resized box on the viewport. Anchor is the inner's
-            // top-left (top:0, left:0 of the slot, slot top = NAVBAR_STICKY_OFFSET).
-            targets.dx = vw / 2 - r.left - targets.w / 2
-            targets.dy = pad - NAVBAR_STICKY_OFFSET
-            // Calibrate the sticky range and hero tail so:
-            //   1. the slot unsticks the moment the scrub completes
-            //      (no dead pinned scroll between the animation and CareJourney)
-            //   2. the constant post-unstick gap below the expanded card lands
-            //      at exactly TAIL_GAP px. Derivation:
-            //        gap = paddingBottom + pad + NAVBAR_STICKY_OFFSET + slotH - vh
-            if (heroEl) {
-              row.style.minHeight = `${SCRUB_VH * vh + targets.h0 + NAVBAR_STICKY_OFFSET}px`
-              heroEl.style.paddingBottom = `${TAIL_GAP + vh - pad - NAVBAR_STICKY_OFFSET - targets.h0}px`
-            }
-          },
-        },
-      })
+  // ── Mobile: video grows to full-bleed (width → 100vw, radius → 0). ──
+  const mExpand = (y) => {
+    const g = mgeom.current
+    return g ? clamp01((y - g.start) / (g.end - g.start)) : 0
+  }
+  const mW = useTransform(scrollY, (y) => { const g = mgeom.current; return g ? g.w0 + (g.vw - g.w0) * mExpand(y) : undefined })
+  // Symmetric margin that keeps the video centred at EVERY width — from its
+  // resting (max-width-capped) box to full-bleed. (vw − w)/2 is the centred gap
+  // from each viewport edge; minus pagePx because the margin is relative to the
+  // padded container, not the viewport. Applied to both sides so the CSS
+  // `margin: 0 auto` never fights the inline value (which used to push it off-centre).
+  const mMargin = useTransform(scrollY, (y) => {
+    const g = mgeom.current
+    if (!g) return 0
+    const w = g.w0 + (g.vw - g.w0) * mExpand(y)
+    return (g.vw - w) / 2 - g.pagePx
+  })
+  const mRadius = useTransform(scrollY, (y) => { const g = mgeom.current; return g ? g.r0 * (1 - mExpand(y)) : undefined })
 
-      tl.fromTo(
-        card,
-        { width: () => targets.w0, height: () => targets.h0 },
-        {
-          x: () => targets.dx,
-          y: () => targets.dy,
-          width: () => targets.w,
-          height: () => targets.h,
-          ease: 'none',
-          duration: 0.7,
-        },
-      )
-      // Hold: empty tween of duration 0.6 keeps the scrub pinned at full size
-      // for ~60% of the viewport before the trigger releases.
-      tl.to({}, { duration: 0.6 })
+  // Desktop geometry + scrub runway sizing (replaces GSAP onRefreshInit).
+  useLayoutEffect(() => {
+    const right = rightColRef.current
+    const hero = heroRef.current
+    const clear = () => {
+      geom.current = null
+      if (right) right.style.minHeight = ''
+      if (hero) hero.style.paddingBottom = ''
+    }
+    if (isMobile || reduce) { clear(); return }
 
-      if (fadeTargets.length) {
-        gsap.to(fadeTargets, {
-          opacity: 0,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: row,
-            start: 'top top',
-            end: () => '+=' + window.innerHeight * 0.5,
-            scrub: 0.6,
-          },
-        })
+    const measure = () => {
+      const slot = slotRef.current
+      if (!slot || !right || !hero) return
+      if (window.innerWidth <= BREAKPOINT_TABLET) { clear(); return }
+      const vw = window.innerWidth
+      const vh = window.innerHeight
+      const pad = Math.max(72, Math.min(96, 0.05 * vw))
+      const rect = slot.getBoundingClientRect()
+      const w0 = rect.width
+      const h0 = rect.height
+      const cardAbsTop = rect.top + window.scrollY
+      const slotTop = slot.offsetTop
+      const wFull = Math.min(vw - 2 * pad, 1440)
+      const hFull = vh - 2 * pad
+      const start = cardAbsTop - NAVBAR_STICKY_OFFSET // scroll where the card sticks
+      // Centre the expanded card in the viewport, BUT never let its right edge
+      // drift right of the slot's resting right edge. On screens wider than 1440
+      // the width caps at 1440 while the centred right edge ((vw+wFull)/2) lands
+      // RIGHT of rect.right, so the card visibly "slides right past the container"
+      // as it contracts on scroll-up. Capping dx at (w0 - wFull) pins the right
+      // edge to the slot — the card then grows leftward only, killing that drift —
+      // while staying perfectly centred at ≤1440 where centring is already safe.
+      const dx = Math.min(vw / 2 - rect.left - wFull / 2, w0 - wFull)
+      geom.current = {
+        w0, h0, wFull, hFull,
+        dx,
+        dy: pad - NAVBAR_STICKY_OFFSET,
+        start,
+        expandEnd: start + EXPAND_FRAC * SCRUB_VH * vh,
+        fadeLen: 0.5 * vh,
       }
-    })
+      // Runway tall enough for the full scrub while the card stays stuck, plus
+      // the slot's own offset below the built-for ticker. Tail keeps the gap to
+      // CareJourney at TAIL_GAP (hero net height unchanged by slotTop).
+      right.style.minHeight = `${SCRUB_VH * vh + h0 + NAVBAR_STICKY_OFFSET + slotTop}px`
+      hero.style.paddingBottom = `${TAIL_GAP + vh - pad - NAVBAR_STICKY_OFFSET - h0 - slotTop}px`
+    }
+    measure()
+    window.addEventListener('resize', measure)
+    return () => window.removeEventListener('resize', measure)
+  }, [isMobile, reduce])
 
-    return () => ctx.revert()
-  }, [isMobile])
-
-  // Mobile-only: on scroll the video expands from its natural card size to
-  // full viewport width, becoming the key focal point. Border-radius melts
-  // to 0 so it reads as a cinematic full-bleed moment.
-  useEffect(() => {
-    if (!isMobile) return
-    if (typeof window === 'undefined') return
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-
-    const el = mobileVideoRef.current
-    if (!el) return
-
-    const ctx = gsap.context(() => {
-      // Break out of .container's horizontal padding by animating marginLeft
-      // to -pagePx and width to 100vw. This mirrors the coverage-carousel
-      // breakout pattern and avoids fighting CSS width: 100% with GSAP.
-      // borderRadius is read as a computed px value so GSAP can tween it.
-      const getValues = () => {
-        const pagePx = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--page-px')) || 19.5
-        const br = parseFloat(getComputedStyle(el).borderRadius) || 30
-        return { pagePx, br }
+  // Mobile geometry for the full-bleed expand.
+  useLayoutEffect(() => {
+    if (!isMobile || reduce) { mgeom.current = null; return }
+    const measure = () => {
+      const el = mobileVideoRef.current
+      if (!el) return
+      const pagePx = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--page-px')) || 19.5
+      const r0 = parseFloat(getComputedStyle(el).borderRadius) || 30
+      const rect = el.getBoundingClientRect()
+      const top = rect.top + window.scrollY
+      mgeom.current = {
+        w0: el.offsetWidth,
+        vw: window.innerWidth,
+        pagePx, r0,
+        start: top - window.innerHeight * 0.6, // begins when el top hits 60% vh
+        end: top - window.innerHeight * 0.2,   // full-bleed by 20% vh
       }
+    }
+    measure()
+    window.addEventListener('resize', measure)
+    return () => window.removeEventListener('resize', measure)
+  }, [isMobile, reduce])
 
-      // Snapshot natural state so GSAP can revert on ScrollTrigger refresh.
-      const naturalML = parseFloat(getComputedStyle(el).marginLeft) || 0
-      const naturalW  = el.offsetWidth
-
-      gsap.to(el, {
-          // Function-based vars so `invalidateOnRefresh` re-reads them on resize —
-          // plain numbers would freeze to the first-paint viewport dimensions.
-          marginLeft: () => -getValues().pagePx,
-          width: () => window.innerWidth,
-          maxWidth: 'none',
-          borderRadius: 0,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: el,
-            start: 'top 60%',
-            end: 'top 20%',
-            scrub: 0.8,
-            invalidateOnRefresh: true,
-            onRefresh: () => {
-              gsap.set(el, { clearProps: 'marginLeft,width,maxWidth,borderRadius' })
-            },
-          },
-        }
-      )
-    })
-
-    return () => ctx.revert()
-  }, [isMobile])
+  // Entrance props — fade-only (no movement) under reduced motion. The scroll
+  // scrub below stays disabled under reduced motion (it's heavy scroll-driven
+  // movement); only this opacity entrance is preserved.
+  const enter = { initial: 'hidden', animate: 'visible', variants: softVariants(reduce, heroContainer) }
+  const itemVariants = softVariants(reduce, heroItem)
 
   return (
     <div className="hero-outer">
-    <section className="hero" id="hero">
+    <section className="hero" id="hero" ref={heroRef}>
       <div className="container hero-container">
         {isMobile ? (
           /* ── Mobile layout ── */
           <>
             <div className="hero-mobile-top">
-              <h1 className="hero-heading hero-heading--mobile">The future of post-<br />enrollment healthcare.</h1>
+              <h1 className="hero-heading hero-heading--mobile">The future of <br />post-enrollment <br />healthcare.</h1>
               <p className="hero-subtitle hero-subtitle--mobile">Where everything connects –<br />and care actually moves.</p>
               <div className="hero-buttons hero-buttons--mobile">
                 <a href="#contact" className="btn btn--primary">Request a demo</a>
@@ -184,34 +189,57 @@ export default function Hero() {
               </div>
             </div>
             <BuiltForCarousel />
-            <div className="hero-mobile-video" ref={mobileVideoRef}>
-              <ResponsiveVideo desktop="assets/Hero_Desktop.mp4" mobile="assets/Hero_Mobile.mp4" desktopWebm="assets/Hero_Desktop.webm" mobileWebm="assets/Hero_Mobile.webm" />
-            </div>
+            <motion.div
+              className="hero-mobile-video"
+              ref={mobileVideoRef}
+              style={reduce ? undefined : { width: mW, marginLeft: mMargin, marginRight: mMargin, borderRadius: mRadius, maxWidth: 'none' }}
+            >
+              <ResponsiveVideo desktop="assets/video/hero_desktop.mp4" mobile="assets/video/hero_mobile.mp4" desktopWebm="assets/video/hero_desktop.webm" mobileWebm="assets/video/hero_mobile.webm" />
+            </motion.div>
           </>
         ) : (
-          /* ── Desktop layout ── */
-          <>
-            <div className="hero-top-row">
-              <h1 ref={headingRef} className="hero-heading">The future of<br />post-enrollment<br />healthcare.</h1>
-              <div ref={carouselWrapRef} className="hero-carousel-wrap">
-                <BuiltForCarousel />
-              </div>
-            </div>
-            <div ref={bottomRowRef} className="hero-bottom-row">
-              <div ref={leftRef} className="hero-left">
-                <p className="hero-subtitle">The first AI-native infrastructure bridging coverage and care.</p>
-                <div className="hero-buttons">
-                  <a href="#contact" className="btn btn--primary">Request a demo</a>
-                  <a href="#contact" className="btn btn--secondary">Talk to us</a>
-                </div>
-              </div>
-              <div className="hero-video-card">
-                <div ref={cardRef} className="hero-video-card-inner">
-                  <ResponsiveVideo desktop="assets/Hero_Desktop.mp4" mobile="assets/Hero_Mobile.mp4" desktopWebm="assets/Hero_Desktop.webm" mobileWebm="assets/Hero_Mobile.webm" />
-                </div>
-              </div>
-            </div>
-          </>
+          /* ── Desktop layout (v2: two columns — text left, carousel + video
+                right; Figma 2057:663). Entrance + scrub are Motion-driven. ── */
+          <div className="hero-grid">
+            {/* Left column. Each item: outer = Motion entrance (opacity + y),
+                inner = scroll-fade opacity (textFade) — kept on separate
+                elements so the two opacity drivers don't fight (combined =
+                entrance × scroll). */}
+            <motion.div className="hero-left-col" {...enter}>
+              <motion.div variants={itemVariants}>
+                <motion.h1 className="hero-heading" style={{ opacity: textFade }}>
+                  The future of<br />post-enrollment<br />healthcare.
+                </motion.h1>
+              </motion.div>
+              <motion.div variants={itemVariants}>
+                <motion.div className="hero-left" style={{ opacity: textFade }}>
+                  <p className="hero-subtitle">The first AI-native infrastructure bridging coverage and care.</p>
+                  <div className="hero-buttons">
+                    <a href="#contact" className="btn btn--primary">Request a demo</a>
+                    <a href="#contact" className="btn btn--secondary">Talk to us</a>
+                  </div>
+                </motion.div>
+              </motion.div>
+            </motion.div>
+
+            {/* Right column — built-for ticker above the sticky video. This
+                column is the scrub runway (min-height set in the effect). */}
+            <motion.div className="hero-right-col" ref={rightColRef} {...enter}>
+              <motion.div className="hero-carousel-wrap" variants={itemVariants}>
+                <motion.div style={{ opacity: textFade }}>
+                  <BuiltForCarousel />
+                </motion.div>
+              </motion.div>
+              <motion.div className="hero-video-card" ref={slotRef} variants={itemVariants}>
+                <motion.div
+                  className="hero-video-card-inner"
+                  style={reduce ? undefined : { width: cardW, height: cardH, x: cardX, y: cardY }}
+                >
+                  <ResponsiveVideo desktop="assets/video/hero_desktop.mp4" mobile="assets/video/hero_mobile.mp4" desktopWebm="assets/video/hero_desktop.webm" mobileWebm="assets/video/hero_mobile.webm" />
+                </motion.div>
+              </motion.div>
+            </motion.div>
+          </div>
         )}
       </div>
     </section>

@@ -1,10 +1,9 @@
-import { useCallback, useEffect, useRef } from 'react'
-import gsap from 'gsap'
-import { useScrollReveal } from '../../hooks/useScrollReveal'
-import { splitLines, lineRevealVars, blockRevealVars, blockRevealFromVars, selfTrigger } from '../../utils/reveal'
-import { PRIMARY_EASE } from '../../utils/eases'
+import { useCallback, useLayoutEffect, useRef, useState } from 'react'
+import { motion, useReducedMotion } from 'motion/react'
 import useIsMobile from '../../hooks/useIsMobile'
 import { asset } from '../../utils/assetPath'
+import { softVariants } from '../../utils/motion'
+import SectionH2 from '../ui/SectionH2/SectionH2'
 import './HowItWorks.css'
 
 const steps = [
@@ -13,57 +12,63 @@ const steps = [
   { title: 'Less friction', desc: 'Healthcare feels easier to navigate', num: '03' },
 ]
 
-function CenterIcon({ refProp }) {
+// Gentle ease-out (easeOutCubic) — soft deceleration, no abrupt snap.
+const EASE = [0.33, 1, 0.68, 1]
+// Sequenced reveal: card1 → left curve → card2 → right curve → card3 → logo (last).
+// Tightened so the whole explanation resolves in ≲1.6s — keeps the left→right→
+// connect→logo order, but clean and quick rather than illustrative.
+const vText = { hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0, transition: { duration: 0.7, ease: EASE } } }
+const vCard1 = { hidden: { opacity: 0, y: 12 }, visible: { opacity: 1, y: 0, transition: { delay: 0.1, duration: 0.7, ease: EASE } } }
+const vCard2 = { hidden: { opacity: 0, y: 14 }, visible: { opacity: 1, y: 0, transition: { delay: 0.35, duration: 0.7, ease: EASE } } }
+const vCard3 = { hidden: { opacity: 0, y: 14 }, visible: { opacity: 1, y: 0, transition: { delay: 0.6, duration: 0.7, ease: EASE } } }
+// Curves draw just after their cards land.
+const vLeftCurve = { hidden: { pathLength: 0, opacity: 0 }, visible: { pathLength: 1, opacity: 1, transition: { delay: 0.45, duration: 0.7, ease: EASE } } }
+const vRightCurve = { hidden: { pathLength: 0, opacity: 0 }, visible: { pathLength: 1, opacity: 1, transition: { delay: 0.8, duration: 0.7, ease: EASE } } }
+// Logo appears LAST, as the culmination — a gentle fade + soft scale settle.
+const vLogo = { hidden: { opacity: 0, scale: 0.92, y: 6 }, visible: { opacity: 1, scale: 1, y: 0, transition: { delay: 1.0, duration: 0.7, ease: EASE } } }
+// Mobile: simple staggered fade-up.
+const vItem = { hidden: { opacity: 0, y: 16 }, visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: EASE } } }
+const vStagger = { visible: { transition: { staggerChildren: 0.1 } } }
+
+function CenterIcon({ variants }) {
   return (
-    <div className="how-center-icon" ref={refProp}>
+    <motion.div className="how-center-icon" variants={variants}>
       <div className="how-circle">
         <img src={asset('assets/icons/near-logo-coloured.svg')} alt="Near Health logo" className="how-circle-logo" />
       </div>
-    </div>
+    </motion.div>
   )
 }
 
-function StepCard({ title, desc, num, refProp }) {
+function StepCard({ title, desc, num, variants, cardRef }) {
   return (
-    <div className="how-step-card" ref={refProp}>
+    <motion.div className="how-step-card" variants={variants} ref={cardRef}>
       <div className="how-step-top">
         <h3>{title}</h3>
         <span className="how-num">{num}</span>
       </div>
       <p>{desc}</p>
-    </div>
+    </motion.div>
   )
 }
 
 export default function HowItWorks() {
   const isMobile = useIsMobile()
-  const sectionRef = useRef(null)
+  const reduce = useReducedMotion()
   const layoutRef = useRef(null)
-  const labelRef = useRef(null)
-  const titleRef = useRef(null)
-  const descRef = useRef(null)
   const card1Ref = useRef(null)
   const card2Ref = useRef(null)
   const card3Ref = useRef(null)
-  const centerIconRef = useRef(null)
-  const svgRef = useRef(null)
-  const leftPathRef = useRef(null)
-  const rightPathRef = useRef(null)
+  const [curves, setCurves] = useState(null) // { w, h, left, right }
 
-  // Measure the connector geometry from layout offsets (transform-agnostic, so the
-  // y:24 pre-reveal offset on cards doesn't pollute the curve targets).
+  // Measure connector geometry from layout offsets (transform-agnostic, so the
+  // cards' entrance y-offset never pollutes the curve targets). motion.path
+  // then animates pathLength to draw them.
   const writeCurves = useCallback(() => {
     const layout = layoutRef.current
-    const c1 = card1Ref.current
-    const c2 = card2Ref.current
-    const c3 = card3Ref.current
-    const svg = svgRef.current
-    const lp = leftPathRef.current
-    const rp = rightPathRef.current
-    if (!layout || !c1 || !c2 || !c3 || !svg || !lp || !rp) return null
-
-    const W = layout.offsetWidth
-    const H = layout.offsetHeight
+    const c1 = card1Ref.current, c2 = card2Ref.current, c3 = card3Ref.current
+    if (!layout || !c1 || !c2 || !c3) return
+    const W = layout.offsetWidth, H = layout.offsetHeight
     const x1 = c1.offsetLeft + c1.offsetWidth / 2
     const y1 = c1.offsetTop + c1.offsetHeight
     const x2L = c2.offsetLeft
@@ -71,116 +76,73 @@ export default function HowItWorks() {
     const x2R = c2.offsetLeft + c2.offsetWidth
     const x3 = c3.offsetLeft + c3.offsetWidth / 2
     const y3 = c3.offsetTop + c3.offsetHeight
-
-    // Card 01 bottom-center → Card 02 left-middle. Drawn in journey order (M = card1).
-    const lW = x2L - x1
-    const lH = y2 - y1
+    // Card 01 bottom-center → Card 02 left-middle.
+    const lW = x2L - x1, lH = y2 - y1
     const left = `M ${x1} ${y1} C ${x1} ${y1 + lH * 0.552}, ${x1 + lW * 0.259} ${y2}, ${x1 + lW * 0.576} ${y2} L ${x2L} ${y2}`
-
-    // Card 02 right-middle → Card 03 bottom-center. Reversed from the symmetric form
-    // so the dashoffset draw flows card2 → card3, matching the 01→02→03 reading.
-    const rW = x3 - x2R
-    const rH = y2 - y3
+    // Card 02 right-middle → Card 03 bottom-center (reversed so it draws 02→03).
+    const rW = x3 - x2R, rH = y2 - y3
     const right = `M ${x2R} ${y2} L ${x3 - rW * 0.576} ${y2} C ${x3 - rW * 0.259} ${y2}, ${x3} ${y3 + rH * 0.552}, ${x3} ${y3}`
-
-    svg.setAttribute('width', W)
-    svg.setAttribute('height', H)
-    svg.setAttribute('viewBox', `0 0 ${W} ${H}`)
-    lp.setAttribute('d', left)
-    rp.setAttribute('d', right)
-    return { lp, rp, leftLen: lp.getTotalLength(), rightLen: rp.getTotalLength() }
+    setCurves({ w: W, h: H, left, right })
   }, [])
 
-  useScrollReveal({
-    scopeRef: sectionRef,
-    prepare: () => {
-      const text = [labelRef.current, titleRef.current, descRef.current]
-      const blocks = [card1Ref.current, card2Ref.current, card3Ref.current, centerIconRef.current].filter(Boolean)
-      const paths = [leftPathRef.current, rightPathRef.current].filter(Boolean)
-      gsap.set(text, { autoAlpha: 0 })
-      gsap.set(blocks, blockRevealFromVars())
-      // Step 1 emerges from a smaller offset so it feels softer than the later steps.
-      if (card1Ref.current) gsap.set(card1Ref.current, blockRevealFromVars({ y: 16 }))
-      if (paths.length) gsap.set(paths, { autoAlpha: 0 })
-      return [...text, ...blocks, ...paths]
-    },
-    animate: () => {
-      const labelSplit = splitLines(labelRef.current)
-      const titleSplit = splitLines(titleRef.current)
-      const descSplit = splitLines(descRef.current)
-      gsap.set([labelRef.current, titleRef.current, descRef.current], { autoAlpha: 1 })
-
-      const curves = !isMobile ? writeCurves() : null
-      if (curves) {
-        gsap.set(curves.lp, { autoAlpha: 1, strokeDasharray: curves.leftLen, strokeDashoffset: curves.leftLen })
-        gsap.set(curves.rp, { autoAlpha: 1, strokeDasharray: curves.rightLen, strokeDashoffset: curves.rightLen })
-      }
-
-      // Header lines — each piece triggers as its own element scrolls in.
-      gsap.from(labelSplit.lines, { ...lineRevealVars({ stagger: 0.05 }), scrollTrigger: selfTrigger(labelRef.current) })
-      gsap.from(titleSplit.lines, { ...lineRevealVars(), scrollTrigger: selfTrigger(titleRef.current) })
-      gsap.from(descSplit.lines, { ...lineRevealVars(), scrollTrigger: selfTrigger(descRef.current) })
-
-      if (centerIconRef.current) {
-        gsap.to(centerIconRef.current, { ...blockRevealVars({ stagger: 0 }), scrollTrigger: selfTrigger(centerIconRef.current) })
-      }
-
-      // Journey is a single composed sequence whose three card fades grow
-      // progressively slower — each step takes longer to settle than the last,
-      // so the sequence eases toward resolution rather than hitting a uniform beat.
-      const journey = gsap.timeline({ scrollTrigger: selfTrigger(card1Ref.current) })
-      const cardBase = { autoAlpha: 1, y: 0, ease: 'expo.out' }
-      journey.to(card1Ref.current, { ...cardBase, duration: 0.5 })
-      if (curves) journey.to(curves.lp, { strokeDashoffset: 0, duration: 0.45, ease: PRIMARY_EASE }, '-=0.2')
-      journey.to(card2Ref.current, { ...cardBase, duration: 1.5 }, '-=0.2')
-      if (curves) journey.to(curves.rp, { strokeDashoffset: 0, duration: 0.6, ease: PRIMARY_EASE }, '-=1.05')
-      journey.to(card3Ref.current, { ...cardBase, duration: 2.6 }, '-=0.45')
-    },
-    deps: [isMobile],
-  })
-
-  useEffect(() => {
-    if (isMobile) return
-    // Always draw the connector geometry, even if useScrollReveal bailed for reduced motion.
+  useLayoutEffect(() => {
+    if (isMobile) { setCurves(null); return }
     writeCurves()
-    const onResize = () => writeCurves()
-    window.addEventListener('resize', onResize)
-    return () => window.removeEventListener('resize', onResize)
+    window.addEventListener('resize', writeCurves)
+    return () => window.removeEventListener('resize', writeCurves)
   }, [isMobile, writeCurves])
 
+  // Containers always orchestrate; children fade-only (no movement) under reduced motion.
+  const headerReveal = { initial: 'hidden', whileInView: 'visible', viewport: { once: true, amount: 0.6 } }
+  const layoutReveal = { initial: 'hidden', whileInView: 'visible', viewport: { once: true, amount: 0.3 } }
+  const mobileReveal = { initial: 'hidden', whileInView: 'visible', viewport: { once: true, amount: 0.2 }, variants: softVariants(reduce, vStagger) }
+  const v = (variants) => softVariants(reduce, variants)
+
   return (
-    <section className="how-it-works" id="how-it-works" ref={sectionRef}>
+    <section className="how-it-works" id="how-it-works">
       <div className="container">
-        <div className="how-header">
-          <span className="how-label" ref={labelRef}>How it works</span>
-          <h2 className="section-title" ref={titleRef}>From coverage<br /> to connected care.</h2>
-          <p className="how-desc" ref={descRef}>Near helps make healthcare easier to understand, access, and navigate.</p>
-        </div>
+        <motion.div className="how-header" {...headerReveal}>
+          <motion.span className="how-label" variants={v(vText)}>How it works</motion.span>
+          <SectionH2
+            lines={['From coverage', 'to connected care.']}
+            marginBottom={20}
+            mobileMarginBottom={16}
+          />
+          <motion.p className="how-desc" variants={v(vText)}>Near helps make healthcare easier to understand, access, and navigate.</motion.p>
+        </motion.div>
 
         {isMobile ? (
-          <>
-            <CenterIcon refProp={centerIconRef} />
+          <motion.div {...mobileReveal}>
+            <CenterIcon variants={v(vItem)} />
             <div className="how-steps-row">
-              <StepCard {...steps[0]} refProp={card1Ref} />
-              <StepCard {...steps[1]} refProp={card2Ref} />
-              <StepCard {...steps[2]} refProp={card3Ref} />
+              <StepCard {...steps[0]} variants={v(vItem)} />
+              <StepCard {...steps[1]} variants={v(vItem)} />
+              <StepCard {...steps[2]} variants={v(vItem)} />
             </div>
-          </>
+          </motion.div>
         ) : (
-          <div className="how-layout" ref={layoutRef}>
+          <motion.div className="how-layout" ref={layoutRef} {...layoutReveal}>
             <div className="how-steps-row">
-              <StepCard {...steps[0]} refProp={card1Ref} />
-              <CenterIcon refProp={centerIconRef} />
-              <StepCard {...steps[2]} refProp={card3Ref} />
+              <StepCard {...steps[0]} variants={v(vCard1)} cardRef={card1Ref} />
+              <CenterIcon variants={v(vLogo)} />
+              <StepCard {...steps[2]} variants={v(vCard3)} cardRef={card3Ref} />
             </div>
             <div className="how-curves-row">
-              <StepCard {...steps[1]} refProp={card2Ref} />
+              <StepCard {...steps[1]} variants={v(vCard2)} cardRef={card2Ref} />
             </div>
-            <svg className="how-curves" ref={svgRef} fill="none">
-              <path ref={leftPathRef}  stroke="#0A1C1E" strokeWidth="1" strokeOpacity="0.2" />
-              <path ref={rightPathRef} stroke="#0A1C1E" strokeWidth="1" strokeOpacity="0.2" />
+            <svg
+              className="how-curves" fill="none"
+              width={curves?.w} height={curves?.h}
+              viewBox={curves ? `0 0 ${curves.w} ${curves.h}` : undefined}
+            >
+              {curves && (
+                <>
+                  <motion.path d={curves.left} stroke="#0A1C1E" strokeWidth="1" strokeOpacity="0.2" variants={v(vLeftCurve)} />
+                  <motion.path d={curves.right} stroke="#0A1C1E" strokeWidth="1" strokeOpacity="0.2" variants={v(vRightCurve)} />
+                </>
+              )}
             </svg>
-          </div>
+          </motion.div>
         )}
       </div>
     </section>

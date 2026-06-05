@@ -1,48 +1,15 @@
-import { useEffect, useRef } from 'react'
-import gsap from 'gsap'
 import useIsMobile from '../../hooks/useIsMobile'
 
 const ITEMS = ['Agents', 'Agencies', 'FMOs', 'GAs', 'Clinics', 'Groups', 'MSOs']
 const TRIPLED = [...ITEMS, ...ITEMS, ...ITEMS]
 
-const ITEM_H   = 14   // px — matches Hero.css .built-for-item height
-const GAP      = 8    // px — matches Hero.css .built-for-track gap
-const LOOP_H   = ITEMS.length * (ITEM_H + GAP)  // 154px — includes the gap after the last item before the repeat
-const DURATION = 14.4 // seconds per loop
-const DELAY    = 1.35 // seconds before start
-
+// Pure-CSS marquee — no GSAP. The desktop vertical loop and the mobile
+// horizontal loop both run via CSS keyframes (`built-for-scroll-v` /
+// `built-for-scroll` in Hero.css), each translating by exactly one ITEMS set so
+// the repeat in TRIPLED makes the loop seamless (translate3d keeps the element
+// on one compositor layer across the boundary — no 1-frame snap).
 export default function BuiltForCarousel() {
   const isMobile = useIsMobile()
-  const trackRef = useRef(null)
-
-  useEffect(() => {
-    if (isMobile) return
-    const track = trackRef.current
-    if (!track) return
-
-    // GSAP modulo loop: y advances continuously, modulo LOOP_H keeps it in range.
-    // No snap-back at the loop boundary — eliminates the CSS infinite-animation flash.
-    const proxy = { y: 0 }
-    const speed = LOOP_H / DURATION  // px per second
-    let mounted = true
-
-    const ctx = gsap.context(() => {
-      gsap.delayedCall(DELAY, () => {
-        if (mounted) gsap.ticker.add(ticker)
-      })
-    })
-
-    function ticker(time, deltaTime) {
-      proxy.y = (proxy.y + speed * (deltaTime / 1000)) % LOOP_H
-      gsap.set(track, { y: -proxy.y })
-    }
-
-    return () => {
-      mounted = false
-      ctx.revert()
-      gsap.ticker.remove(ticker)
-    }
-  }, [isMobile])
 
   if (isMobile) {
     return (
@@ -65,7 +32,7 @@ export default function BuiltForCarousel() {
       <span className="built-for-label">Built for</span>
       <div className="built-for-divider"></div>
       <div className="built-for-viewport">
-        <div className="built-for-track" ref={trackRef}>
+        <div className="built-for-track">
           {TRIPLED.map((item, i) => (
             <div className="built-for-item" key={i}>{item}</div>
           ))}

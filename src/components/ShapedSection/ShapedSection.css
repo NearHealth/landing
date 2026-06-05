@@ -3,21 +3,19 @@
   padding: var(--space-section-desktop) 0 15rem;
 }
 .shaped-section .container { padding: var(--px-section-x); }
-.shaped-section .section-title { margin-bottom: 32px; }
+.shaped-section .nh-h2 { margin-bottom: 32px; }
 .shaped-photo {
   position: relative;
   width: 100%; aspect-ratio: 1440 / 725;
   border-radius: var(--radius-lg);
   overflow: hidden;
 }
-.shaped-photo > img {
+.shaped-photo img {
   display: block;
-  position: absolute;
-  width: 116.46%;   /* 1677 / 1440 — Figma Group width */
-  height: 132.28%;  /* 959 / 725 — Figma Group height */
-  left: -16.11%;    /* -232 / 1440 — Group x offset */
-  top: -14.62%;     /* -106 / 725 — Group y offset */
+  width: 100%;
+  height: 100%;
   object-fit: cover;
+  object-position: center;
 }
 /* Right-half darkening gradient — Figma's gradient was drawn on a 986×764
    sub-rectangle at card x=459, so the in-Figma 38%/61% stops along the
@@ -27,7 +25,7 @@
   position: absolute;
   inset: 0;
   z-index: 1;
-  background: linear-gradient(88deg, rgba(10, 28, 30, 0) 58%, rgba(10, 28, 30, 1) 74%);
+  background: linear-gradient(88deg, rgba(10, 28, 30, 0) 58%, rgba(10, 28, 30, 0.6) 74%);
   pointer-events: none;
 }
 .shaped-overlay {
@@ -47,6 +45,11 @@
   font-size: clamp(18px, 2.08vw, 30px); font-weight: 400;
   line-height: 1.2; letter-spacing: -0.01em;
   color: var(--white);
+}
+.shaped-overlay-word {
+  display: inline-block;
+  white-space: pre;
+  will-change: transform, opacity;
 }
 .shaped-overlay-badge {
   position: absolute;
@@ -68,18 +71,21 @@
 @media (max-width: 480px) {
   .shaped-section { padding: var(--space-section-mobile) 0; margin-bottom: 0; }
   .shaped-section .container { padding: 0 19.5px; }
-  .shaped-section .section-title { margin-bottom: 16px; letter-spacing: -0.01em; }
+  .shaped-section .nh-h2 { margin-bottom: 16px; letter-spacing: -0.01em; }
   .shaped-photo {
-    height: auto; aspect-ratio: 380 / 675;
+    height: auto; aspect-ratio: 380 / 665;
     margin: 0 auto;
     border-radius: var(--radius-card);
   }
-  .shaped-photo > img { height: 100%; object-fit: cover; object-position: center; transform: none; }
+  /* base .shaped-photo img rule (absolute inset:0 + cover) already fills the
+     portrait mobile card — the square-ish export crops top/bottom, centred. */
   .shaped-photo::after { display: none; }
   .shaped-overlay {
     display: flex; flex-direction: column; justify-content: flex-end;
-    padding: 28px 30px 48px 30px;
-    background: none;
+    padding: 28px 28px 48px;
+    /* Bottom scrim (Figma: transparent → #0A1C1E over the lower ~456px) so the
+       white copy stays readable over the photo. */
+    background: linear-gradient(180deg, rgba(10, 28, 30, 0) 31%, #0A1C1E 100%);
   }
   .shaped-overlay-text {
     position: static;
@@ -97,7 +103,7 @@
     position: static;
     left: auto; top: auto;
     align-items: center; gap: 17px;
-    margin-top: 40px;
+    margin-top: 44px;
     width: 100%; max-width: 100%;
   }
   .shaped-overlay-badge .shaped-badge-icon { width: 29px; height: 30px; flex-shrink: 0; }

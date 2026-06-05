@@ -5,10 +5,15 @@
   font-family: 'Gilroy-Semibold', sans-serif; font-weight: 600;
   letter-spacing: 0.08em; text-transform: uppercase;
   cursor: pointer;
-  transition: all 0.25s var(--ease);
+  transition: background 0.25s var(--ease), border-color 0.25s var(--ease),
+              color 0.25s var(--ease), transform var(--dur-press) var(--ease-press);
 }
-.btn--md, .btn { padding: 12px 18px; border-radius: var(--radius-card); font-size: var(--fs-btn); }
-.btn--sm        { padding: 8px 16px;  border-radius: var(--radius-card); font-size: var(--fs-btn); }
+.btn:active, .btn--primary:active, .btn--secondary:active,
+.btn--outline:active, .btn--ghost:active { transform: scale(0.97); }
+/* +1px top padding optically centres the label (Gilroy sits high) — applied
+   globally so every <Button> matches the per-section tweaks. */
+.btn--md, .btn { padding: 13px 18px 12px; border-radius: var(--radius-card); font-size: var(--fs-btn); }
+.btn--sm        { padding: 9px 16px 8px;  border-radius: var(--radius-card); font-size: var(--fs-btn); }
 
 /* ── Variants ── */
 .btn--primary, .btn-primary { border-color: var(--accent); background: var(--accent); color: var(--dark); }
