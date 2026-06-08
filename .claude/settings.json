@@ -21,7 +21,9 @@
       "Bash(ffmpeg -y -i '/Users/davecaos/repos/nearhealth/nearhealth_web/AI Chat_Desktop_Export new photo v3.mp4' -frames:v 1 -update 1 -q:v 3 public/assets/AI_Chat_Desktop_poster.jpg)",
       "Bash(cwebp -q 80 -resize 1600 0 -quiet provider-desktop-overlay-31de26.png -o provider-desktop-overlay.webp)",
       "Bash(cwebp -q 80 -resize 1600 0 -quiet broker-desktop-3b995a.png -o broker-desktop.webp)",
-      "Bash(curl -sI \"http://localhost:5178/landing/assets/images/provider-desktop.jpg\")"
+      "Bash(curl -sI \"http://localhost:5178/landing/assets/images/provider-desktop.jpg\")",
+      "Bash(npm ci *)",
+      "Bash(./build-production.sh)"
     ]
   }
 }

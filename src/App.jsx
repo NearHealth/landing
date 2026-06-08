@@ -18,12 +18,6 @@ import { NAVBAR_HEIGHT, NAV_LINK_GAP } from './utils/layout'
 import { SECTIONS } from './constants/sections'
 import { useEffect, useRef, useState } from 'react'
 
-// Dev tools (gradient tuner) show in local dev, OR in any build when the URL
-// carries ?tweaks — so they can be opened on the deployed staging site without
-// shipping a visible button to ordinary visitors.
-const showTweaks = import.meta.env.DEV ||
-  new URLSearchParams(window.location.search).has('tweaks')
-
 export default function App() {
   const lenisRef = useRef(null)
   useLenis(lenisRef)
@@ -128,7 +122,7 @@ export default function App() {
         <Footer />
       </div>
       {import.meta.env.DEV && <GridOverlay />}
-      {showTweaks && <GradientTuner />}
+      {import.meta.env.DEV && <GradientTuner />}
     </>
   )
 }
