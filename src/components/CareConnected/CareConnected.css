@@ -41,16 +41,16 @@
   left: 50%; top: 50%;
   /* width = 861/946 (=91.0148%) × scale. Vars are driven by the dev
      GradientTuner; fallbacks are the baked production values. */
-  width: calc(91.0148% * var(--pg-scale, 1.59));
+  width: calc(91.0148% * var(--pg-scale, 1.5));
   aspect-ratio: 1;
-  margin-left: calc(91.0148% * var(--pg-scale, 1.59) / -2);
-  margin-top: calc(91.0148% * var(--pg-scale, 1.59) / -2);
+  margin-left: calc(91.0148% * var(--pg-scale, 1.5) / -2);
+  margin-top: calc(91.0148% * var(--pg-scale, 1.5) / -2);
   border-radius: 50%;
   transform-origin: 50% 50%;
   background: radial-gradient(50% 50% at 50% 50%,
-    rgba(94, 230, 253, 0) var(--pg-s1, 53%),
-    rgba(160, 240, 254, var(--pg-mid, 0.81)) var(--pg-s2, 78%),
-    #5EE6FD var(--pg-s3, 86%));
+    rgba(94, 230, 253, 0) var(--pg-s1, 45%),
+    rgba(160, 240, 254, var(--pg-mid, 0.7)) var(--pg-s2, 70%),
+    #5EE6FD var(--pg-s3, 100%));
   will-change: transform;
 }
 .cta-sphere--1 { animation: cta-l1 6s linear infinite; }
@@ -118,13 +118,13 @@
   /* Mobile pill glow — baked production values below; tunable independently of
      desktop via the dev GradientTuner's "Pill · mobile" group (--pgm-*). */
   .cta-pill-glow .cta-sphere {
-    width: calc(91.0148% * var(--pgm-scale, 1.39));
-    margin-left: calc(91.0148% * var(--pgm-scale, 1.39) / -2);
-    margin-top: calc(91.0148% * var(--pgm-scale, 1.39) / -2);
+    width: calc(91.0148% * var(--pgm-scale, 1.4));
+    margin-left: calc(91.0148% * var(--pgm-scale, 1.4) / -2);
+    margin-top: calc(91.0148% * var(--pgm-scale, 1.4) / -2);
     background: radial-gradient(50% 50% at 50% 50%,
-      rgba(94, 230, 253, 0) var(--pgm-s1, 53%),
-      rgba(160, 240, 254, var(--pgm-mid, 0.32)) var(--pgm-s2, 75%),
-      #5EE6FD var(--pgm-s3, 94%));
+      rgba(94, 230, 253, 0) var(--pgm-s1, 52%),
+      rgba(160, 240, 254, var(--pgm-mid, 0.6)) var(--pgm-s2, 70%),
+      #5EE6FD var(--pgm-s3, 95%));
   }
   /* Dim the mobile pill glow to match the toned-down hover glow (opacity 0.5). */
   .cta-pill-glow { opacity: 0.5; }

@@ -58,8 +58,8 @@ const GROUPS = [
 
 const DEFAULTS = {
   hs1: 16, hs2: 56, hs3: 63, hmid: 100, hscale: 2.98,     // hover
-  ps1: 53, ps2: 78, ps3: 86, pmid: 81, pscale: 1.59,      // pill (desktop)
-  pms1: 53, pms2: 75, pms3: 94, pmmid: 32, pmscale: 1.39, // pill (mobile)
+  ps1: 45, ps2: 70, ps3: 100, pmid: 70, pscale: 1.5,      // pill (desktop)
+  pms1: 52, pms2: 70, pms3: 95, pmmid: 60, pmscale: 1.4,  // pill (mobile)
   deSx: 0.78, deSize: 1.32, deSpeed: 9, deBlur: 67, deOpacity: 62, // designed-for glow
 }
 
