@@ -220,8 +220,8 @@
   border-radius: 50%;
   transform-origin: 50% 50%;
   background: radial-gradient(50% 50% at 50% 50%,
-    rgba(94, 230, 253, 0) var(--hg-s1, 38%),
-    rgba(160, 240, 254, var(--hg-mid, 0.5)) var(--hg-s2, 48%),
+    rgba(94, 230, 253, 0) var(--hg-s1, 16%),
+    rgba(160, 240, 254, var(--hg-mid, 1)) var(--hg-s2, 56%),
     #5EE6FD var(--hg-s3, 63%));
   will-change: transform;
   animation-play-state: paused;   /* only spin while hovered */

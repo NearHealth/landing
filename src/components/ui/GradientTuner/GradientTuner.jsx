@@ -57,10 +57,10 @@ const GROUPS = [
 ]
 
 const DEFAULTS = {
-  hs1: 38, hs2: 48, hs3: 63, hmid: 50, hscale: 2.98,      // hover
+  hs1: 16, hs2: 56, hs3: 63, hmid: 100, hscale: 2.98,     // hover
   ps1: 53, ps2: 78, ps3: 86, pmid: 81, pscale: 1.59,      // pill (desktop)
   pms1: 53, pms2: 75, pms3: 94, pmmid: 32, pmscale: 1.39, // pill (mobile)
-  deSx: 0.73, deSize: 1.69, deSpeed: 10, deBlur: 34, deOpacity: 50, // designed-for glow
+  deSx: 0.78, deSize: 1.32, deSpeed: 9, deBlur: 67, deOpacity: 62, // designed-for glow
 }
 
 function Slider({ label, value, min, max, step = 1, unit = '%', onChange }) {
