@@ -38,13 +38,20 @@ npm run build              # vite build + SSG prerender via scripts/prerender.mj
 # SPA-only build (skips prerender — faster iteration)
 npm run build:spa
 
-# Generic hosting (DreamHost, Netlify, etc. — base: /)
-./build-production.sh      # outputs to ./production/
+# Static hosting (DreamHost, Netlify, etc. — base: /, prerendered, SEO URLs rewritten)
+./build-production.sh                                  # outputs to ./production/
+SITE_URL=https://www.near.health ./build-production.sh # override the public domain (default: https://near.health)
 ```
 
 **Auto-deploy.** Pushes to `main` trigger `.github/workflows/deploy.yml`, which runs `npm ci → playwright install chromium → npm run build` and publishes `dist/` to GitHub Pages via `actions/deploy-pages@v4`.
 
-**Prerender.** After `vite build`, `scripts/prerender.mjs` boots Vite preview, opens the built site with Playwright, snapshots the rendered `#root` HTML, and inlines it into `dist/index.html`. Skipped automatically when `VERCEL=1` (build container lacks Chromium system libs).
+**Static hosting (DreamHost).** `./build-production.sh` produces a self-contained `./production/` bundle for any plain static host (Apache, no Node runtime, no env vars):
+
+1. Builds with `--base=/` so assets resolve at the domain root, then runs the prerender for SEO + fast first paint.
+2. `scripts/fix-production-urls.mjs` rewrites the URLs Vite's `--base` can't reach — `canonical` / `og:*` / `twitter:*` tags, the `sitemap.xml` `<loc>`, the `robots.txt` `Sitemap:` line, and the font `<link rel=preload>` hrefs — from the GitHub Pages URL to `https://near.health` (override via `SITE_URL=…`). This step runs independently of the prerender, so a Playwright flake can't ship stale SEO URLs.
+3. **Deploy:** upload the *contents* of `production/` (not the folder) to the domain's web root via SFTP or the DreamHost file manager. No `.htaccess` needed — in-page nav is hash-only, so there are no routes to rewrite. Do **not** upload `.env`, `src/`, or `node_modules/`.
+
+**Prerender.** After `vite build`, `scripts/prerender.mjs` boots Vite preview, opens the built site with Playwright, snapshots the rendered `#root` HTML, and inlines it into the output `index.html`. Defaults to `dist/` + base `/landing/`; `build-production.sh` overrides those via `PRERENDER_OUTDIR=production PRERENDER_BASE=/`. Skipped automatically when `VERCEL=1` (build container lacks Chromium system libs); soft-fails to the non-prerendered `index.html` if Playwright is unavailable.
 
 **Vercel.** `vercel.json` rewrites `/landing/:path*` to `/:path*` and sets long-lived `Cache-Control` headers — 1yr `immutable` for hashed JS/CSS/fonts, 30d for media (`mp4`/`webm`/`lottie`/images), and 1h `must-revalidate` for HTML and `fonts.css`.
 
@@ -110,7 +117,8 @@ public/
     └── CTA_Gradient_*.lottie        # Lottie gradient backgrounds
 
 scripts/
-├── prerender.mjs                    # Playwright-based SSG prerender (runs after vite build)
+├── prerender.mjs                    # Playwright-based SSG prerender (PRERENDER_OUTDIR/PRERENDER_BASE-aware)
+├── fix-production-urls.mjs          # Rewrites github.io SEO URLs + font preloads to SITE_URL (DreamHost build)
 ├── navbar-snap.mjs                  # Screenshot tool for navbar regression checks
 └── optimize-videos.sh               # ffmpeg helper for video assets
 

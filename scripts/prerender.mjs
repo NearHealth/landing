@@ -13,8 +13,15 @@ async function prerender() {
     return
   }
 
+  // Default to the GitHub Pages build (dist/ + /landing/); override via env for
+  // the generic-host build (production/ + /) — see build-production.sh.
+  const outDir = process.env.PRERENDER_OUTDIR || 'dist'
+  const base = process.env.PRERENDER_BASE || '/landing/'
+
   const server = await preview({
     root,
+    base, // override vite.config base when building for a different host
+    build: { outDir }, // serve the right output folder
     preview: { port: 4174, strictPort: false, open: false },
   })
 
@@ -25,16 +32,17 @@ async function prerender() {
   const page = await browser.newPage({ viewport: { width: 1280, height: 800 } })
 
   try {
-    await page.goto(`${address}landing/`, { waitUntil: 'networkidle', timeout: 15000 })
+    const subpath = base.replace(/^\//, '') // '/landing/' -> 'landing/' ; '/' -> ''
+    await page.goto(`${address}${subpath}`, { waitUntil: 'networkidle', timeout: 15000 })
 
     const rootHtml = await page.$eval('#root', (el) => el.innerHTML)
 
-    const indexPath = resolve(root, 'dist/index.html')
+    const indexPath = resolve(root, outDir, 'index.html')
     let html = readFileSync(indexPath, 'utf-8')
     html = html.replace('<div id="root"></div>', `<div id="root">${rootHtml}</div>`)
     writeFileSync(indexPath, html)
 
-    console.log(`Pre-rendered dist/index.html (${(Buffer.byteLength(html) / 1024).toFixed(1)} KB)`)
+    console.log(`Pre-rendered ${outDir}/index.html (${(Buffer.byteLength(html) / 1024).toFixed(1)} KB)`)
   } finally {
     await browser.close()
     server.httpServer.close()
