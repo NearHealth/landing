@@ -41,7 +41,7 @@ export default function PostEnrollment() {
           <div className="post-glow-sphere post-glow-sphere--2" />
         </div>
         <SectionH2
-          lines={['Designed for the', 'post-enrollment reality']}
+          lines={['Designed for the', 'post-enrollment reality.']}
           marginBottom={146}
           mobileMarginBottom={52}
         />
