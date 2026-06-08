@@ -3,13 +3,17 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- Theme-aware favicon. Chrome + Firefox switch via the prefers-color-scheme
-         media query embedded inside the SVG (the `media` attr on rel=icon does NOT
-         work in Chrome). PNG is the fallback for browsers without SVG-favicon
-         support (Safari) — Firefox still respects its media attribute there. -->
-    <link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg?v=3" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-light.png?v=3" media="(prefers-color-scheme: light)" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-dark.png?v=3" media="(prefers-color-scheme: dark)" />
+    <!-- Theme-aware favicon. The adaptive favicon.svg carries an internal
+         @media (prefers-color-scheme: dark) rule — Chrome/Edge/Firefox use it and
+         switch glyph colour with the OS theme. The PNG is a static fallback for
+         browsers without SVG-favicon support (Safari); its explicit sizes="32x32"
+         is REQUIRED so Chrome prefers the scalable SVG over the raster. Do NOT add
+         media-query PNG links: Chrome ignores `media` on <link rel=icon>, treats
+         them as unconditional candidates, and may pick one — which is what stopped
+         the icon adapting. Bump ?v=N whenever an icon changes (busts the ~30-day
+         favicon cache). -->
+    <link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-light.png?v=4" />
+    <link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg?v=4" />
     <title>Near Health — Turning coverage into care</title>
     <meta name="description" content="Near coordinates care after enrollment without adding operational burden. Built for brokers and providers.">
 

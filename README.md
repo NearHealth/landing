@@ -110,7 +110,7 @@ public/
 ├── fonts.css                        # @font-face for Gilroy (self-hosted)
 └── assets/
     ├── fonts/                       # Gilroy-{Regular,Medium,Semibold,Bold}.woff2 + .woff
-    ├── icons/                       # near-logo.svg, n.svg, e.svg, a.svg, r.svg
+    ├── icons/                       # near-logo{,-coloured}.svg + favicon.svg (adaptive) / favicon-light.png (fallback)
     ├── images/                      # Photos, platform screenshots
     ├── {Hero,AI_Chat}_*.{webm,mp4}  # VP9 WebM preferred, H264 MP4 fallback for iOS Safari
     ├── AI_Chat_*_poster.jpg         # First-frame posters for AI Chat videos
@@ -196,6 +196,28 @@ Font: **Gilroy**, self-hosted under `public/assets/fonts/` (`.woff2` + `.woff` f
 - Buttons / labels: Gilroy-SemiBold (600)
 - Emphasis: Gilroy-Bold (700)
 - Fallback: Inter (Google Fonts), then system fonts
+
+### Theme-Aware Favicon
+
+The browser-tab favicon adapts to the visitor's **system colour scheme** — a dark-teal glyph (`#0A1C1E`) in light mode, cyan (`#5EE6FD`) in dark mode. `index.html` declares exactly two icons:
+
+```html
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/icons/favicon-light.png?v=4" />
+<link rel="icon" type="image/svg+xml" href="/assets/icons/favicon.svg?v=4" />
+```
+
+**How the switch works.** The adaptive `favicon.svg` carries an inline `<style>` block — `path { fill: #0A1C1E }` with `@media (prefers-color-scheme: dark) { path { fill: #5EE6FD } }`. Chrome, Edge, and Firefox use the SVG and recolour the glyph automatically. The PNG is a static fallback for browsers without SVG-favicon support.
+
+**The Chrome gotcha (why it's exactly these two tags).** Chrome ignores the `media` attribute on `<link rel="icon">`. An earlier setup added `favicon-light.png media="(prefers-color-scheme: light)"` + `favicon-dark.png media="(prefers-color-scheme: dark)"` — Chrome saw two *unconditional* `32x32` PNGs next to the SVG and, per its favicon-selection quirk, picked a static PNG over the scalable SVG, so the icon never adapted. The fix:
+
+- **Never add `media`-query PNG links.** Let the adaptive SVG handle light/dark.
+- The single raster fallback **must carry an explicit `sizes`** (`32x32`) — that's what makes Chrome prefer the SVG over the PNG.
+
+**Notes.**
+- The favicon follows the **OS/system** appearance, not any in-page theme. A visitor whose system is in dark mode sees the cyan glyph on first load in Chrome/Firefox — no refresh needed.
+- **Safari (macOS & iOS) does not theme-switch tab favicons at all** — it ignores `prefers-color-scheme` in the SVG *and* `media` on the links — so Safari shows the static `favicon-light.png`. There is no markup workaround.
+- Favicons are cached aggressively (~30-day `max-age`). When changing an icon, **bump the `?v=N`** query on both links to bust the cache.
+- Assets live in `public/assets/icons/`: `favicon.svg` (adaptive), `favicon-light.png` (fallback), plus static single-theme `favicon-light.svg` / `favicon-dark.svg`. Paths resolve at the site root (`/assets/...`); the GitHub Pages build rewrites them to `/landing/assets/...` via Vite's base.
 
 ### Scroll & Animation
 
