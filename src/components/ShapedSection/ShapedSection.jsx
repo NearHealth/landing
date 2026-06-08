@@ -43,8 +43,8 @@ export default function ShapedSection() {
     <section className="shaped-section" id="shaped">
       <div className="container">
         <SectionH2
-          lines={['Shaped by real-world use']}
-          mobileLines={['Shaped by', 'real-world use']}
+          lines={['Shaped by real-world use.']}
+          mobileLines={['Shaped by', 'real-world use.']}
           marginBottom={32}
           mobileMarginBottom={16}
         />

@@ -34,7 +34,7 @@ export default function CareConnected() {
               <div className="cta-sphere cta-sphere--2" />
             </div>
           )}
-          <SectionH2 lines={['Care, connected']} marginBottom={0} mobileMarginBottom={0} />
+          <SectionH2 lines={['Care, connected.']} marginBottom={0} mobileMarginBottom={0} />
         </div>
       </motion.div>
     </section>

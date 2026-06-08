@@ -42,7 +42,7 @@ export default function MemberExperience() {
           </div>
         </motion.div>
         <div className="member-footer">
-          <motion.p className="member-footer-text" {...reveal(0.6)}>Brokers and providers stay informed</motion.p>
+          <motion.p className="member-footer-text" {...reveal(0.6)}>Brokers and providers stay informed.</motion.p>
           <motion.div className="member-footer-btns" {...reveal(0.6)}>
             <Button variant="primary" href="#contact">Request a demo</Button>
             <Button variant="secondary" href="#contact">Talk to us</Button>

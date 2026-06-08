@@ -8,17 +8,17 @@ const audiences = [
   {
     icon: asset('assets/images/post-enrollment-brokers.svg'),
     title: 'Brokers',
-    desc: 'Better retention through better support',
+    desc: 'Better retention through better support.',
   },
   {
     icon: asset('assets/images/post-enrollment-providers.svg'),
     title: 'Providers',
-    desc: 'Reach patients already seeking care',
+    desc: 'Reach patients already seeking care.',
   },
   {
     icon: asset('assets/images/post-enrollment-members.svg'),
     title: 'Members',
-    desc: 'Navigate healthcare with clarity',
+    desc: 'Navigate healthcare with clarity.',
   },
 ]
 
