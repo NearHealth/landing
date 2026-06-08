@@ -11,7 +11,8 @@
     "preview": "vite preview",
     "test": "playwright test",
     "test:visual": "playwright test tests/visual/",
-    "test:visual:update": "playwright test tests/visual/ --update-snapshots"
+    "test:visual:update": "playwright test tests/visual/ --update-snapshots",
+    "og:snapshot": "vite build && node scripts/og-snapshot.mjs"
   },
   "dependencies": {
     "lenis": "^1.3.23",
