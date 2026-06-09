@@ -122,7 +122,7 @@ export default function App() {
         <Footer />
       </div>
       {import.meta.env.DEV && <GridOverlay />}
-      {import.meta.env.DEV && <GradientTuner />}
+      {/* import.meta.env.DEV && */ <GradientTuner />}
     </>
   )
 }
