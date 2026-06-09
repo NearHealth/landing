@@ -420,10 +420,27 @@
      value on ScrollTrigger refresh; this is the first-paint fallback. */
   min-height: calc(130vh + 634px);
 }
+/* LAB: ticker out of flow so it no longer dictates the video's top. The invisible
+   .hero-h1-mirror takes the flow height instead (= the heading's two lines). */
 .hero-right-col .hero-carousel-wrap {
-  transform: none;             /* drop the old top-row offset */
+  position: absolute;
+  top: 0;
+  right: 0;
   width: 298px;
-  flex-shrink: 0;
+}
+/* LAB: invisible mirror of the <h1>'s first two lines. Same font metrics → its
+   flow height equals the heading's two-line height at any width, so the video
+   below always aligns to the bottom of heading line 2. Pure CSS, no JS offset. */
+.hero-h1-mirror {
+  font-family: var(--font-heading);
+  font-size: clamp(54px, 6vw, 96px);   /* identical to .hero-left-col .hero-heading */
+  font-weight: 400;
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  color: transparent;
+  user-select: none;
+  pointer-events: none;
+  align-self: stretch;
 }
 .hero-right-col .hero-video-card {
   flex: 0 0 auto;
@@ -431,11 +448,7 @@
   width: 100%; max-width: 947px;
   aspect-ratio: 947 / 532;
   margin-left: 0;
-  /* Base 0 = flush under the built-for ticker. JS (Hero.jsx measure()) feeds
-     --hero-video-offset = current two-line <h1> height − the load-time base, so
-     the card shifts in lock-step with the fluid heading on resize. max(0px,…)
-     keeps it from riding up over the ticker when the heading shrinks. */
-  margin-top: max(0px, var(--hero-video-offset, 0px));
+  margin-top: 0; /* flush under the built-for ticker */
 }
 
 /* ── Tablet (768–1024px, e.g. portrait iPad) ──────────────────────────────
@@ -463,4 +476,19 @@
     max-width: none;
     aspect-ratio: 947 / 532;
   }
+}
+
+/* ── LAB: post-hero riser ──────────────────────────────────────────────────
+   The block wrapping every section after the hero. HeroLab drives --post-hero-y
+   (on :root) from the live scrub geometry so the block stays POST_HERO_GAP below
+   the video's CURRENT bottom edge through the expand + hold, then freezes and
+   scrolls normally. No empty band at rest (it sits just under the small resting
+   video); the growing video pushes it down; fullscreen, then they scroll together.
+   z-index above the hero so it slides cleanly over the sticky card on release. */
+.post-hero {
+  position: relative;
+  z-index: 2;
+  transform: translateY(var(--post-hero-y, 0px));
+  opacity: var(--post-hero-opacity, 1);
+  will-change: transform, opacity;
 }

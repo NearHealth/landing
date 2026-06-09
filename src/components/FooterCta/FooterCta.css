@@ -60,7 +60,7 @@
 /* ── Mobile (≤480px) ── */
 @media (max-width: 480px) {
   .footer-cta { padding: 3rem 0 140px; }
-  .footer-cta-text { font-size: 16px; }
+  .footer-cta-text { max-width: 380px; margin-bottom: 30px; font-size: 16px; }
 }
 
 /* Pause the drifting gradients while off-screen (continuous repaint otherwise). */

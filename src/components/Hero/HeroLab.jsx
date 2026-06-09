@@ -1,11 +1,11 @@
 import { useLayoutEffect, useRef } from 'react'
-import { motion, useScroll, useTransform, useMotionValue, useReducedMotion } from 'motion/react'
+import { motion, useScroll, useTransform, useMotionValue, useMotionValueEvent, useReducedMotion } from 'motion/react'
 import useIsMobile from '../../hooks/useIsMobile'
 import { BREAKPOINT_TABLET, NAVBAR_STICKY_OFFSET } from '../../utils/layout'
 import { softVariants } from '../../utils/motion'
 import ResponsiveVideo from '../ui/ResponsiveVideo/ResponsiveVideo'
 import BuiltForCarousel from './BuiltForCarousel'
-import './Hero.css'
+import './HeroLab.css'
 
 // ── Motion entrance (staggered fade-up). Same variants drive BOTH columns so
 // the right side appears exactly like the left. ──
@@ -19,9 +19,36 @@ const heroItem = {
 const SCRUB_VH = 0.6      // scrub scroll distance as a fraction of viewport height
 const EXPAND_FRAC = 0.538 // expand over this fraction of the scrub, then hold
 const TAIL_GAP = 120      // px gap below the expanded card before CareJourney
+// LAB: cap the viewport height the scrub math scales with. On very tall /
+// zoomed-out viewports the raw vh ballooned the runway + bottom padding (→ a big
+// empty band under the hero) and stretched the card into a cropped portrait.
+// Clamping to a reference height keeps the runway/padding bounded; the card is
+// centred in the REAL viewport at its aspect-correct size.
+const MAX_SCRUB_VH = 900
+const CARD_ASPECT = 532 / 947 // expanded card height ÷ width
+const POST_HERO_GAP = 80 // constant gap the next section keeps below the video
 const clamp01 = (v) => (v < 0 ? 0 : v > 1 ? 1 : v)
 
-export default function Hero() {
+// translateY for the .post-hero riser at a given scroll. It keeps the next
+// section POST_HERO_GAP below the video's CURRENT (growing) bottom edge through
+// the expand + hold, then — past `release` — freezes, so the +sy term stops
+// compounding and the block resumes normal upward scroll. videoBottomVp is the
+// inner card's bottom in viewport coords (sticky top + centring offset + height).
+const postHeroYAt = (g, scrollY) => {
+  const sy = Math.min(scrollY, g.release)
+  let videoBottomVp
+  if (sy < g.start) {
+    // Pre-sticky: the card is still in normal flow at its resting size, riding up
+    // with the scroll. (Continuous with the branch below at sy === start.)
+    videoBottomVp = g.cardAbsTop - sy + g.h0
+  } else {
+    const p = clamp01((sy - g.start) / (g.expandEnd - g.start))
+    videoBottomVp = NAVBAR_STICKY_OFFSET + g.dy * p + (g.h0 + (g.hFull - g.h0) * p)
+  }
+  return videoBottomVp + POST_HERO_GAP - g.postHeroTop + sy
+}
+
+export default function HeroLab() {
   const isMobile = useIsMobile()
   const reduce = useReducedMotion()
 
@@ -78,6 +105,28 @@ export default function Hero() {
     return g ? 1 - clamp01(y / g.fadeLen) : 1
   })
 
+  // LAB: drive the .post-hero riser (it lives in AppLab, a sibling) via a :root
+  // CSS var. Keeps the next section glued POST_HERO_GAP below the video's bottom
+  // through the expand+hold, then scrolls normally.
+  const postHeroY = useTransform([scrollY, resizeTick], ([y]) => {
+    const g = geom.current
+    return g ? postHeroYAt(g, y) : 0
+  })
+  useMotionValueEvent(postHeroY, 'change', (v) => {
+    document.documentElement.style.setProperty('--post-hero-y', `${v}px`)
+  })
+
+  // LAB: the post-hero block sits dimmed (30%) until the video expand plays it
+  // in — opacity ramps 0.3 → 1 across the same expand progress, hitting full at
+  // fullscreen.
+  const postHeroOpacity = useTransform([scrollY, resizeTick], ([y]) => {
+    const g = geom.current
+    return g ? 0.3 + 0.7 * dExpand(y) : 1
+  })
+  useMotionValueEvent(postHeroOpacity, 'change', (v) => {
+    document.documentElement.style.setProperty('--post-hero-opacity', `${v}`)
+  })
+
   // ── Mobile: video grows to full-bleed (width → 100vw, radius → 0). ──
   const mExpand = (y) => {
     const g = mgeom.current
@@ -101,19 +150,18 @@ export default function Hero() {
   useLayoutEffect(() => {
     const right = rightColRef.current
     const hero = heroRef.current
-    // Two-line height of the <h1> at the width it was first measured on. The
-    // video offset tracks the DELTA from this base, so at load the layout is
-    // unchanged and the card only shifts as the fluid heading grows/shrinks on
-    // resize — keeping the video locked to the first two heading lines.
-    let twoLineBase = null
     const clear = () => {
       geom.current = null
       if (right) right.style.minHeight = ''
       if (hero) {
         hero.style.paddingBottom = ''
+        hero.style.minHeight = ''
         hero.style.removeProperty('--hero-two-line-h')
         hero.style.removeProperty('--hero-video-offset')
       }
+      // Mobile / reduced motion: no riser offset, full opacity.
+      document.documentElement.style.setProperty('--post-hero-y', '0px')
+      document.documentElement.style.setProperty('--post-hero-opacity', '1')
     }
     if (isMobile || reduce) { clear(); return }
 
@@ -123,70 +171,79 @@ export default function Hero() {
       if (window.innerWidth <= BREAKPOINT_TABLET) { clear(); return }
       const vw = window.innerWidth
       const vh = window.innerHeight
+      // LAB: the scrub scroll-distance + tail scale with this CAPPED height, so a
+      // 1800px-tall or zoomed-out viewport no longer balloons the runway/padding.
+      const vhEff = Math.min(vh, MAX_SCRUB_VH)
       const pad = Math.max(72, Math.min(96, 0.05 * vw))
       const rect = slot.getBoundingClientRect()
       const w0 = rect.width
       const h0 = rect.height
       const cardAbsTop = rect.top + window.scrollY
       const slotTop = slot.offsetTop
-      const wFull = Math.min(vw - 2 * pad, 1440)
-      const hFull = vh - 2 * pad
+      // −10px breathing room on narrow screens (where the expanded width is
+      // vw−2·pad). Absorbed by the 1440 cap on wide screens, so they're unchanged.
+      const wFull = Math.min(vw - 2 * pad - 10, 1440)
+      // LAB: aspect-correct AND height-capped — never a cropped portrait on tall
+      // screens. The card fills its (capped) width and letterboxes top/bottom.
+      const hFull = Math.min(vhEff - 2 * pad, wFull * CARD_ASPECT)
       const start = cardAbsTop - NAVBAR_STICKY_OFFSET // scroll where the card sticks
-      // Centre the expanded card in the viewport, BUT never let its right edge
-      // drift right of the slot's resting right edge. On screens wider than 1440
-      // the width caps at 1440 while the centred right edge ((vw+wFull)/2) lands
-      // RIGHT of rect.right, so the card visibly "slides right past the container"
-      // as it contracts on scroll-up. Capping dx at (w0 - wFull) pins the right
-      // edge to the slot — the card then grows leftward only, killing that drift —
-      // while staying perfectly centred at ≤1440 where centring is already safe.
       const dx = Math.min(vw / 2 - rect.left - wFull / 2, w0 - wFull)
-      geom.current = {
-        w0, h0, wFull, hFull,
-        dx,
-        dy: pad - NAVBAR_STICKY_OFFSET,
-        start,
-        expandEnd: start + EXPAND_FRAC * SCRUB_VH * vh,
-        fadeLen: 0.5 * vh,
-      }
-      // Runway tall enough for the full scrub while the card stays stuck, plus
-      // the slot's own offset below the built-for ticker. Tail keeps the gap to
-      // CareJourney at TAIL_GAP (hero net height unchanged by slotTop).
-      right.style.minHeight = `${SCRUB_VH * vh + h0 + NAVBAR_STICKY_OFFSET + slotTop}px`
-      hero.style.paddingBottom = `${TAIL_GAP + vh - pad - NAVBAR_STICKY_OFFSET - h0 - slotTop}px`
+      // LAB: anchor the card near the top (at `pad`), not centred — it expands in
+      // place on tall screens (client request).
+      const dy = pad - NAVBAR_STICKY_OFFSET
+      const release = start + SCRUB_VH * vhEff // video unpins; riser stops tracking
+      // Card bottom (viewport-y) when fully expanded & sticky (p=1): = pad + hFull.
+      const videoBottomAtRelease = NAVBAR_STICKY_OFFSET + dy + hFull
+      // The .post-hero block must NATURALLY sit here so its riser translateY is
+      // exactly 0 at release — i.e. it ends on its real layout position. A non-zero
+      // end offset would leave empty space under the footer, since a transform
+      // doesn't shrink the document's scroll height.
+      const targetPostHeroTop = videoBottomAtRelease + POST_HERO_GAP + release
 
-      // Measure the first two heading lines via the Range API (one rect per
-      // line box — robust to the explicit <br/>s and to font kerning). Group by
-      // line top so a zero-width <br> rect can't be mistaken for a line.
-      const h1 = hero.querySelector('.hero-heading')
-      if (h1) {
-        const range = document.createRange()
-        range.selectNodeContents(h1)
-        const byTop = new Map()
-        for (const r of range.getClientRects()) {
-          if (r.height <= 0) continue
-          const key = Math.round(r.top)
-          if (!byTop.has(key)) byTop.set(key, r)
-        }
-        const lines = [...byTop.values()]
-        if (lines.length >= 2) {
-          const twoLineH = lines[1].bottom - lines[0].top
-          if (twoLineBase == null) twoLineBase = twoLineH
-          hero.style.setProperty('--hero-two-line-h', `${twoLineH}px`)
-          // Negative deltas (heading shrank below the base) clamp to 0 in CSS so
-          // the card never rides up over the ticker.
-          hero.style.setProperty('--hero-video-offset', `${twoLineH - twoLineBase}px`)
-        }
+      geom.current = {
+        w0, h0, wFull, hFull, dx, dy, start, cardAbsTop, release,
+        expandEnd: start + EXPAND_FRAC * SCRUB_VH * vhEff,
+        postHeroTop: targetPostHeroTop, // refined to the measured value just below
+        fadeLen: 0.5 * vhEff,
       }
+      // Runway: tall enough to keep the card sticky through the scrub (vhEff so it
+      // doesn't balloon on tall screens).
+      right.style.minHeight = `${SCRUB_VH * vhEff + h0 + NAVBAR_STICKY_OFFSET + slotTop}px`
+      // Drop the CSS `min-height: 100vh` floor: on tall screens it forces the hero
+      // taller than `target`, so the padding below can't reach target and the
+      // riser's translateY can't return to 0 (→ a gap under the footer). The
+      // pulled-up post-hero fills the lower viewport instead.
+      hero.style.minHeight = '0px'
+      // Tune the hero's bottom padding so .post-hero's natural top == target → the
+      // riser translateY lands on 0 at release, leaving no gap under the footer.
+      const postHeroEl = document.querySelector('.post-hero')
+      if (postHeroEl) {
+        hero.style.paddingBottom = '0px'
+        const baseTop = postHeroEl.offsetTop // hero height with no tail padding
+        const padBottom = Math.max(0, Math.round(targetPostHeroTop - baseTop))
+        hero.style.paddingBottom = `${padBottom}px`
+        geom.current.postHeroTop = baseTop + padBottom
+      } else {
+        hero.style.paddingBottom = ''
+      }
+
+      // Set the riser offset for the current scroll synchronously (before paint),
+      // so it's correct on first load + every resize without waiting for a scroll.
+      document.documentElement.style.setProperty('--post-hero-y', `${postHeroYAt(geom.current, window.scrollY)}px`)
+      document.documentElement.style.setProperty('--post-hero-opacity', `${0.3 + 0.7 * dExpand(window.scrollY)}`)
+
+      // (The right block's two-line alignment is now pure CSS via .hero-h1-mirror
+      // — no JS measurement needed. The scrub reads the resulting video position.)
+
       // Force the scroll-driven card transforms to recompute against the fresh
       // geom even though scrollY didn't change (resize-without-scroll).
       resizeTick.set(resizeTick.get() + 1)
     }
     measure()
     window.addEventListener('resize', measure)
-    // Webfont (Gilroy) swap shifts line metrics — re-measure once it settles so
-    // the base captures the final two-line height, not the fallback's.
+    // Webfont (Gilroy) swap shifts line metrics — re-measure once it settles.
     if (document.fonts && document.fonts.ready) {
-      document.fonts.ready.then(() => { twoLineBase = null; measure() })
+      document.fonts.ready.then(() => measure())
     }
     return () => window.removeEventListener('resize', measure)
   }, [isMobile, reduce])
@@ -280,6 +337,12 @@ export default function Hero() {
                   <BuiltForCarousel />
                 </motion.div>
               </motion.div>
+              {/* Invisible h1 mirror: inherits the heading's exact font metrics
+                  and renders two lines (cap + ascender), so its flow height equals
+                  the heading's first two lines at ANY width — the video below it
+                  is pushed down to align with line 2, pure-CSS, no JS measuring.
+                  Swap T/l for an SVG later to keep it out of SEO/text. */}
+              <div className="hero-h1-mirror" aria-hidden="true">T<br />l</div>
               <motion.div className="hero-video-card" ref={slotRef} variants={itemVariants}>
                 <motion.div
                   className="hero-video-card-inner"

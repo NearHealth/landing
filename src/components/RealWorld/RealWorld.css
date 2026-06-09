@@ -60,9 +60,12 @@
     align-self: start;
     width: 36px; height: 36px;
     margin: 0;
+    padding: 7px;
     border-radius: 746.25px;
   }
-  .feature-icon img { width: 16px; height: 16px; }
+  /* 36px circle − 2×7px padding = 22px inner box; the flex centring on the
+     base .feature-icon keeps the glyph dead-centre. */
+  .feature-icon img { width: 22px; height: 22px; }
   .feature-card h3 {
     grid-column: 2; grid-row: 1;
     margin-bottom: 0;

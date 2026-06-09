@@ -5,21 +5,36 @@ import { asset } from '../../../utils/assetPath'
 const MOBILE_MEDIA = '(max-width: 480px)'
 const DESKTOP_MEDIA = '(min-width: 481px)'
 
+const isMobileViewport = () =>
+  typeof window !== 'undefined' && window.matchMedia(MOBILE_MEDIA).matches
+
 /**
  * Video that switches source based on viewport via native <source media>.
- * Source is picked at load time only (no live resize switching).
+ * Source is picked at load time only (no live resize switching — a breakpoint
+ * cross triggers a full reload via useReloadOnBreakpoint, which re-picks it).
  *
- * @param {string} desktop - desktop MP4 path (e.g. 'assets/Hero_Desktop.mp4')
- * @param {string} mobile - mobile MP4 path (e.g. 'assets/Hero_Mobile.mp4')
+ * The poster is REQUIRED for perceived performance: on a slow host Safari can
+ * leave an autoplay <video> blank until the clip buffers, so the poster paints
+ * the cover frame immediately. Pick it per-viewport, mirroring the <source>
+ * boundary, so the cover matches the clip that will load.
+ *
+ * @param {string} desktop - desktop MP4 path
+ * @param {string} mobile - mobile MP4 path
  * @param {string} [desktopWebm] - desktop WebM path
  * @param {string} [mobileWebm] - mobile WebM path
- * @param {string} [poster] - single poster image (same on both viewports)
+ * @param {string} [desktopPoster] - desktop cover image
+ * @param {string} [mobilePoster] - mobile cover image
+ * @param {string} [poster] - single cover used on both viewports (fallback)
  * @param {string} [className] - extra classes
  */
 export default function ResponsiveVideo({
   desktop, mobile, desktopWebm, mobileWebm,
-  poster, className = '',
+  desktopPoster, mobilePoster, poster, className = '',
 }) {
+  const cover = isMobileViewport()
+    ? (mobilePoster || poster)
+    : (desktopPoster || poster)
+
   return (
     <video
       autoPlay
@@ -27,7 +42,7 @@ export default function ResponsiveVideo({
       loop
       playsInline
       preload="auto"
-      poster={poster ? asset(poster) : undefined}
+      poster={cover ? asset(cover) : undefined}
       className={className}
     >
       {mobileWebm  && <source src={asset(mobileWebm)}  type="video/webm" media={MOBILE_MEDIA} />}

@@ -51,7 +51,7 @@ export default function ScrollPlayVideo({
       muted
       loop
       playsInline
-      preload="auto"
+      preload="none"
       poster={poster ? asset(poster) : undefined}
       className={className}
     >

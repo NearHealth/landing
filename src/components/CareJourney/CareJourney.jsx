@@ -45,21 +45,37 @@ const cards = [
 function CareCard({ card, variants }) {
   const isMobile = useIsMobile()
   const reduce = useReducedMotion()
-  const [hovered, setHovered] = useState(false)
-  // Hover glow is a desktop-only flourish (no hover on touch; skipped under
-  // reduced motion). Pure CSS port of Hover_Gradient.lottie — fades in on hover.
-  const showGlow = !isMobile && !reduce
+  const [active, setActive] = useState(false)
+  const cardElRef = useRef(null)
+  // Glow (pure CSS port of Hover_Gradient.lottie) renders on both layouts,
+  // skipped only under reduced motion. Desktop drives it on hover; mobile has
+  // no hover, so it activates while the card sits in the viewport instead.
+  const showGlow = !reduce
 
-  const onEnter = showGlow ? () => setHovered(true) : undefined
-  const onLeave = showGlow ? () => setHovered(false) : undefined
+  const onEnter = (showGlow && !isMobile) ? () => setActive(true) : undefined
+  const onLeave = (showGlow && !isMobile) ? () => setActive(false) : undefined
+
+  // Mobile: light the glow while the card is in view (mirrors the hover state).
+  useEffect(() => {
+    if (!showGlow || !isMobile) return
+    const el = cardElRef.current
+    if (!el) return
+    const io = new IntersectionObserver(
+      ([entry]) => setActive(entry.isIntersecting),
+      { threshold: 0.4 }
+    )
+    io.observe(el)
+    return () => io.disconnect()
+  }, [showGlow, isMobile])
 
   return (
-    <motion.a href="#contact" className="care-card" variants={variants} onMouseEnter={onEnter} onMouseLeave={onLeave}>
+    <motion.a ref={cardElRef} href="#contact" className="care-card" variants={variants} onMouseEnter={onEnter} onMouseLeave={onLeave}>
       <div className="care-card-surface">
-        {/* Hover glow — exact CSS port of Hover_Gradient.lottie. Two cyan spheres
-            inside the surface clip (z-index 0), below content; fades in on hover. */}
+        {/* Glow — exact CSS port of Hover_Gradient.lottie. Two cyan spheres
+            inside the surface clip (z-index 0), below content; fades in when
+            active (hover on desktop, in-view on mobile). */}
         {showGlow && (
-          <div className={`care-card-glow-css${hovered ? ' is-on' : ''}`} aria-hidden="true">
+          <div className={`care-card-glow-css${active ? ' is-on' : ''}`} aria-hidden="true">
             <div className="gsphere gsphere--1" />
             <div className="gsphere gsphere--2" />
           </div>

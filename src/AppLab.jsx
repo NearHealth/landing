@@ -1,5 +1,5 @@
 import Navbar from './components/Navbar/Navbar'
-import Hero from './components/Hero/Hero'
+import HeroLab from './components/Hero/HeroLab'
 import CareJourney from './components/CareJourney/CareJourney'
 import MemberExperience from './components/MemberExperience/MemberExperience'
 import HowItWorks from './components/HowItWorks/HowItWorks'
@@ -19,7 +19,7 @@ import { NAVBAR_HEIGHT, NAV_LINK_GAP } from './utils/layout'
 import { SECTIONS } from './constants/sections'
 import { useEffect, useRef, useState } from 'react'
 
-export default function App() {
+export default function AppLab() {
   const lenisRef = useRef(null)
   useLenis(lenisRef)
   // Drag-resize across a layout breakpoint → reload, restoring the section.
@@ -111,21 +111,27 @@ export default function App() {
       >
         Request a demo
       </a>
-      <Hero key={sectionKey(SECTIONS.hero)} />
-      <CareJourney key={sectionKey(SECTIONS.builtFor)} />
-      <MemberExperience />
-      <HowItWorks key={sectionKey(SECTIONS.howItWorks)} />
-      <PostEnrollment key={sectionKey(SECTIONS.whyNear)} />
-      <ConnectedCoverage />
-      <RealWorld />
-      <ShapedSection />
-      <CareConnected />
-      <div className="footer-wrap">
-        <FooterCta key={sectionKey(SECTIONS.contact)} />
-        <Footer />
+      <HeroLab key={sectionKey(SECTIONS.hero)} />
+      {/* LAB: everything after the hero lives in one wrapper that rises over the
+          hero's empty (letterbox + tail) area. The hero video stays sticky; this
+          block slides up across the computed dead space, killing the gap. The
+          pull distance is set by HeroLab on :root from the aspect-locked geom. */}
+      <div className="post-hero">
+        <CareJourney key={sectionKey(SECTIONS.builtFor)} />
+        <MemberExperience />
+        <HowItWorks key={sectionKey(SECTIONS.howItWorks)} />
+        <PostEnrollment key={sectionKey(SECTIONS.whyNear)} />
+        <ConnectedCoverage />
+        <RealWorld />
+        <ShapedSection />
+        <CareConnected />
+        <div className="footer-wrap">
+          <FooterCta key={sectionKey(SECTIONS.contact)} />
+          <Footer />
+        </div>
       </div>
       {import.meta.env.DEV && <GridOverlay />}
-      {/* import.meta.env.DEV && */ <GradientTuner />}
+      {import.meta.env.DEV && <GradientTuner />}
     </>
   )
 }

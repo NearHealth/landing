@@ -60,12 +60,12 @@
   .how-center-icon {
     position: relative;
     display: flex; justify-content: center;
-    margin-bottom: 16px;
+    margin-bottom: 24px;
   }
   .how-center-icon::after {
     content: '';
     position: absolute; left: 50%; top: 100%;
-    width: 1px; height: 16px;
+    width: 1px; height: 24px;
     background: rgba(10,28,30,0.2);
     transform: translateX(-50%);
   }

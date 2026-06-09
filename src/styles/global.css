@@ -117,6 +117,10 @@
 
 /* ── Reset ── */
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+/* Media never blows past its container. Videos sit in aspect-ratio cards with
+   overflow:hidden + object-fit:cover; this caps the horizontal axis as a guard
+   so a slow-host / wrong-aspect frame (or its poster) can't stretch the layout. */
+video, img { max-width: 100%; }
 html { -webkit-font-smoothing: antialiased; overscroll-behavior-y: none; overflow-x: clip; }
 html.lenis, html.lenis body { height: auto; }
 .lenis.lenis-smooth { scroll-behavior: auto !important; }
