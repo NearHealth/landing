@@ -11,6 +11,15 @@
 }
 /* 32px between the title block and the cards (Figma 70:397). */
 .care-journey-header { margin-bottom: 32px; }
+/* Cap the subtitle width via a static wrapper (not the animated <p>, whose
+   transform/inline styles from Motion we keep clean) so the first sentence
+   ("…after enrollment.", ~650px in Gilroy-Medium 18px) sits on one line and
+   "Providers…" greedily wraps to the second — replacing the old hard <br />.
+   text-wrap:normal overrides the global `balance`, which would otherwise even
+   out the two lines. On narrower viewports the cap is never reached, so the copy
+   wraps to the container width on its own. */
+.care-journey-subtitle { max-width: 700px; }
+.care-journey-header .section-subtitle { text-wrap: normal; }
 .care-cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));

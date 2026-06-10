@@ -141,15 +141,17 @@ export default function CareJourney() {
             marginBottom={16}
             mobileMarginBottom={22}
           />
-          <motion.p
-            className="section-subtitle"
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.6 }}
-            variants={itemVariants}
-          >
-            Members struggle to use their coverage. Brokers lose visibility after enrollment.<br /> Providers face disconnected patient journeys.
-          </motion.p>
+          <div className="care-journey-subtitle">
+            <motion.p
+              className="section-subtitle"
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, amount: 0.6 }}
+              variants={itemVariants}
+            >
+              Members struggle to use their coverage. Brokers lose visibility after enrollment. Providers face disconnected patient journeys.
+            </motion.p>
+          </div>
         </div>
         <motion.div
           className="care-cards"
