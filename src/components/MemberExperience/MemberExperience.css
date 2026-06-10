@@ -15,6 +15,7 @@
   line-height: 1.36; letter-spacing: 0.02em;
 }
 .member-video-wrap {
+  position: relative;          /* anchor for the autoplay-blocked play overlay */
   width: 100%; aspect-ratio: 1439/810;
   border-radius: var(--radius-lg);
   overflow: hidden;

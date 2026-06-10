@@ -391,7 +391,7 @@
 
 /* Heading a touch smaller than --fs-hero (6.5vw → 6vw, ~7%) so the widest line
    clears the video in the two-column layout. Tune the vw value to taste. */
-.hero-left-col .hero-heading { font-size: clamp(54px, 6vw, 96px); }
+.hero-left-col .hero-heading { font-size: clamp(54px, 5.85vw, 96px); }
 
 /* Desktop built-for marquee — pure CSS (replaces the GSAP ticker). Translate by
    exactly one ITEMS set (7 × (14px item + 8px gap) = 154px); the repeat in
@@ -433,7 +433,7 @@
    below always aligns to the bottom of heading line 2. Pure CSS, no JS offset. */
 .hero-h1-mirror {
   font-family: var(--font-heading);
-  font-size: clamp(54px, 6vw, 96px);   /* identical to .hero-left-col .hero-heading */
+  font-size: clamp(54px, 5.85vw, 96px);   /* identical to .hero-left-col .hero-heading */
   font-weight: 400;
   line-height: 0.95;
   letter-spacing: -0.03em;

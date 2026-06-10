@@ -105,9 +105,9 @@ export default function HeroLab() {
     return g ? 1 - clamp01(y / g.fadeLen) : 1
   })
 
-  // LAB: drive the .post-hero riser (it lives in AppLab, a sibling) via a :root
-  // CSS var. Keeps the next section glued POST_HERO_GAP below the video's bottom
-  // through the expand+hold, then scrolls normally.
+  // Drive the .post-hero riser (it lives in App, a sibling) via a :root CSS var.
+  // Keeps the next section glued POST_HERO_GAP below the video's bottom through
+  // the expand+hold, then scrolls normally.
   const postHeroY = useTransform([scrollY, resizeTick], ([y]) => {
     const g = geom.current
     return g ? postHeroYAt(g, y) : 0
@@ -183,9 +183,12 @@ export default function HeroLab() {
       // −10px breathing room on narrow screens (where the expanded width is
       // vw−2·pad). Absorbed by the 1440 cap on wide screens, so they're unchanged.
       const wFull = Math.min(vw - 2 * pad - 10, 1440)
-      // LAB: aspect-correct AND height-capped — never a cropped portrait on tall
-      // screens. The card fills its (capped) width and letterboxes top/bottom.
-      const hFull = Math.min(vhEff - 2 * pad, wFull * CARD_ASPECT)
+      // LAB: fill the (capped) viewport height. On a normal desktop (vh ≤ cap)
+      // this is vh−2·pad, so with dy=pad−82 the card fills AND centres (equal top/
+      // bottom gaps) — true fullscreen. On tall/zoomed screens vhEff caps it, so
+      // it stays top-anchored and never inflates into a portrait (the cap, not an
+      // aspect lock, is what prevents that). object-fit: cover handles the crop.
+      const hFull = vhEff - 2 * pad
       const start = cardAbsTop - NAVBAR_STICKY_OFFSET // scroll where the card sticks
       const dx = Math.min(vw / 2 - rect.left - wFull / 2, w0 - wFull)
       // LAB: anchor the card near the top (at `pad`), not centred — it expands in
