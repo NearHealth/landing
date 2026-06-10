@@ -222,16 +222,16 @@
   left: 50%; top: 50%;
   /* width = 861/700 (=123%) × scale. Vars are driven by the dev GradientTuner;
      fallbacks are the baked production values. */
-  width: calc(123% * var(--hg-scale, 2.98));
+  width: calc(123% * var(--hg-scale, 3));
   aspect-ratio: 1;
-  margin-left: calc(123% * var(--hg-scale, 2.98) / -2);
-  margin-top: calc(123% * var(--hg-scale, 2.98) / -2);
+  margin-left: calc(123% * var(--hg-scale, 3) / -2);
+  margin-top: calc(123% * var(--hg-scale, 3) / -2);
   border-radius: 50%;
   transform-origin: 50% 50%;
   background: radial-gradient(50% 50% at 50% 50%,
-    rgba(94, 230, 253, 0) var(--hg-s1, 16%),
-    rgba(160, 240, 254, var(--hg-mid, 1)) var(--hg-s2, 56%),
-    #5EE6FD var(--hg-s3, 63%));
+    rgba(94, 230, 253, 0) var(--hg-s1, 30%),
+    rgba(160, 240, 254, var(--hg-mid, 0.7)) var(--hg-s2, 50%),
+    #5EE6FD var(--hg-s3, 60%));
   will-change: transform;
   animation-play-state: paused;   /* only spin while hovered */
 }
