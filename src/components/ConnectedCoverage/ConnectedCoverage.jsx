@@ -170,7 +170,7 @@ export default function ConnectedCoverage() {
             marginBottom={18}
             mobileMarginBottom={18}
           />
-          <motion.p className="platform-subtitle" {...reveal}>Supporting the coverage types brokers and providers work with every day.</motion.p>
+          <motion.p className="platform-subtitle" {...reveal}>Supporting the coverage <br className="mobile-br" />types brokers and providers work with every day.</motion.p>
         </div>
         <motion.div className="platform-phone" {...reveal}>
           <img
