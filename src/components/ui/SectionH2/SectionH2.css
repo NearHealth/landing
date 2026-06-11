@@ -49,7 +49,6 @@
     letter-spacing: -0.01em;
     padding-bottom: 0;
     white-space: normal;
-    text-wrap: balance;
     /* Keep the trailing period off the overflow:clip mask edge — iOS Safari
        intermittently drops the last glyph when it sits flush against the clip
        boundary. Horizontal-only, so the vertical reveal mask is untouched. */

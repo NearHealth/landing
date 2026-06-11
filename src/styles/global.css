@@ -187,7 +187,9 @@ ul { list-style: none; }
 .section-subtitle {
   font-size: var(--fs-subtitle); font-weight: 400;
   line-height: 1.36; letter-spacing: 0; margin-top: var(--space-sm);
-  text-wrap: balance;
+  /* No text-wrap: balance — WebKit/Safari mishandles it on these subtitles
+     (balanced text fails to wrap inside its max-width and overflows). Default
+     greedy wrapping respects the container width on every browser. */
 }
 .footer-wrap { position: relative; }
 
@@ -198,6 +200,6 @@ ul { list-style: none; }
      no separate 4.6MB background-mobile.svg needed. */
 }
 @media (max-width: 480px) {
-  .section-subtitle { margin-top: 0; text-wrap: unset; }
+  .section-subtitle { margin-top: 0; }
   .section-title { font-size: 36px; margin-bottom: 22px; }
 }

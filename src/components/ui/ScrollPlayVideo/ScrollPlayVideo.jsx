@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import { asset } from '../../../utils/assetPath'
 import useVideoPlayback from '../../../hooks/useVideoPlayback'
 import VideoPlayOverlay from '../VideoPlayOverlay/VideoPlayOverlay'
+import VideoLoader from '../VideoLoader/VideoLoader'
 
 // Mobile video is phones-only (≤480); tablets and up get the desktop clip
 // (client 0206 item 4 — "use the desktop video on tablets in both cases").
@@ -27,12 +28,12 @@ const isMobileViewport = () =>
  * after OS pauses, loop backstop) — see the hook for the failure modes.
  */
 export default function ScrollPlayVideo({
-  desktop, mobile, desktopWebm, mobileWebm,
+  desktop, mobile,
   desktopPoster, mobilePoster, className = '',
 }) {
   const videoRef = useRef(null)
   const shouldPlayRef = useRef(false) // flips with viewport intersection
-  const { blocked, requestPlay } = useVideoPlayback(videoRef, shouldPlayRef)
+  const { blocked, loading, requestPlay } = useVideoPlayback(videoRef, shouldPlayRef)
   const poster = isMobileViewport() ? mobilePoster : desktopPoster
 
   useEffect(() => {
@@ -85,11 +86,10 @@ export default function ScrollPlayVideo({
         poster={poster ? asset(poster) : undefined}
         className={className}
       >
-        {mobileWebm  && <source src={asset(mobileWebm)}  type="video/webm" media={MOBILE_MEDIA} />}
-        {mobile      && <source src={asset(mobile)}      type="video/mp4"  media={MOBILE_MEDIA} />}
-        {desktopWebm && <source src={asset(desktopWebm)} type="video/webm" media={DESKTOP_MEDIA} />}
-        {desktop     && <source src={asset(desktop)}     type="video/mp4"  media={DESKTOP_MEDIA} />}
+        {mobile  && <source src={asset(mobile)}  type="video/mp4" media={MOBILE_MEDIA} />}
+        {desktop && <source src={asset(desktop)} type="video/mp4" media={DESKTOP_MEDIA} />}
       </video>
+      <VideoLoader loading={loading && !blocked} />
       {blocked && <VideoPlayOverlay onPlay={requestPlay} />}
     </>
   )

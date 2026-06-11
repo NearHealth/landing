@@ -244,7 +244,7 @@ export default function Hero() {
               ref={mobileVideoRef}
               style={reduce ? undefined : { width: mW, marginLeft: mMargin, marginRight: mMargin, borderRadius: mRadius, maxWidth: 'none' }}
             >
-              <ResponsiveVideo desktop="assets/video/hero_desktop.mp4" mobile="assets/video/hero_mobile.mp4" desktopWebm="assets/video/hero_desktop.webm" mobileWebm="assets/video/hero_mobile.webm" desktopPoster="assets/video/hero_desktop_poster.jpg" mobilePoster="assets/video/hero_mobile_poster.jpg" />
+              <ResponsiveVideo desktop="assets/video/hero_desktop.mp4" mobile="assets/video/hero_mobile.mp4" desktopPoster="assets/video/hero_desktop_poster.jpg" mobilePoster="assets/video/hero_mobile_poster.jpg" />
             </motion.div>
           </>
         ) : (
@@ -285,7 +285,7 @@ export default function Hero() {
                   className="hero-video-card-inner"
                   style={reduce ? undefined : { width: cardW, height: cardH, x: cardX, y: cardY }}
                 >
-                  <ResponsiveVideo desktop="assets/video/hero_desktop.mp4" mobile="assets/video/hero_mobile.mp4" desktopWebm="assets/video/hero_desktop.webm" mobileWebm="assets/video/hero_mobile.webm" desktopPoster="assets/video/hero_desktop_poster.jpg" mobilePoster="assets/video/hero_mobile_poster.jpg" />
+                  <ResponsiveVideo desktop="assets/video/hero_desktop.mp4" mobile="assets/video/hero_mobile.mp4" desktopPoster="assets/video/hero_desktop_poster.jpg" mobilePoster="assets/video/hero_mobile_poster.jpg" />
                 </motion.div>
               </motion.div>
             </motion.div>

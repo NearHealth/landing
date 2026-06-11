@@ -15,11 +15,10 @@
    transform/inline styles from Motion we keep clean) so the first sentence
    ("…after enrollment.", ~650px in Gilroy-Medium 18px) sits on one line and
    "Providers…" greedily wraps to the second — replacing the old hard <br />.
-   text-wrap:normal overrides the global `balance`, which would otherwise even
-   out the two lines. On narrower viewports the cap is never reached, so the copy
-   wraps to the container width on its own. */
+   On narrower viewports the cap is never reached, so the copy wraps to the
+   container width on its own. (Greedy wrap is the global default now that
+   text-wrap: balance is gone — see .section-subtitle in global.css.) */
 .care-journey-subtitle { max-width: 700px; }
-.care-journey-header .section-subtitle { text-wrap: normal; }
 .care-cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));

@@ -5,7 +5,7 @@
 .connected-coverage .nh-h2 { text-align: center; }
 .connected-coverage-inner { display: flex; flex-direction: column; align-items: center; text-align: center; }
 .platform-text { max-width: 600px; }
-.platform-subtitle { margin: var(--space-sm) auto 0; font-size: var(--fs-subtitle); font-weight: 500; line-height: 1.5; text-wrap: balance; }
+.platform-subtitle { max-width: 454px; margin: var(--space-sm) auto 0; font-size: var(--fs-subtitle); font-weight: 500; line-height: 1.5; }
 .platform-phone { margin-top: 32px; border-radius: var(--radius-lg); overflow: hidden; line-height: 0; }
 .platform-phone picture { display: block; }
 .platform-phone-img {

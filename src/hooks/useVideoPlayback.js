@@ -17,11 +17,15 @@ import { useCallback, useEffect, useRef, useState } from 'react'
  * now (e.g. scrolled into view). The hook never starts a video whose flag is
  * false, and a deliberate pause (flag flipped off first) is left alone.
  *
- * Returns { blocked, requestPlay }: render an overlay while `blocked`, wire
- * its onClick to `requestPlay`.
+ * Returns { blocked, loading, requestPlay }: render a play overlay while
+ * `blocked`, a loading spinner while `loading` (the clip is fetching/buffering
+ * and not yet showing frames), and wire the overlay's onClick to `requestPlay`.
  */
 export default function useVideoPlayback(videoRef, shouldPlayRef) {
   const [blocked, setBlocked] = useState(false)
+  // True while the browser is fetching/buffering with no frame to show yet —
+  // drives the loading spinner. Hidden the moment playback produces frames.
+  const [loading, setLoading] = useState(false)
   const reloadedRef = useRef(false)
 
   const tryPlay = useCallback(() => {
@@ -48,11 +52,25 @@ export default function useVideoPlayback(videoRef, shouldPlayRef) {
     const video = videoRef.current
     if (!video) return
 
+    // Force the muted PROPERTY on, imperatively. React applies the `muted`
+    // JSX attribute as a property whose timing isn't guaranteed before the
+    // browser evaluates autoplay — if it lands unmuted, the autoplay policy
+    // rejects play() (only muted autoplay is allowed without a gesture). Setting
+    // it here, before the play() calls below, makes muted autoplay reliable.
+    video.muted = true
+
     // Cap resume-after-pause retries so a browser that insists on pausing
     // (e.g. OS media policy) isn't fought in a loop; any successful playback
     // resets the budget.
     let pauseRetries = 0
-    const onPlaying = () => { pauseRetries = 0; setBlocked(false) }
+    const onPlaying = () => { pauseRetries = 0; setBlocked(false); setLoading(false) }
+
+    // Spinner: on while the clip is fetching/stalled with nothing to paint,
+    // off the instant it can render frames or fails (error → the overlay/poster
+    // takes over; never leave the spinner running forever).
+    const onWaiting = () => setLoading(true)
+    const onCanPlay = () => setLoading(false)
+    const onError = () => setLoading(false)
 
     const onEnded = () => {
       try { video.currentTime = 0 } catch { /* not seekable yet */ }
@@ -76,6 +94,11 @@ export default function useVideoPlayback(videoRef, shouldPlayRef) {
     video.addEventListener('playing', onPlaying)
     video.addEventListener('ended', onEnded)
     video.addEventListener('pause', onPause)
+    video.addEventListener('loadstart', onWaiting)
+    video.addEventListener('waiting', onWaiting)
+    video.addEventListener('stalled', onWaiting)
+    video.addEventListener('canplay', onCanPlay)
+    video.addEventListener('error', onError)
     document.addEventListener('visibilitychange', onVisible)
     window.addEventListener('pageshow', onPageShow)
 
@@ -88,6 +111,11 @@ export default function useVideoPlayback(videoRef, shouldPlayRef) {
       video.removeEventListener('playing', onPlaying)
       video.removeEventListener('ended', onEnded)
       video.removeEventListener('pause', onPause)
+      video.removeEventListener('loadstart', onWaiting)
+      video.removeEventListener('waiting', onWaiting)
+      video.removeEventListener('stalled', onWaiting)
+      video.removeEventListener('canplay', onCanPlay)
+      video.removeEventListener('error', onError)
       document.removeEventListener('visibilitychange', onVisible)
       window.removeEventListener('pageshow', onPageShow)
     }
@@ -106,5 +134,5 @@ export default function useVideoPlayback(videoRef, shouldPlayRef) {
     }
   }, [blocked, tryPlay])
 
-  return { blocked, requestPlay: tryPlay }
+  return { blocked, loading, requestPlay: tryPlay }
 }

@@ -31,8 +31,6 @@ export default function MemberExperience() {
         <motion.div className="member-video-animate" {...reveal(0.15)}>
           <div className="member-video-wrap">
             <ScrollPlayVideo
-              desktopWebm="assets/video/ai_chat_desktop.webm"
-              mobileWebm="assets/video/ai_chat_mobile.webm"
               desktop="assets/video/ai_chat_desktop.mp4"
               mobile="assets/video/ai_chat_mobile.mp4"
               desktopPoster="assets/video/ai_chat_desktop_poster.jpg"

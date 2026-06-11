@@ -27,7 +27,7 @@
   background: var(--accent);
 }
 .feature-card h3 { margin-bottom: 20px; font-size: var(--fs-h5); font-weight: 500; letter-spacing: 0.02em; }
-.feature-card p  { font-size: 16px; font-weight: 500; line-height: 1.32; letter-spacing: 0.02em; color: rgba(10, 28, 30, 0.6); text-wrap: balance; }
+.feature-card p  { font-size: 16px; font-weight: 500; line-height: 1.32; letter-spacing: 0.02em; color: rgba(10, 28, 30, 0.6); }
 
 /* ── Tablet (≤1024px) ── */
 @media (max-width: 1024px) {

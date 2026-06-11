@@ -8,7 +8,7 @@
   gap: var(--space-lg);
   margin-bottom: var(--space-md);
 }
-.member-header .nh-h2 { flex-shrink: 0; max-width: 680px; text-wrap: balance; margin-bottom: 0; }
+.member-header .nh-h2 { flex-shrink: 0; max-width: 680px; margin-bottom: 0; }
 .member-desc {
   max-width: 447px;
   font-size: var(--fs-subtitle); font-weight: 500;
