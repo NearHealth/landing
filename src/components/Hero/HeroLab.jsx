@@ -192,9 +192,10 @@ export default function HeroLab() {
       // Fill the viewport height the scrub scales with. In LANDSCAPE vhEff = vh,
       // so with dy = pad − NAVBAR_STICKY_OFFSET the card fills AND centres (equal
       // top/bottom gaps) — true fullscreen. In PORTRAIT the cap on vhEff keeps the
-      // card from inflating into a cropped portrait; landscape has no such guard,
-      // so near-square monitors (4:3/5:4) stretch it past the card's aspect —
-      // accepted with the full-height choice. object-fit: cover handles the crop.
+      // card from inflating into a cropped portrait. The card CAN grow taller
+      // than the video's aspect (always does in landscape): the video inside is
+      // object-fit: contain, so it keeps its aspect, centres vertically, and the
+      // card tint fills the top/bottom bands — the video itself never crops.
       const hFull = vhEff - 2 * pad
       const start = cardAbsTop - NAVBAR_STICKY_OFFSET // scroll where the card sticks
       const dx = Math.min(vw / 2 - rect.left - wFull / 2, w0 - wFull)
