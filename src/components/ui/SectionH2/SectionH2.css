@@ -48,11 +48,9 @@
     line-height: 1;
     letter-spacing: -0.01em;
     padding-bottom: 0;
-    white-space: normal;
-    /* Balance is kept HERE (unlike the subtitles, where it was removed): these
-       are short pre-split heading lines, so balance just evens a mobile wrap and
-       doesn't hit the WebKit overflow-past-max-width bug that long <p> copy did. */
-    text-wrap: balance;
+    /* No white-space:normal / text-wrap:balance on mobile — keep the base
+       white-space:nowrap so each heading renders on its explicit pre-split line
+       (lines/mobileLines), with no auto-wrap or balancing. */
     /* Keep the trailing period off the overflow:clip mask edge — iOS Safari
        intermittently drops the last glyph when it sits flush against the clip
        boundary. Horizontal-only, so the vertical reveal mask is untouched. */
