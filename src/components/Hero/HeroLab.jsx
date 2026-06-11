@@ -194,8 +194,8 @@ export default function HeroLab() {
       // top/bottom gaps) — true fullscreen. In PORTRAIT the cap on vhEff keeps the
       // card from inflating into a cropped portrait. The card CAN grow taller
       // than the video's aspect (always does in landscape): the video inside is
-      // object-fit: contain, so it keeps its aspect, centres vertically, and the
-      // card tint fills the top/bottom bands — the video itself never crops.
+      // its own centred 16:9 box (sized via cq units, see HeroLab.css), so it
+      // keeps its aspect and never crops — the card just grows around it.
       const hFull = vhEff - 2 * pad
       const start = cardAbsTop - NAVBAR_STICKY_OFFSET // scroll where the card sticks
       const dx = Math.min(vw / 2 - rect.left - wFull / 2, w0 - wFull)
