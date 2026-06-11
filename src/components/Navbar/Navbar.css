@@ -204,6 +204,12 @@
   border-radius: var(--radius-card);
   background: var(--accent);
   color: var(--dark);
+  /* Explicit Semibold family: this <a> is NOT a .btn, so without it the button
+     inherits body's 'Gilroy-Medium' (a 500-only @font-face) and the 600 below
+     gets faux-bolded — heavy/blurry in Safari. font-synthesis:none stops that
+     from ever silently happening again. */
+  font-family: 'Gilroy-Semibold', sans-serif;
+  font-synthesis: none;
   font-size: var(--fs-btn); font-weight: 600; line-height: 1;
   letter-spacing: 0.08em; text-transform: uppercase;
   text-decoration: none;
