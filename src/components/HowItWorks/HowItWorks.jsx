@@ -9,7 +9,7 @@ import './HowItWorks.css'
 const steps = [
   { title: 'More clarity', desc: 'Coverage becomes easier to understand.', num: '01' },
   { title: 'Better access', desc: 'Care and support stay aligned.', num: '02' },
-  { title: 'Less friction', desc: 'Healthcare feels easier to navigate', num: '03' },
+  { title: 'Less friction', desc: 'Healthcare feels easier to navigate.', num: '03' },
 ]
 
 // Gentle ease-out (easeOutCubic) — soft deceleration, no abrupt snap.
