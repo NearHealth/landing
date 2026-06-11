@@ -19,11 +19,11 @@ const heroItem = {
 const SCRUB_VH = 0.6      // scrub scroll distance as a fraction of viewport height
 const EXPAND_FRAC = 0.538 // expand over this fraction of the scrub, then hold
 const TAIL_GAP = 120      // px gap below the expanded card before CareJourney
-// LAB: cap the viewport height the scrub math scales with. On very tall /
-// zoomed-out viewports the raw vh ballooned the runway + bottom padding (→ a big
-// empty band under the hero) and stretched the card into a cropped portrait.
-// Clamping to a reference height keeps the runway/padding bounded; the card is
-// centred in the REAL viewport at its aspect-correct size.
+// Cap on the height the scrub math scales with — applied in PORTRAIT only (see
+// measure()). On a vertical monitor an uncapped vh would balloon the runway and
+// stretch the card into a cropped portrait. In LANDSCAPE the cap is bypassed so
+// the expanded card fills the full viewport height (a known Safari quirk can
+// then leave a little empty space under the footer — intentionally left as-is).
 const MAX_SCRUB_VH = 900
 const CARD_ASPECT = 532 / 947 // expanded card height ÷ width
 const POST_HERO_GAP = 80 // constant gap the next section keeps below the video
@@ -171,12 +171,15 @@ export default function HeroLab() {
       if (window.innerWidth <= BREAKPOINT_TABLET) { clear(); return }
       const vw = window.innerWidth
       const vh = window.innerHeight
-      // LAB: the scrub scroll-distance + tail scale with this CAPPED height, so a
-      // 1800px-tall or zoomed-out viewport no longer balloons the runway/padding.
-      // (Tried bypassing the cap in landscape for a full-height hero — it grew the
-      // runway faster than targetPostHeroTop, clamped padBottom to 0, and left the
-      // post-hero riser frozen negative → a gap under the footer. The cap stays.)
-      const vhEff = Math.min(vh, MAX_SCRUB_VH)
+      // LANDSCAPE: full vh so the expanded card fills the viewport height
+      // (hFull = vh − 2·pad → equal pad top/bottom = filled AND vertically centred).
+      // PORTRAIT (vertical, non-tablet monitors): keep the MAX_SCRUB_VH cap so the
+      // card doesn't stretch into a cropped portrait. Tablets never reach this
+      // branch (width ≤ TABLET exits to the mobile layout above).
+      // NOTE: on tall LANDSCAPE this can leave a little empty space under the
+      // footer — a known Safari quirk in this scrub; intentionally left as-is.
+      const isPortrait = vh > vw
+      const vhEff = isPortrait ? Math.min(vh, MAX_SCRUB_VH) : vh
       const pad = Math.max(72, Math.min(96, 0.05 * vw))
       const rect = slot.getBoundingClientRect()
       const w0 = rect.width
@@ -194,16 +197,9 @@ export default function HeroLab() {
       const hFull = vhEff - 2 * pad
       const start = cardAbsTop - NAVBAR_STICKY_OFFSET // scroll where the card sticks
       const dx = Math.min(vw / 2 - rect.left - wFull / 2, w0 - wFull)
-      // Center the expanded card vertically in the REAL viewport. Only `dy` (the
-      // final translate) changes — vhEff/runway/release stay on the capped value,
-      // so the document height + post-hero riser math are untouched (this is NOT
-      // the uncapped-vhEff full-fill that ballooned the runway → footer gap).
-      // On screens up to the cap, (vh−hFull)/2 == pad, so this equals the old
-      // top-anchor exactly; on taller LANDSCAPE screens it splits the slack evenly
-      // instead of leaving it all below the card. PORTRAIT monitors keep the top
-      // anchor (expand in place, per the earlier client request).
-      const isPortrait = vh > vw
-      const dy = isPortrait ? (pad - NAVBAR_STICKY_OFFSET) : ((vh - hFull) / 2 - NAVBAR_STICKY_OFFSET)
+      // Anchor the card at `pad` from the top. With hFull = vhEff − 2·pad this
+      // yields equal pad gaps top & bottom = filled + centred in landscape.
+      const dy = pad - NAVBAR_STICKY_OFFSET
       const release = start + SCRUB_VH * vhEff // video unpins; riser stops tracking
       // Card bottom (viewport-y) when fully expanded & sticky (p=1): NAVBAR + dy + hFull.
       const videoBottomAtRelease = NAVBAR_STICKY_OFFSET + dy + hFull
