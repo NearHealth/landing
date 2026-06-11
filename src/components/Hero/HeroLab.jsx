@@ -19,11 +19,8 @@ const heroItem = {
 const SCRUB_VH = 0.6      // scrub scroll distance as a fraction of viewport height
 const EXPAND_FRAC = 0.538 // expand over this fraction of the scrub, then hold
 const TAIL_GAP = 120      // px gap below the expanded card before CareJourney
-// Cap on the height the scrub math scales with — applied in PORTRAIT only (see
-// measure()). On a vertical monitor an uncapped vh would balloon the runway and
-// stretch the card into a cropped portrait. In LANDSCAPE the cap is bypassed so
-// the expanded card fills the full viewport height (a known Safari quirk can
-// then leave a little empty space under the footer — intentionally left as-is).
+// Cap on the height the scrub math scales with — applied in PORTRAIT only;
+// full rationale at the orientation branch in measure().
 const MAX_SCRUB_VH = 900
 const CARD_ASPECT = 532 / 947 // expanded card height ÷ width
 const POST_HERO_GAP = 80 // constant gap the next section keeps below the video
@@ -176,8 +173,11 @@ export default function HeroLab() {
       // PORTRAIT (vertical, non-tablet monitors): keep the MAX_SCRUB_VH cap so the
       // card doesn't stretch into a cropped portrait. Tablets never reach this
       // branch (width ≤ TABLET exits to the mobile layout above).
-      // NOTE: on tall LANDSCAPE this can leave a little empty space under the
-      // footer — a known Safari quirk in this scrub; intentionally left as-is.
+      // NOTE: on tall LANDSCAPE the uncapped vh can outgrow what the hero's
+      // bottom padding compensates for (padBottom clamps to 0 below), so the
+      // riser stops short of its layout position → a little empty space under
+      // the footer. Plain scrub geometry, reproduces in any browser (not a
+      // Safari quirk); the client accepted it — intentionally left as-is.
       const isPortrait = vh > vw
       const vhEff = isPortrait ? Math.min(vh, MAX_SCRUB_VH) : vh
       const pad = Math.max(72, Math.min(96, 0.05 * vw))
@@ -189,11 +189,12 @@ export default function HeroLab() {
       // −10px breathing room on narrow screens (where the expanded width is
       // vw−2·pad). Absorbed by the 1440 cap on wide screens, so they're unchanged.
       const wFull = Math.min(vw - 2 * pad - 10, 1440)
-      // LAB: fill the (capped) viewport height. On a normal desktop (vh ≤ cap)
-      // this is vh−2·pad, so with dy=pad−82 the card fills AND centres (equal top/
-      // bottom gaps) — true fullscreen. On tall/zoomed screens vhEff caps it, so
-      // it stays top-anchored and never inflates into a portrait (the cap, not an
-      // aspect lock, is what prevents that). object-fit: cover handles the crop.
+      // Fill the viewport height the scrub scales with. In LANDSCAPE vhEff = vh,
+      // so with dy = pad − NAVBAR_STICKY_OFFSET the card fills AND centres (equal
+      // top/bottom gaps) — true fullscreen. In PORTRAIT the cap on vhEff keeps the
+      // card from inflating into a cropped portrait; landscape has no such guard,
+      // so near-square monitors (4:3/5:4) stretch it past the card's aspect —
+      // accepted with the full-height choice. object-fit: cover handles the crop.
       const hFull = vhEff - 2 * pad
       const start = cardAbsTop - NAVBAR_STICKY_OFFSET // scroll where the card sticks
       const dx = Math.min(vw / 2 - rect.left - wFull / 2, w0 - wFull)
