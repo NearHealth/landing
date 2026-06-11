@@ -3,12 +3,6 @@
   padding: var(--space-section) 0 var(--space-section-desktop);
 }
 .care-journey .container { padding: var(--px-section-x); }
-/* Desktop: 412px from the hero video to this section. The gap is the hero's
-   post-scrub tail (TAIL_GAP = 120px, set in Hero.jsx) + this top padding, so
-   120 + 292 = 412. Desktop-only — the scrub/tail exist only there. */
-@media (min-width: 1025px) {
-  .care-journey { padding-top: 292px; }
-}
 /* 32px between the title block and the cards (Figma 70:397). */
 .care-journey-header { margin-bottom: 32px; }
 /* Cap the subtitle width via a static wrapper (not the animated <p>, whose
