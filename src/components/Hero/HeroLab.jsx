@@ -194,11 +194,18 @@ export default function HeroLab() {
       const hFull = vhEff - 2 * pad
       const start = cardAbsTop - NAVBAR_STICKY_OFFSET // scroll where the card sticks
       const dx = Math.min(vw / 2 - rect.left - wFull / 2, w0 - wFull)
-      // LAB: anchor the card near the top (at `pad`), not centred — it expands in
-      // place on tall screens (client request).
-      const dy = pad - NAVBAR_STICKY_OFFSET
+      // Center the expanded card vertically in the REAL viewport. Only `dy` (the
+      // final translate) changes — vhEff/runway/release stay on the capped value,
+      // so the document height + post-hero riser math are untouched (this is NOT
+      // the uncapped-vhEff full-fill that ballooned the runway → footer gap).
+      // On screens up to the cap, (vh−hFull)/2 == pad, so this equals the old
+      // top-anchor exactly; on taller LANDSCAPE screens it splits the slack evenly
+      // instead of leaving it all below the card. PORTRAIT monitors keep the top
+      // anchor (expand in place, per the earlier client request).
+      const isPortrait = vh > vw
+      const dy = isPortrait ? (pad - NAVBAR_STICKY_OFFSET) : ((vh - hFull) / 2 - NAVBAR_STICKY_OFFSET)
       const release = start + SCRUB_VH * vhEff // video unpins; riser stops tracking
-      // Card bottom (viewport-y) when fully expanded & sticky (p=1): = pad + hFull.
+      // Card bottom (viewport-y) when fully expanded & sticky (p=1): NAVBAR + dy + hFull.
       const videoBottomAtRelease = NAVBAR_STICKY_OFFSET + dy + hFull
       // The .post-hero block must NATURALLY sit here so its riser translateY is
       // exactly 0 at release — i.e. it ends on its real layout position. A non-zero
