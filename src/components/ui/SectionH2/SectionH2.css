@@ -1,6 +1,15 @@
 .nh-h2 {
   --nh-h2-mb: 16px;
   --nh-h2-mb-mobile: 22px;
+  /* Fluid mobile h2 size, shared with section-level overrides: 36px design cap,
+     shrinking with the viewport so every pre-split line fits the 19.5px-padded
+     container — mobile lines are nowrap inside an overflow:clip mask, so any
+     line wider than the container is silently cut, with no wrap fallback.
+     Calibrated to the site's widest mobile h2 line, “Healthcare navigation,”
+     ≈ 10.5em at this letter-spacing (+~2% rasterisation margin → /10.65).
+     Recalibrate if a wider h2 line ships. 36px is reached at ≥422px viewports;
+     narrower phones scale down linearly. */
+  --nh-h2-fs-mobile: min(36px, calc((100vw - 2 * var(--page-px)) / 10.65));
   margin: 0 0 var(--nh-h2-mb);
   font-family: var(--font-heading);
   font-size: var(--fs-h2);
@@ -38,7 +47,7 @@
 @media (max-width: 480px) {
   /* Care-era mobile h2 sizing/metrics */
   .nh-h2 {
-    font-size: 36px;
+    font-size: var(--nh-h2-fs-mobile);
     line-height: 1;
     letter-spacing: -0.01em;
     margin-bottom: var(--nh-h2-mb-mobile);

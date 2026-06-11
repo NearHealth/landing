@@ -97,7 +97,11 @@
 @media (max-width: 1024px) {
   .post-enrollment > .container { padding: 56px 40px; min-height: unset; }
   .post-glow { display: none; }
-  .post-enrollment .nh-h2 { font-size: 44px; margin-bottom: 56px; max-width: 100%; }
+  /* 44px cap, fluid below: the dark card eats 40px ×2 on top of the 19.5px page
+     padding, and the widest line “post-enrollment reality.” is ≈10.0em at the
+     tablet letter-spacing (-0.03em) → /10.2 (+2% margin). Narrow tablets /
+     landscape phones / folds (≲570px) scale down instead of clipping. */
+  .post-enrollment .nh-h2 { font-size: min(44px, calc((100vw - 2 * var(--page-px) - 80px) / 10.2)); margin-bottom: 56px; max-width: 100%; }
   .post-list { width: 100%; gap: 0; }
   .post-item { padding: 24px 0; border-top: 1px solid rgba(255,255,255,0.1); gap: 16px; }
   .post-item:first-child { border-top: none; padding-top: 0; }
@@ -112,9 +116,13 @@
   /* Figma node 2072:1411 (mobile): container pad 36/23/52, radius 30. */
   .post-enrollment > .container { padding: 36px 23px 52px; border-radius: 30px; min-height: unset; }
   .post-enrollment .nh-h2 {
-    max-width: 323px;
+    /* No max-width here (Figma had 323px): with nowrap + clip it cut the
+       heading on ≥414px phones; the explicit `lines` make it redundant. */
     margin-bottom: 52px;
-    font-size: 32px; letter-spacing: -0.01em;
+    /* 32px cap, fluid below: card pad 23px ×2 on top of the 19.5px page
+       padding; widest line “post-enrollment reality.” ≈ 10.65em → /10.8. */
+    font-size: min(32px, calc((100vw - 2 * var(--page-px) - 46px) / 10.8));
+    letter-spacing: -0.01em;
   }
   .post-list { gap: 0; }
   /* Figma: list gap 28px sits on BOTH sides of each zero-height divider, so
