@@ -292,7 +292,7 @@ export default function HeroLab() {
           <>
             <div className="hero-mobile-top">
               <h1 className="hero-heading hero-heading--mobile">The future of <br />post-enrollment <br />healthcare.</h1>
-              <p className="hero-subtitle hero-subtitle--mobile">Mid α</p>
+              <p className="hero-subtitle hero-subtitle--mobile">The first AI-native infrastructure bridging coverage and care.</p>
               <div className="hero-buttons hero-buttons--mobile">
                 <a href="#contact" className="btn btn--primary">Request a demo</a>
                 <a href="#contact" className="btn btn--secondary">Talk to us</a>
@@ -323,7 +323,7 @@ export default function HeroLab() {
               </motion.div>
               <motion.div variants={itemVariants}>
                 <motion.div className="hero-left" style={{ opacity: textFade }}>
-                  <p className="hero-subtitle">Mid α</p>
+                  <p className="hero-subtitle">The first AI-native infrastructure bridging coverage and care.</p>
                   <div className="hero-buttons">
                     <a href="#contact" className="btn btn--primary">Request a demo</a>
                     <a href="#contact" className="btn btn--secondary">Talk to us</a>
