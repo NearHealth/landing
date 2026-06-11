@@ -37,6 +37,7 @@ export default function RealWorld() {
       <div className="container">
         <SectionH2
           lines={['Designed for modern healthcare operations.']}
+          mobileLines={['Designed for modern', 'healthcare operations.']}
           marginBottom={32}
           mobileMarginBottom={28}
         />

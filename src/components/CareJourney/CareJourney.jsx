@@ -138,6 +138,7 @@ export default function CareJourney() {
         <div className="care-journey-header">
           <SectionH2
             lines={['Enrollment got digital.', 'Care coordination didn’t.']}
+            mobileLines={['Enrollment got digital.', 'Care coordination', 'didn’t.']}
             marginBottom={16}
             mobileMarginBottom={22}
           />
