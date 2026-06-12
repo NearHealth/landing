@@ -1,17 +1,19 @@
 import { test, expect, type Page } from '@playwright/test'
 
-// Regression tests for the "needs two clicks" navbar bug.
+// Regression tests for the navbar nav-link jumps. Two guarantees:
 //
-// Every section after the hero lives in `.post-hero`, which carries a
-// scroll-linked `translateY(--post-hero-y)` that VARIES in the riser zone near
-// the top and FREEZES past `release`. The old scrollToId measured
-// getBoundingClientRect() at the current scroll (top of page → riser value) and
-// teleported, so the first click from the top landed ~one section early (on
-// #member-experience instead of #how-it-works). App.jsx now re-measures after
-// the jump settles into the frozen zone and corrects, so a single click lands.
+// 1. SINGLE-CLICK LANDING. Every section after the hero lives in `.post-hero`,
+//    which carries a scroll-linked `translateY(--post-hero-y)` that VARIES in
+//    the riser zone near the top and FREEZES past `release`. The old scrollToId
+//    measured at the current scroll and teleported, so the first click from the
+//    top landed ~one section early. App.jsx re-measures after the jump settles
+//    into the frozen zone and corrects, so a single click lands.
 //
-// Landing offset mirrors App.jsx: NAVBAR_HEIGHT(66) + NAV_LINK_GAP(56) = 122,
-// plus 120 for #care-connected (which has padding:0).
+// 2. HERO-ALIGNED GAP. scrollToId lands each section so its content start (box
+//    top + the section's own padding-top) sits at the SAME viewport height as
+//    the hero's "The future of…" headline (`.hero-heading`) — the same breathing
+//    room below the navbar on every jump, instead of the old fixed offset that
+//    stacked on top of each section's 120px padding.
 
 const BASE = 'http://localhost:5188/landing/'
 const VW = 1440
@@ -49,38 +51,57 @@ async function waitStill(page: Page) {
   }, { timeout: 5000 })
 }
 
-// Top of a section in viewport coords, after the scroll fully settles.
-async function sectionTopAfter(page: Page, click: () => Promise<void>, id: string) {
+// The hero heading's resting top in viewport coords at scroll 0 — the gap every
+// section landing should reproduce (165 desktop / 143 mobile).
+async function heroHeadingTop(page: Page) {
+  return page.evaluate(() => {
+    const h = document.querySelector('.hero-heading')
+    return h ? Math.round(h.getBoundingClientRect().top) : null
+  })
+}
+
+// A landed section's CONTENT START in viewport coords = box top + padding-top,
+// measured after the scroll fully settles. This is the stable reference App.jsx
+// aligns to the hero heading (the inner heading lines animate translateY on
+// reveal, so they are not a stable probe; the box + padding is).
+async function contentTopAfter(page: Page, click: () => Promise<void>, id: string) {
   await click()
   await waitStill(page)
   return page.evaluate((sel: string) => {
     const el = document.querySelector(sel)
-    return el ? Math.round(el.getBoundingClientRect().top) : null
+    if (!el) return null
+    const padTop = parseFloat(getComputedStyle(el).paddingTop) || 0
+    return Math.round(el.getBoundingClientRect().top + padTop)
   }, id)
 }
 
 const TARGETS = [
-  { name: 'How it works', id: '#how-it-works', offset: 122, click: (page: Page) => page.locator('.nav-link', { hasText: 'How it works' }).click() },
-  { name: 'Why near',     id: '#why-near',     offset: 122, click: (page: Page) => page.locator('.nav-link', { hasText: 'Why near' }).click() },
-  { name: 'Talk to us',   id: '#care-connected', offset: 242, click: (page: Page) => page.locator('.nav-link', { hasText: 'Talk to us' }).click() },
-  { name: 'Request a demo', id: '#contact',    offset: 122, click: (page: Page) => page.locator('.navbar-cta-fixed').click() },
+  { name: 'How it works', id: '#how-it-works', click: (page: Page) => page.locator('.nav-link', { hasText: 'How it works' }).click() },
+  { name: 'Why near',     id: '#why-near',     click: (page: Page) => page.locator('.nav-link', { hasText: 'Why near' }).click() },
+  { name: 'Talk to us',   id: '#care-connected', click: (page: Page) => page.locator('.nav-link', { hasText: 'Talk to us' }).click() },
+  { name: 'Request a demo', id: '#contact',    click: (page: Page) => page.locator('.navbar-cta-fixed').click() },
 ]
 
 for (const t of TARGETS) {
-  test(`single nav click from the top lands on ${t.id}`, async ({ page }) => {
+  test(`single nav click from the top lands on ${t.id} aligned to the hero gap`, async ({ page }) => {
     await page.goto(BASE)
     await settleAtTop(page)
+
+    const heroTop = await heroHeadingTop(page)
+    expect(heroTop, 'hero heading should be measurable').not.toBeNull()
 
     // Sanity: target is far below the fold before the click.
     const before = await page.evaluate((sel: string) => Math.round(document.querySelector(sel)!.getBoundingClientRect().top), t.id)
     expect(before, `${t.id} should start below the fold`).toBeGreaterThan(VH)
 
-    const top = await sectionTopAfter(page, () => t.click(page), t.id)
+    const contentTop = await contentTopAfter(page, () => t.click(page), t.id)
 
-    // The section must land at its navbar offset (±24px), NOT a section lower —
-    // which is exactly the two-click bug this fixes.
-    expect(top, `${t.name} → ${t.id} landed at ${top}px (expected ≈${t.offset})`).toBeGreaterThanOrEqual(t.offset - 24)
-    expect(top).toBeLessThanOrEqual(t.offset + 24)
+    // Single-click landing: content is on-screen near the top, NOT a section
+    // lower (the two-click bug) and NOT buried far down (the old big gap).
+    expect(contentTop, `${t.name} → ${t.id} content landed at ${contentTop}px`).toBeGreaterThanOrEqual(0)
+    expect(contentTop!).toBeLessThan(VH / 2)
+    // Hero-aligned gap: content start matches the hero heading top (±6px).
+    expect(Math.abs(contentTop! - heroTop!), `${t.id} content ${contentTop}px vs hero ${heroTop}px`).toBeLessThanOrEqual(6)
   })
 }
 
