@@ -38,15 +38,28 @@ export default function App() {
     const scrollToId = (id, pass = 0) => {
       const el = document.querySelector(id)
       if (!el) return
-      // Consistent landing offset for every nav-link jump (navbar height + a
-      // 56px gap), so all sections sit the same distance below the bar.
-      // #care-connected has padding:0 (unlike the 120px top padding every other
-      // section carries), so its cyan pill would land jammed under the navbar —
-      // add that 120px back here so it lands with the same breathing room.
-      const offset = NAVBAR_HEIGHT + NAV_LINK_GAP + (id === SECTIONS.careConnected ? 120 : 0)
+      // Land every section so its CONTENT START (the box top + the section's
+      // own padding-top) sits at the same viewport height as the hero's "The
+      // future of…" headline — the same breathing room below the navbar on
+      // every jump. Reading each section's computed padding-top keeps this
+      // responsive (120px desktop / 71px mobile / 0 on #care-connected) and
+      // replaces the old fixed offset + per-section #care-connected hack.
+      //
+      // heroTop comes from the hero section's OWN top padding (a static CSS
+      // value, 165px desktop / 143px mobile) — which equals the heading's
+      // resting top but, unlike the heading's live rect, is immune to the
+      // one-time translateY entrance animation that would skew a measurement
+      // taken during the first ~0.7s after load.
+      const heroEl = document.querySelector('.hero')
+      const heroTop = heroEl
+        ? parseFloat(getComputedStyle(heroEl).paddingTop) || (NAVBAR_HEIGHT + NAV_LINK_GAP)
+        : NAVBAR_HEIGHT + NAV_LINK_GAP
+      const padTop = parseFloat(getComputedStyle(el).paddingTop) || 0
       // getBoundingClientRect + scrollY is offsetParent-agnostic (handles
       // sections nested in wrappers, e.g. #contact inside .footer-wrap).
-      const top = Math.max(0, el.getBoundingClientRect().top + window.scrollY - offset)
+      const targetFor = (node) =>
+        Math.max(0, node.getBoundingClientRect().top + window.scrollY - (heroTop - padTop))
+      const top = targetFor(el)
       if (!lenisRef.current) { window.scrollTo({ top, behavior: 'auto' }); return }
       lenisRef.current.scrollTo(top, { immediate: true })
       // .post-hero carries a scroll-linked translateY(--post-hero-y) that VARIES
@@ -60,7 +73,7 @@ export default function App() {
       requestAnimationFrame(() => requestAnimationFrame(() => {
         const settled = document.querySelector(id) // re-query: bump() may have remounted the node
         if (!settled) return
-        const top2 = Math.max(0, settled.getBoundingClientRect().top + window.scrollY - offset)
+        const top2 = targetFor(settled)
         if (Math.abs(top2 - top) >= 1) scrollToId(id, pass + 1)
       }))
     }
