@@ -1,0 +1,26 @@
+# Cache policy for DreamHost (Apache). Lives in public/ so Vite copies it into
+# production/ on every build — survives build-production.sh's --emptyOutDir.
+#
+# The entry document (index.html / "/") keeps the SAME URL every deploy while
+# its contents — and the hashed asset references inside it — change. So it must
+# NEVER be cached: that's what makes a browser pick up a new release. Vite-built
+# assets carry a content hash in the filename, so they're safe to cache forever.
+
+<IfModule mod_headers.c>
+  # HTML entry points: always revalidate — never serve a stale page from cache.
+  <FilesMatch "\.html$">
+    Header set Cache-Control "no-store, no-cache, must-revalidate, max-age=0"
+    Header set Pragma "no-cache"
+    Header unset ETag
+  </FilesMatch>
+
+  # Fingerprinted build assets: immutable, cache for a year.
+  <FilesMatch "\.(js|css|woff2|woff)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+
+  # Media/images: not hashed, but rarely change — cache 30 days.
+  <FilesMatch "\.(mp4|webm|lottie|jpg|jpeg|png|webp|svg|gif|avif|ico)$">
+    Header set Cache-Control "public, max-age=2592000"
+  </FilesMatch>
+</IfModule>
