@@ -35,7 +35,7 @@ export default function App() {
 
   useEffect(() => {
     const bump = (id) => setNavKeys((k) => ({ ...k, [id]: (k[id] || 0) + 1 }))
-    const scrollToId = (id) => {
+    const scrollToId = (id, pass = 0) => {
       const el = document.querySelector(id)
       if (!el) return
       // Consistent landing offset for every nav-link jump (navbar height + a
@@ -47,8 +47,22 @@ export default function App() {
       // getBoundingClientRect + scrollY is offsetParent-agnostic (handles
       // sections nested in wrappers, e.g. #contact inside .footer-wrap).
       const top = Math.max(0, el.getBoundingClientRect().top + window.scrollY - offset)
-      if (lenisRef.current) lenisRef.current.scrollTo(top, { immediate: true })
-      else window.scrollTo({ top, behavior: 'auto' })
+      if (!lenisRef.current) { window.scrollTo({ top, behavior: 'auto' }); return }
+      lenisRef.current.scrollTo(top, { immediate: true })
+      // .post-hero carries a scroll-linked translateY(--post-hero-y) that VARIES
+      // in the riser zone near the top and FREEZES past release. The rect above
+      // bakes in the CURRENT value, so a jump from the top measures the wrong
+      // target (lands a section early — the classic "works on the 2nd click").
+      // Re-measure once the jump settles into the frozen zone, then correct.
+      // Targets always land past release, so this converges in one extra pass;
+      // the guard caps any pathological loop.
+      if (pass >= 3) return
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        const settled = document.querySelector(id) // re-query: bump() may have remounted the node
+        if (!settled) return
+        const top2 = Math.max(0, settled.getBoundingClientRect().top + window.scrollY - offset)
+        if (Math.abs(top2 - top) >= 1) scrollToId(id, pass + 1)
+      }))
     }
 
     const onGoto = (e) => {
