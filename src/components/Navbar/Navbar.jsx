@@ -1,10 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
 import { NAVBAR_HEIGHT } from '../../utils/layout'
 import { SECTIONS } from '../../constants/sections'
+import { asset } from '../../utils/assetPath'
 import NearBrand from '../ui/NearBrand/NearBrand'
 import './Navbar.css'
 
-export default function Navbar() {
+// `standalone` renders the bar on a page OTHER than the landing page (e.g. the
+// Terms page). The landing page owns the in-page `nav:goto` scroll choreography
+// (see App.jsx); off it, that machinery is absent, so links must be plain hrefs
+// back to the landing page's sections (e.g. /landing/#how-it-works) instead.
+export default function Navbar({ standalone = false }) {
   const [menuOpen, setMenuOpen] = useState(false)
   // Hide the bar on scroll-down, reveal on scroll-up (client 0206 item 5).
   // rAF-throttled, reads native scrollY (Lenis drives native scroll). Small
@@ -58,6 +63,17 @@ export default function Navbar() {
     window.location.replace(window.location.pathname)
   }
 
+  // On a standalone page, point at the landing page + section hash and let the
+  // browser navigate normally; on the landing page, dispatch the in-page jump.
+  const home = asset('') // '/landing/' (or '/' in the root-domain build)
+  const homeProps = standalone
+    ? { href: home }
+    : { href: SECTIONS.hero, onClick: reloadToTop }
+  const linkProps = (id) =>
+    standalone
+      ? { href: `${home}${id}` }
+      : { href: id, onClick: (e) => handleLinkClick(e, id) }
+
   return (
     <nav className={`navbar${hidden ? ' navbar--hidden' : ''}`}>
       {/* Glass plate is a SIBLING of nav-container so mix-blend-mode on
@@ -66,16 +82,16 @@ export default function Navbar() {
           parent or background on .navbar, the blend would be trapped. */}
       <div className="navbar__glass" aria-hidden="true" />
       <div className="nav-container">
-        <a href={SECTIONS.hero} className="nav-logo" onClick={reloadToTop}>
+        <a {...homeProps} className="nav-logo">
           <NearBrand size="sm" />
         </a>
         <div className={`nav-links${menuOpen ? ' active' : ''}`}>
-          <a href={SECTIONS.hero} className="nav-link" onClick={reloadToTop}>Built for</a>
-          <a href={SECTIONS.howItWorks} className="nav-link" onClick={(e) => handleLinkClick(e, SECTIONS.howItWorks)}>How it works</a>
-          <a href={SECTIONS.whyNear} className="nav-link" onClick={(e) => handleLinkClick(e, SECTIONS.whyNear)}>Why near</a>
-          <a href={SECTIONS.careConnected} className="nav-link" onClick={(e) => handleLinkClick(e, SECTIONS.careConnected)}>Talk to us</a>
+          <a {...homeProps} className="nav-link">Built for</a>
+          <a {...linkProps(SECTIONS.howItWorks)} className="nav-link">How it works</a>
+          <a {...linkProps(SECTIONS.whyNear)} className="nav-link">Why near</a>
+          <a {...linkProps(SECTIONS.careConnected)} className="nav-link">Talk to us</a>
         </div>
-        <a href={SECTIONS.contact} className="btn btn-primary btn-sm nav-cta" onClick={(e) => handleLinkClick(e, SECTIONS.contact)}>Request a demo</a>
+        <a {...linkProps(SECTIONS.contact)} className="btn btn-primary btn-sm nav-cta">Request a demo</a>
         <button className="mobile-menu-btn" onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle menu">
           <span></span><span></span><span></span>
         </button>
