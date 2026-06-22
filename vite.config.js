@@ -50,6 +50,13 @@ export default defineConfig({
   base: '/landing/',
   build: {
     rollupOptions: {
+      // Multi-page app: the landing page (index.html) + the Terms page
+      // (terms/index.html → served at /landing/terms/).
+      input: {
+        main: 'index.html',
+        terms: 'terms/index.html',
+        privacy: 'privacy/index.html',
+      },
       output: {
         // Split heavy third-party libs into parallel chunks so the React app
         // shell can hydrate without waiting on GSAP / Lottie / Lenis to parse.

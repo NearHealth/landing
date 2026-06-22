@@ -33,16 +33,23 @@ async function prerender() {
 
   try {
     const subpath = base.replace(/^\//, '') // '/landing/' -> 'landing/' ; '/' -> ''
-    await page.goto(`${address}${subpath}`, { waitUntil: 'networkidle', timeout: 15000 })
 
-    const rootHtml = await page.$eval('#root', (el) => el.innerHTML)
+    // Every multi-page entry: '' is the landing page (outDir/index.html),
+    // 'terms/' is the Terms page (outDir/terms/index.html). Each snapshots its
+    // own #root into its own built HTML.
+    const routes = ['', 'terms/', 'privacy/']
+    for (const route of routes) {
+      await page.goto(`${address}${subpath}${route}`, { waitUntil: 'networkidle', timeout: 15000 })
 
-    const indexPath = resolve(root, outDir, 'index.html')
-    let html = readFileSync(indexPath, 'utf-8')
-    html = html.replace('<div id="root"></div>', `<div id="root">${rootHtml}</div>`)
-    writeFileSync(indexPath, html)
+      const rootHtml = await page.$eval('#root', (el) => el.innerHTML)
 
-    console.log(`Pre-rendered ${outDir}/index.html (${(Buffer.byteLength(html) / 1024).toFixed(1)} KB)`)
+      const indexPath = resolve(root, outDir, route, 'index.html')
+      let html = readFileSync(indexPath, 'utf-8')
+      html = html.replace('<div id="root"></div>', `<div id="root">${rootHtml}</div>`)
+      writeFileSync(indexPath, html)
+
+      console.log(`Pre-rendered ${outDir}/${route}index.html (${(Buffer.byteLength(html) / 1024).toFixed(1)} KB)`)
+    }
   } finally {
     await browser.close()
     server.httpServer.close()

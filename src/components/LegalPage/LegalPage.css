@@ -1,0 +1,156 @@
+/* Terms of Service page. Typography + colours map to the Figma "Terms of
+   Service" frames (Gilroy; headings #0A1C1E, body #4B4A4A, labels #737272,
+   accent cyan #5EE6FD). Reuses the global tokens from styles/global.css. */
+
+.legal {
+  /* Clear the fixed navbar; smooth-scroll TOC jumps inside the page. */
+  padding-top: var(--navbar-h);
+  scroll-behavior: smooth;
+}
+
+.legal-inner {
+  max-width: 1216px;
+  margin: 0 auto;
+  padding: 96px var(--page-px) 128px;
+}
+
+/* Anchored sections land below the fixed navbar, not under it. */
+.legal-section { scroll-margin-top: calc(var(--navbar-h) + 24px); }
+
+/* ── Page header ── */
+.legal-header {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.legal-eyebrow,
+.legal-toc-label {
+  font-family: 'Gilroy-Semibold', var(--font);
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #737272;
+}
+
+.legal-title {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: 64px;
+  line-height: 0.9;
+  letter-spacing: 0;
+  color: var(--dark);
+}
+
+.legal-updated {
+  font-family: var(--font);
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 1.42;
+  letter-spacing: 0.02em;
+  color: #737272;
+}
+
+.legal-intro {
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  max-width: 850px;
+  margin-top: 8px;
+}
+.legal-intro p {
+  font-family: var(--font);
+  font-weight: 500;
+  font-size: 22px;
+  line-height: 1.13;
+  letter-spacing: 0.02em;
+  color: var(--dark);
+}
+
+/* ── Two-column body (TOC + sections) ── */
+.legal-body {
+  display: flex;
+  align-items: flex-start;
+  gap: 96px;
+  margin-top: 48px;
+}
+
+.legal-toc {
+  flex: 0 0 280px;
+  width: 280px;
+  position: sticky;
+  top: calc(var(--navbar-h) + 32px);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.legal-toc ul {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.legal-toc a {
+  font-family: var(--font);
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 1.32;
+  letter-spacing: 0.02em;
+  color: #737272;
+  transition: color 0.2s var(--ease);
+}
+.legal-toc a:hover { color: var(--dark); }
+
+.legal-sections {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+}
+
+.legal-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.legal-section h2 {
+  font-family: var(--font-heading);
+  font-weight: 400;
+  font-size: 32px;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  color: var(--dark);
+}
+.legal-section p,
+.legal-list li {
+  font-family: var(--font);
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 1.42;
+  letter-spacing: 0.02em;
+  color: #4B4A4A;
+}
+.legal-section a {
+  color: var(--dark);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.legal-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-left: 1.4em;
+}
+.legal-list li { list-style: disc; }
+
+/* ── Mobile (Figma "Terms of service — Mobile", node 317-6484) ──
+   Single column, 48px title, no TOC. */
+@media (max-width: 1024px) {
+  .legal-inner { padding: 40px 24px 56px; }
+  .legal-title { font-size: 48px; letter-spacing: -0.02em; }
+  .legal-intro p { font-size: 18px; line-height: 1.6; }
+  .legal-body { gap: 0; margin-top: 48px; }
+  .legal-toc { display: none; }
+}

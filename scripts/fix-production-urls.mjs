@@ -21,7 +21,7 @@ const replacements = [
   ['/landing/assets/', '/assets/'], // root-relative font preloads Vite didn't rewrite
 ]
 
-for (const file of ['index.html', 'sitemap.xml', 'robots.txt']) {
+for (const file of ['index.html', 'terms/index.html', 'privacy/index.html', 'sitemap.xml', 'robots.txt']) {
   const path = resolve(outDir, file)
   if (!existsSync(path)) continue
   const before = readFileSync(path, 'utf-8')

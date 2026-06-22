@@ -1,6 +1,7 @@
 import { motion, useReducedMotion } from 'motion/react'
 import { usePlayInView } from '../../hooks/usePlayInView'
 import { softVariants } from '../../utils/motion'
+import { asset } from '../../utils/assetPath'
 import './Footer.css'
 
 // Motion entrance for the big wordmark (was a GSAP fade-up). The cyan gradient
@@ -28,8 +29,8 @@ export default function Footer() {
         </motion.svg>
         <span className="footer-item footer-copyright">&copy; NearHealth LLC. 2026</span>
         <a href="mailto:hello@near.health" className="footer-item footer-email">hello@near.health</a>
-        <a href="#" className="footer-item footer-terms">Terms</a>
-        <a href="#" className="footer-item footer-privacy">Privacy</a>
+        <a href={asset('terms/')} className="footer-item footer-terms">Terms</a>
+        <a href={asset('privacy/')} className="footer-item footer-privacy">Privacy</a>
         <div className="footer-socials">
           <a href="#" className="social-icon" aria-label="LinkedIn">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
