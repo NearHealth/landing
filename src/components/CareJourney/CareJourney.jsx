@@ -16,7 +16,7 @@ const cardsStagger = { visible: { transition: { staggerChildren: 0.12 } } }
 const cards = [
   {
     title: 'For Brokers',
-    subtitle: 'Agents · Agencies · FMOs · GAs',
+    subtitle: 'Agencies · FMOs · GAs',
     image: asset('assets/images/broker-desktop.jpg'),
     imageWebp: asset('assets/images/broker-desktop.webp'),
     imageMobile: asset('assets/images/broker-mobile.jpg'),
@@ -46,30 +46,16 @@ function CareCard({ card, variants }) {
   const isMobile = useIsMobile()
   const reduce = useReducedMotion()
   const [active, setActive] = useState(false)
-  const cardElRef = useRef(null)
-  // Glow (pure CSS port of Hover_Gradient.lottie) renders on both layouts,
-  // skipped only under reduced motion. Desktop drives it on hover; mobile has
-  // no hover, so it activates while the card sits in the viewport instead.
-  const showGlow = !reduce
+  // Glow (pure CSS port of Hover_Gradient.lottie) is a desktop hover affordance
+  // only — skipped under reduced motion and on mobile (no hover; keeps the
+  // gradient animation off small screens).
+  const showGlow = !reduce && !isMobile
 
-  const onEnter = (showGlow && !isMobile) ? () => setActive(true) : undefined
-  const onLeave = (showGlow && !isMobile) ? () => setActive(false) : undefined
-
-  // Mobile: light the glow while the card is in view (mirrors the hover state).
-  useEffect(() => {
-    if (!showGlow || !isMobile) return
-    const el = cardElRef.current
-    if (!el) return
-    const io = new IntersectionObserver(
-      ([entry]) => setActive(entry.isIntersecting),
-      { threshold: 0.4 }
-    )
-    io.observe(el)
-    return () => io.disconnect()
-  }, [showGlow, isMobile])
+  const onEnter = showGlow ? () => setActive(true) : undefined
+  const onLeave = showGlow ? () => setActive(false) : undefined
 
   return (
-    <motion.a ref={cardElRef} href="#contact" className="care-card" variants={variants} onMouseEnter={onEnter} onMouseLeave={onLeave}>
+    <motion.a href="#contact" className="care-card" variants={variants} onMouseEnter={onEnter} onMouseLeave={onLeave}>
       <div className="care-card-surface">
         {/* Glow — exact CSS port of Hover_Gradient.lottie. Two cyan spheres
             inside the surface clip (z-index 0), below content; fades in when

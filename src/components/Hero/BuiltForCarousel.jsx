@@ -1,6 +1,6 @@
 import useIsMobile from '../../hooks/useIsMobile'
 
-const ITEMS = ['Agents', 'Agencies', 'FMOs', 'GAs', 'Clinics', 'Groups', 'MSOs']
+const ITEMS = ['Brokers', 'Agencies', 'FMOs', 'GAs', 'Clinics', 'Groups', 'MSOs']
 const TRIPLED = [...ITEMS, ...ITEMS, ...ITEMS]
 
 // Pure-CSS marquee — no GSAP. The desktop vertical loop and the mobile

@@ -60,6 +60,6 @@ test.describe('Built-for carousel on mobile', () => {
     const items = page.locator('.built-for-h-item')
     // TRIPLED = 7 items × 3 = 21
     await expect(items).toHaveCount(21)
-    await expect(items.first()).toHaveText('Agents')
+    await expect(items.first()).toHaveText('Brokers')
   })
 })
