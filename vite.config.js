@@ -56,6 +56,7 @@ export default defineConfig({
         main: 'index.html',
         terms: 'terms/index.html',
         privacy: 'privacy/index.html',
+        contact: 'contact/index.html',
       },
       output: {
         // Split heavy third-party libs into parallel chunks so the React app

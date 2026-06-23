@@ -37,7 +37,9 @@ async function prerender() {
     // Every multi-page entry: '' is the landing page (outDir/index.html),
     // 'terms/' is the Terms page (outDir/terms/index.html). Each snapshots its
     // own #root into its own built HTML.
-    const routes = ['', 'terms/', 'privacy/']
+    // The contact page snapshots its default (early-access) intent state; the
+    // ?intent=talk variant is chosen client-side and needs no separate snapshot.
+    const routes = ['', 'terms/', 'privacy/', 'contact/']
     for (const route of routes) {
       await page.goto(`${address}${subpath}${route}`, { waitUntil: 'networkidle', timeout: 15000 })
 

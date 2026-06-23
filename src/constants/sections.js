@@ -12,5 +12,18 @@ export const SECTIONS = {
   howItWorks: '#how-it-works',      // HowItWorks.jsx
   whyNear: '#why-near',             // PostEnrollment.jsx
   careConnected: '#care-connected', // CareConnected.jsx
-  contact: '#contact',              // FooterCta.jsx
+  contact: '#contact',              // FooterCta.jsx (in-page anchor on the landing page)
+}
+
+import { asset } from '../utils/assetPath'
+
+// Single source of truth for the standalone /contact page links. The page reads
+// the `intent` query param to pick its hero title/subtitle (see ContactPage.jsx):
+//   • earlyAccess → "Get early access"  (relabelled from the old "Request a demo")
+//   • talk        → "Talk to Us"
+// Functions (not constant strings) so asset() — which reads import.meta.env.BASE_URL —
+// is evaluated lazily at call time, safe in both the prerender and client contexts.
+export const CONTACT_URL = {
+  earlyAccess: () => `${asset('contact/')}?intent=early-access`,
+  talk:        () => `${asset('contact/')}?intent=talk`,
 }
