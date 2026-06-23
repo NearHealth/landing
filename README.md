@@ -39,8 +39,10 @@ npm run build              # vite build + SSG prerender via scripts/prerender.mj
 npm run build:spa
 
 # Static hosting (DreamHost, Netlify, etc. — base: /, prerendered, SEO URLs rewritten)
-./build-production.sh                                  # outputs to ./production/
+./build-production.sh                                  # → ./production/, then reports changed files + stages ./production-upload/
+npm run build:production                               # same thing, via npm
 SITE_URL=https://www.near.health ./build-production.sh # override the public domain (default: https://near.health)
+npm run deploy:mark                                    # after uploading, record this deploy as the new baseline
 ```
 
 **Auto-deploy.** Pushes to `main` trigger `.github/workflows/deploy.yml`, which runs `npm ci → playwright install chromium → npm run build` and publishes `dist/` to GitHub Pages via `actions/deploy-pages@v4`.
@@ -49,7 +51,10 @@ SITE_URL=https://www.near.health ./build-production.sh # override the public dom
 
 1. Builds with `--base=/` so assets resolve at the domain root, then runs the prerender for SEO + fast first paint.
 2. `scripts/fix-production-urls.mjs` rewrites the URLs Vite's `--base` can't reach — `canonical` / `og:*` / `twitter:*` tags, the `sitemap.xml` `<loc>`, the `robots.txt` `Sitemap:` line, and the font `<link rel=preload>` hrefs — from the GitHub Pages URL to `https://near.health` (override via `SITE_URL=…`). This step runs independently of the prerender, so a Playwright flake can't ship stale SEO URLs.
-3. **Deploy:** upload the *contents* of `production/` (not the folder) to the domain's web root via SFTP or the DreamHost file manager. No `.htaccess` needed — in-page nav is hash-only, so there are no routes to rewrite. Do **not** upload `.env`, `src/`, or `node_modules/`.
+3. **Deploy (incremental):** the build stages just the changed files into `production-upload/`. Upload the *contents* of `production-upload/` to the domain's web root via SFTP or the DreamHost file manager (directory structure is preserved), and delete any files the report lists under *Removed* (also saved to `.deploy/to-delete.txt`). On a **first deploy** — when no baseline exists yet — upload the full *contents* of `production/` instead. No `.htaccess` needed for routing — in-page nav is hash-only. Do **not** upload `.env`, `src/`, or `node_modules/`.
+4. **Record the baseline:** after uploading, run `npm run deploy:mark` to snapshot the now-live files (content hashes → `.deploy/manifest.json`). The next build diffs against this.
+
+**Incremental uploads.** `./build-production.sh` wipes and regenerates the whole `production/` bundle each run (so mtimes can't reveal what changed) and finishes by running `scripts/deploy-diff.mjs`. That script content-hashes the fresh bundle, diffs it against the last recorded baseline (`.deploy/manifest.json`), prints **New / Modified / Removed** files with sizes, and copies only the changed files into `production-upload/` (paths preserved). The build is **read-only** — it never updates the baseline; you do that explicitly with `npm run deploy:mark` after uploading, so a forgotten `mark` re-lists a few unchanged files (safe) instead of skipping one. Note: the `buildStamp` plugin re-stamps a build time/commit into the HTML on every build, so `index.html`, `terms/index.html`, and `privacy/index.html` always show as *Modified* even with no source change (a few KB each). `.deploy/` and `production-upload/` are git-ignored local state.
 
 **Prerender.** After `vite build`, `scripts/prerender.mjs` boots Vite preview, opens the built site with Playwright, snapshots the rendered `#root` HTML, and inlines it into the output `index.html`. Defaults to `dist/` + base `/landing/`; `build-production.sh` overrides those via `PRERENDER_OUTDIR=production PRERENDER_BASE=/`. Skipped automatically when `VERCEL=1` (build container lacks Chromium system libs); soft-fails to the non-prerendered `index.html` if Playwright is unavailable.
 
@@ -119,6 +124,7 @@ public/
 scripts/
 ├── prerender.mjs                    # Playwright-based SSG prerender (PRERENDER_OUTDIR/PRERENDER_BASE-aware)
 ├── fix-production-urls.mjs          # Rewrites github.io SEO URLs + font preloads to SITE_URL (DreamHost build)
+├── deploy-diff.mjs                  # Incremental deploy: diffs production/ vs baseline, stages changed files → production-upload/
 ├── navbar-snap.mjs                  # Screenshot tool for navbar regression checks
 └── optimize-videos.sh               # ffmpeg helper for video assets
 
@@ -133,7 +139,7 @@ tests/
 
 .github/workflows/deploy.yml         # GitHub Pages auto-deploy on push to main
 vercel.json                          # /landing/* path rewrites for Vercel
-build-production.sh                  # Manual build for generic hosts (./production/)
+build-production.sh                  # Manual build for generic hosts → ./production/ + incremental-deploy diff
 ```
 
 ### Design Principles

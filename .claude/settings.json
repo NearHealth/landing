@@ -23,7 +23,16 @@
       "Bash(cwebp -q 80 -resize 1600 0 -quiet broker-desktop-3b995a.png -o broker-desktop.webp)",
       "Bash(curl -sI \"http://localhost:5178/landing/assets/images/provider-desktop.jpg\")",
       "Bash(npm ci *)",
-      "Bash(./build-production.sh)"
+      "Bash(./build-production.sh)",
+      "Bash(node -e \"const {chromium}=require\\('playwright'\\); console.log\\('playwright OK'\\)\")",
+      "Bash(python3 -m http.server 8099)",
+      "Bash(echo \"server pid $!\")",
+      "Bash(curl -so /dev/null -w \"server check: %{http_code}\\\\n\" http://localhost:8099/index.html)",
+      "Bash(kill 84923)",
+      "Bash(git mv *)",
+      "Bash(node -e ' *)",
+      "Bash(git fetch *)",
+      "Bash(git rev-list *)"
     ]
   }
 }

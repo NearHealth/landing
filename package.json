@@ -7,6 +7,8 @@
     "dev": "vite",
     "build": "vite build && node scripts/prerender.mjs",
     "build:spa": "vite build",
+    "build:production": "./build-production.sh",
+    "deploy:mark": "SAVE=1 node scripts/deploy-diff.mjs",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "playwright test",

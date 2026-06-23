@@ -22,9 +22,9 @@ PRERENDER_OUTDIR=production PRERENDER_BASE=/ node scripts/prerender.mjs
 SITE_URL="$SITE_URL" OUT_DIR=production node scripts/fix-production-urls.mjs
 
 echo ""
-echo "✅ Done! Upload the ./production/ folder to your host."
-echo "   Files:"
-ls -lh production/
-echo ""
-echo "   Total size:"
-du -sh production/
+echo "✅ Build complete."
+
+# Diff the fresh build against the last uploaded baseline and stage only the
+# changed files into ./production-upload/ (read-only: never updates the baseline).
+# After you upload, run `npm run deploy:mark` to record this deploy.
+node scripts/deploy-diff.mjs

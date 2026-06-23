@@ -5,6 +5,10 @@ node_modules/
 dist/
 production/
 
+# Incremental-deploy state + staging (see scripts/deploy-diff.mjs)
+.deploy/
+production-upload/
+
 # Environment
 .env
 .env.local
