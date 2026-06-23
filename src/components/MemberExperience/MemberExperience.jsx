@@ -3,6 +3,7 @@ import Button from '../ui/Button/Button'
 import SectionH2 from '../ui/SectionH2/SectionH2'
 import ScrollPlayVideo from '../ui/ScrollPlayVideo/ScrollPlayVideo'
 import { softVariants } from '../../utils/motion'
+import { CONTACT_URL } from '../../constants/sections'
 import './MemberExperience.css'
 
 // Motion entrance (scroll-triggered fade-up). Replaces the GSAP reveal.
@@ -42,8 +43,8 @@ export default function MemberExperience() {
         <div className="member-footer">
           <motion.p className="member-footer-text" {...reveal(0.6)}>Brokers and providers stay informed.</motion.p>
           <motion.div className="member-footer-btns" {...reveal(0.6)}>
-            <Button variant="primary" href="#contact">Request a demo</Button>
-            <Button variant="secondary" href="#contact">Talk to us</Button>
+            <Button variant="primary" href={CONTACT_URL.earlyAccess()}>Get early access</Button>
+            <Button variant="secondary" href={CONTACT_URL.talk()}>Talk to us</Button>
           </motion.div>
         </div>
       </div>

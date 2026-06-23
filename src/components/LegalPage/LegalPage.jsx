@@ -1,7 +1,7 @@
 import Navbar from '../Navbar/Navbar'
 import Footer from '../Footer/Footer'
 import { asset } from '../../utils/assetPath'
-import { SECTIONS } from '../../constants/sections'
+import { CONTACT_URL } from '../../constants/sections'
 import './LegalPage.css'
 
 // Shared layout for the standalone legal pages (Terms of Service, Privacy
@@ -37,8 +37,6 @@ function Block({ block }) {
 }
 
 export default function LegalPage({ title, lastUpdated, intro, sections }) {
-  const home = asset('') // '/landing/' (or '/' in the root-domain build)
-
   return (
     <>
       {/* Same full-document background <img> as the landing page (App.jsx). */}
@@ -48,7 +46,7 @@ export default function LegalPage({ title, lastUpdated, intro, sections }) {
       <Navbar standalone />
       <div className="navbar-blur" aria-hidden="true" />
       <div className="navbar-edge" aria-hidden="true" />
-      <a href={`${home}${SECTIONS.contact}`} className="navbar-cta-fixed">Request a demo</a>
+      <a href={CONTACT_URL.earlyAccess()} className="navbar-cta-fixed">Get early access</a>
 
       <main className="legal">
         <div className="legal-inner">

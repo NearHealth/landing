@@ -16,7 +16,7 @@ import { useLenis } from './hooks/useLenis'
 import useReloadOnBreakpoint from './hooks/useReloadOnBreakpoint'
 import { asset } from './utils/assetPath'
 import { NAVBAR_HEIGHT, NAV_LINK_GAP } from './utils/layout'
-import { SECTIONS } from './constants/sections'
+import { SECTIONS, CONTACT_URL } from './constants/sections'
 import { useEffect, useRef, useState } from 'react'
 
 export default function App() {
@@ -127,16 +127,8 @@ export default function App() {
       {/* Real CTA button — sibling of .navbar so it escapes mix-blend-mode:
           difference. The in-navbar button is visibility:hidden (holds flex
           space). This element tracks the same show/hide animation via CSS. */}
-      <a
-        href={SECTIONS.contact}
-        className="navbar-cta-fixed"
-        onClick={(e) => {
-          e.preventDefault()
-          window.dispatchEvent(new CustomEvent('nav:goto', { detail: SECTIONS.contact }))
-          history.pushState(null, '', SECTIONS.contact)
-        }}
-      >
-        Request a demo
+      <a href={CONTACT_URL.earlyAccess()} className="navbar-cta-fixed">
+        Get early access
       </a>
       <HeroLab key={sectionKey(SECTIONS.hero)} />
       {/* LAB: everything after the hero lives in one wrapper that rises over the

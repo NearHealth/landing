@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { NAVBAR_HEIGHT } from '../../utils/layout'
-import { SECTIONS } from '../../constants/sections'
+import { SECTIONS, CONTACT_URL } from '../../constants/sections'
 import { asset } from '../../utils/assetPath'
 import NearBrand from '../ui/NearBrand/NearBrand'
 import './Navbar.css'
@@ -91,7 +91,7 @@ export default function Navbar({ standalone = false }) {
           <a {...linkProps(SECTIONS.whyNear)} className="nav-link">Why near</a>
           <a {...linkProps(SECTIONS.careConnected)} className="nav-link">Talk to us</a>
         </div>
-        <a {...linkProps(SECTIONS.contact)} className="btn btn-primary btn-sm nav-cta">Request a demo</a>
+        <a href={CONTACT_URL.earlyAccess()} className="btn btn-primary btn-sm nav-cta">Get early access</a>
         <button className="mobile-menu-btn" onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle menu">
           <span></span><span></span><span></span>
         </button>
