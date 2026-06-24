@@ -44,6 +44,19 @@ export default function Navbar({ standalone = false }) {
     }
   }, [])
 
+  // Close the mobile drawer on Escape, and lock body scroll while it is open.
+  useEffect(() => {
+    if (!menuOpen) return
+    const onKey = (e) => { if (e.key === 'Escape') setMenuOpen(false) }
+    window.addEventListener('keydown', onKey)
+    const prevOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      window.removeEventListener('keydown', onKey)
+      document.body.style.overflow = prevOverflow
+    }
+  }, [menuOpen])
+
   const handleLinkClick = (e, id) => {
     e.preventDefault()
     // App owns the jump: it remounts the target section (replaying its reveal)
@@ -75,27 +88,78 @@ export default function Navbar({ standalone = false }) {
       : { href: id, onClick: (e) => handleLinkClick(e, id) }
 
   return (
-    <nav className={`navbar${hidden ? ' navbar--hidden' : ''}`}>
-      {/* Glass plate is a SIBLING of nav-container so mix-blend-mode on
-          links/logo can blend against the rendered glass (which carries the
-          backdrop-filter result of the page below). If the glass were a
-          parent or background on .navbar, the blend would be trapped. */}
-      <div className="navbar__glass" aria-hidden="true" />
-      <div className="nav-container">
-        <a {...homeProps} className="nav-logo">
-          <NearBrand size="sm" />
-        </a>
-        <div className={`nav-links${menuOpen ? ' active' : ''}`}>
-          <a {...homeProps} className="nav-link">Built for</a>
-          <a {...linkProps(SECTIONS.howItWorks)} className="nav-link">How it works</a>
-          <a {...linkProps(SECTIONS.whyNear)} className="nav-link">Why near</a>
-          <a {...linkProps(SECTIONS.careConnected)} className="nav-link">Talk to us</a>
+    <>
+      <nav className={`navbar${hidden ? ' navbar--hidden' : ''}`}>
+        {/* Glass plate is a SIBLING of nav-container so mix-blend-mode on
+            links/logo can blend against the rendered glass (which carries the
+            backdrop-filter result of the page below). If the glass were a
+            parent or background on .navbar, the blend would be trapped. */}
+        <div className="navbar__glass" aria-hidden="true" />
+        <div className="nav-container">
+          <a {...homeProps} className="nav-logo">
+            <NearBrand size="sm" />
+          </a>
+          <div className={`nav-links${menuOpen ? ' active' : ''}`}>
+            <a {...homeProps} className="nav-link">Built for</a>
+            <a {...linkProps(SECTIONS.howItWorks)} className="nav-link">How it works</a>
+            <a {...linkProps(SECTIONS.whyNear)} className="nav-link">Why near</a>
+            <a {...linkProps(SECTIONS.careConnected)} className="nav-link">Talk to us</a>
+          </div>
+          <a href={CONTACT_URL.earlyAccess()} className="btn btn-primary btn-sm nav-cta">Get early access</a>
+          <button
+            className="mobile-menu-btn"
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label="Open menu"
+            aria-expanded={menuOpen}
+            aria-controls="mobile-drawer"
+          >
+            <span></span><span></span><span></span>
+          </button>
         </div>
-        <a href={CONTACT_URL.earlyAccess()} className="btn btn-primary btn-sm nav-cta">Get early access</a>
-        <button className="mobile-menu-btn" onClick={() => setMenuOpen(!menuOpen)} aria-label="Toggle menu">
-          <span></span><span></span><span></span>
-        </button>
-      </div>
-    </nav>
+      </nav>
+
+      {/* Mobile drawer — rendered as a SIBLING of .navbar so it escapes the
+          bar's `mix-blend-mode: difference` and paints literal colours (cyan
+          pill, dark text). Hidden ≥1025px via CSS. */}
+      <div
+        className="mobile-drawer-scrim"
+        data-open={menuOpen}
+        onClick={() => setMenuOpen(false)}
+        aria-hidden="true"
+      />
+      <aside
+        id="mobile-drawer"
+        className="mobile-drawer"
+        data-open={menuOpen}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Menu"
+      >
+        <div className="mobile-drawer__header">
+          <a
+            href={CONTACT_URL.earlyAccess()}
+            className="mobile-drawer__cta"
+            onClick={() => setMenuOpen(false)}
+          >
+            Get early access
+          </a>
+          <button
+            className="mobile-drawer__close"
+            onClick={() => setMenuOpen(false)}
+            aria-label="Close menu"
+          >
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+              <path d="M4 4L16 16M16 4L4 16" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+            </svg>
+          </button>
+        </div>
+        <nav className="mobile-drawer__links" aria-label="Mobile">
+          <a {...homeProps} className="mobile-drawer__link" onClick={(e) => { homeProps.onClick?.(e); setMenuOpen(false) }}>Built for</a>
+          <a {...linkProps(SECTIONS.howItWorks)} className="mobile-drawer__link">How it works</a>
+          <a {...linkProps(SECTIONS.whyNear)} className="mobile-drawer__link">Why near</a>
+          <a {...linkProps(SECTIONS.careConnected)} className="mobile-drawer__link">Talk to us</a>
+        </nav>
+      </aside>
+    </>
   )
 }
