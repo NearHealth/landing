@@ -45,8 +45,8 @@ const GROUP_OF = {
   'Other': 'D',
 }
 const GROUPS = {
-  A: ['Request a demo', 'Broker / Agency partnership', 'Learn about post-enrollment support', 'Platform or product inquiry', 'Strategic partnership', 'Other'],
-  B: ['Request a demo', 'Provider / Clinic partnership', 'Learn about patient referrals', 'Platform or product inquiry', 'Strategic partnership', 'Other'],
+  A: ['Early access', 'Broker / Agency partnership', 'Learn about post-enrollment support', 'Platform or product inquiry', 'Strategic partnership', 'Other'],
+  B: ['Early access', 'Provider / Clinic partnership', 'Learn about patient referrals', 'Platform or product inquiry', 'Strategic partnership', 'Other'],
   C: ['Investment inquiry', 'Strategic partnership', 'Product overview', 'General inquiry', 'Other'],
   D: ['General inquiry', 'Platform or product inquiry', 'Strategic partnership', 'Other'],
 }
