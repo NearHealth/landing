@@ -103,9 +103,9 @@ export default function Navbar({ standalone = false }) {
             <a {...homeProps} className="nav-link">Built for</a>
             <a {...linkProps(SECTIONS.howItWorks)} className="nav-link">How it works</a>
             <a {...linkProps(SECTIONS.whyNear)} className="nav-link">Why near</a>
-            <a {...linkProps(SECTIONS.careConnected)} className="nav-link">Talk to us</a>
+            <a href={CONTACT_URL.talk()} className="nav-link">Talk to us</a>
           </div>
-          <a href={CONTACT_URL.earlyAccess()} className="btn btn-primary btn-sm nav-cta">Get early access</a>
+          <a href={CONTACT_URL.earlyAccess()} className="btn btn-primary btn-sm nav-cta">Early access</a>
           <button
             className="mobile-menu-btn"
             onClick={() => setMenuOpen(!menuOpen)}
@@ -141,7 +141,7 @@ export default function Navbar({ standalone = false }) {
             className="mobile-drawer__cta"
             onClick={() => setMenuOpen(false)}
           >
-            Get early access
+            Early access
           </a>
           <button
             className="mobile-drawer__close"
@@ -157,7 +157,7 @@ export default function Navbar({ standalone = false }) {
           <a {...homeProps} className="mobile-drawer__link" onClick={(e) => { homeProps.onClick?.(e); setMenuOpen(false) }}>Built for</a>
           <a {...linkProps(SECTIONS.howItWorks)} className="mobile-drawer__link">How it works</a>
           <a {...linkProps(SECTIONS.whyNear)} className="mobile-drawer__link">Why near</a>
-          <a {...linkProps(SECTIONS.careConnected)} className="mobile-drawer__link">Talk to us</a>
+          <a href={CONTACT_URL.talk()} className="mobile-drawer__link" onClick={() => setMenuOpen(false)}>Talk to us</a>
         </nav>
       </aside>
     </>
