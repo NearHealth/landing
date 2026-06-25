@@ -128,7 +128,7 @@ export default function App() {
           difference. The in-navbar button is visibility:hidden (holds flex
           space). This element tracks the same show/hide animation via CSS. */}
       <a href={CONTACT_URL.earlyAccess()} className="navbar-cta-fixed">
-        Get early access
+        Early access
       </a>
       <HeroLab key={sectionKey(SECTIONS.hero)} />
       {/* LAB: everything after the hero lives in one wrapper that rises over the

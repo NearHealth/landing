@@ -22,7 +22,7 @@ export default function FooterCta() {
       <div className="container">
         <motion.p className="footer-cta-text" {...reveal(0.6)}>Near brings coverage, care, and support together.</motion.p>
         <motion.div className="footer-cta-buttons" {...reveal(0.6)}>
-          <Button variant="primary" href={CONTACT_URL.earlyAccess()}>Get early access</Button>
+          <Button variant="primary" href={CONTACT_URL.earlyAccess()}>Early access</Button>
           <Button variant="secondary" href={CONTACT_URL.talk()}>Talk to us</Button>
         </motion.div>
       </div>

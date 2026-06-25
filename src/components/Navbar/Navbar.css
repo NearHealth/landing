@@ -182,7 +182,8 @@
      equals the real button width */
   padding: 12px 13px 13px 13px;
   border-radius: var(--radius-card);
-  font-size: var(--fs-btn); font-weight: 600; line-height: 1;
+  font-family: 'Gilroy-Bold', sans-serif;
+  font-size: var(--fs-btn); font-weight: 700; line-height: 1;
   letter-spacing: 0.08em; text-transform: uppercase;
   visibility: hidden;
 }
@@ -208,9 +209,9 @@
      inherits body's 'Gilroy-Medium' (a 500-only @font-face) and the 600 below
      gets faux-bolded — heavy/blurry in Safari. font-synthesis:none stops that
      from ever silently happening again. */
-  font-family: 'Gilroy-Semibold', sans-serif;
+  font-family: 'Gilroy-Bold', sans-serif;
   font-synthesis: none;
-  font-size: var(--fs-btn); font-weight: 600; line-height: 1;
+  font-size: var(--fs-btn); font-weight: 700; line-height: 1;
   letter-spacing: 0.08em; text-transform: uppercase;
   text-decoration: none;
   cursor: pointer;
@@ -296,8 +297,8 @@
     padding: 9px 18px;
     border: none; border-radius: var(--radius-pill);
     background: var(--accent); color: var(--dark);
-    font-family: 'Gilroy-Semibold', sans-serif; font-synthesis: none;
-    font-size: var(--fs-btn); font-weight: 600; line-height: 1;
+    font-family: 'Gilroy-Bold', sans-serif; font-synthesis: none;
+    font-size: var(--fs-btn); font-weight: 700; line-height: 1;
     letter-spacing: 0.08em; text-transform: uppercase;
     text-decoration: none; cursor: pointer;
     transition: background 0.25s var(--ease);

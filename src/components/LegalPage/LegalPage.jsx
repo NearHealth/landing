@@ -46,7 +46,7 @@ export default function LegalPage({ title, lastUpdated, intro, sections }) {
       <Navbar standalone />
       <div className="navbar-blur" aria-hidden="true" />
       <div className="navbar-edge" aria-hidden="true" />
-      <a href={CONTACT_URL.earlyAccess()} className="navbar-cta-fixed">Get early access</a>
+      <a href={CONTACT_URL.earlyAccess()} className="navbar-cta-fixed">Early access</a>
 
       <main className="legal">
         <div className="legal-inner">

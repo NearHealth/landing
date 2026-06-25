@@ -235,7 +235,7 @@ export default function Hero() {
               <h1 className="hero-heading hero-heading--mobile">The future of <br />post-enrollment <br />healthcare.</h1>
               <p className="hero-subtitle hero-subtitle--mobile">The first AI-native infrastructure bridging coverage and care.</p>
               <div className="hero-buttons hero-buttons--mobile">
-                <a href={CONTACT_URL.earlyAccess()} className="btn btn--primary">Get early access</a>
+                <a href={CONTACT_URL.earlyAccess()} className="btn btn--primary">Early access</a>
                 <a href={CONTACT_URL.talk()} className="btn btn--secondary">Talk to us</a>
               </div>
             </div>
@@ -266,7 +266,7 @@ export default function Hero() {
                 <motion.div className="hero-left" style={{ opacity: textFade }}>
                   <p className="hero-subtitle">The first AI-native infrastructure bridging coverage and care.</p>
                   <div className="hero-buttons">
-                    <a href={CONTACT_URL.earlyAccess()} className="btn btn--primary">Get early access</a>
+                    <a href={CONTACT_URL.earlyAccess()} className="btn btn--primary">Early access</a>
                     <a href={CONTACT_URL.talk()} className="btn btn--secondary">Talk to us</a>
                   </div>
                 </motion.div>
