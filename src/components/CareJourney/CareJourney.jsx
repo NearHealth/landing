@@ -3,6 +3,7 @@ import { motion, useReducedMotion } from 'motion/react'
 import useIsMobile from '../../hooks/useIsMobile'
 import SectionH2 from '../ui/SectionH2/SectionH2'
 import { asset } from '../../utils/assetPath'
+import { CONTACT_URL } from '../../constants/sections'
 import { softVariants } from '../../utils/motion'
 import './CareJourney.css'
 
@@ -55,7 +56,7 @@ function CareCard({ card, variants }) {
   const onLeave = showGlow ? () => setActive(false) : undefined
 
   return (
-    <motion.a href="#contact" className="care-card" variants={variants} onMouseEnter={onEnter} onMouseLeave={onLeave}>
+    <motion.a href={CONTACT_URL.talk()} className="care-card" variants={variants} onMouseEnter={onEnter} onMouseLeave={onLeave}>
       <div className="care-card-surface">
         {/* Glow — exact CSS port of Hover_Gradient.lottie. Two cyan spheres
             inside the surface clip (z-index 0), below content; fades in when
