@@ -18,7 +18,9 @@ import './ContactPage.css'
 const INTENTS = {
   'early-access': {
     title: 'Get early access',
-    subtitle: "Tell us a bit about your organization and we'll keep you in the loop as we roll out early access.",
+    // Mobile wraps to a shorter, fuller phrase per Figma (Mobile H2).
+    titleMobile: 'Get early access to Near.',
+    subtitle: 'Tell us a bit about your organization so we can understand your interest and keep you updated as Near moves toward launch.',
   },
   talk: {
     title: 'Talk to Us',
@@ -260,7 +262,7 @@ export default function ContactPage() {
       <Navbar standalone />
       <div className="navbar-blur" aria-hidden="true" />
       <div className="navbar-edge" aria-hidden="true" />
-      <a href={CONTACT_URL.earlyAccess()} className="navbar-cta-fixed">Get early access</a>
+      <a href={CONTACT_URL.earlyAccess()} className="navbar-cta-fixed">Early access</a>
 
       <main className="contact-page">
         {submitted ? (
@@ -271,7 +273,13 @@ export default function ContactPage() {
         ) : (
           <>
             <div className="contact-hero">
-              <h1>{intent.title}</h1>
+              {/* Desktop/mobile titles swap via CSS so the mobile copy can differ
+                  (e.g. early-access reads "Get early access to Near."). When an
+                  intent has no mobile-specific title, both spans show the same text. */}
+              <h1>
+                <span className="contact-hero__title-desktop">{intent.title}</span>
+                <span className="contact-hero__title-mobile">{intent.titleMobile || intent.title}</span>
+              </h1>
               <p>{intent.subtitle}</p>
             </div>
 
