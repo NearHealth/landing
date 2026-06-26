@@ -8,8 +8,6 @@
 
 .contact-page {
   /* Colours with no global token equivalent — kept from the prototype/Figma. */
-  --c-heading:     #1A1A1A;
-  --c-sub:         #6E6B66;
   --c-placeholder: #737272;
   --c-coral:       #FA4433;
   --c-ref-cyan:    #00C0E8;
@@ -146,12 +144,25 @@
 .contact-page .options {
   position: absolute; top: calc(100% + 8px); left: 0; right: 0;
   background: rgba(255,255,255,0.70);
-  -webkit-backdrop-filter: blur(50px) saturate(1.4);
-  backdrop-filter: blur(50px) saturate(1.4);
-  border: 1px solid rgba(255,255,255,0.55);
-  border-radius: 20px; padding: 8px;
-  box-shadow: 0 18px 44px rgba(10,28,30,0.18), inset 0 1px 0 rgba(255,255,255,0.6);
+  -webkit-backdrop-filter: blur(25px);
+  backdrop-filter: blur(25px);
+  border-radius: 25px; padding: 16px;
+  box-shadow: 0 4px 4px rgba(0,0,0,0.05);
   z-index: 20; display: none; max-height: 340px; overflow-y: auto;
+}
+/* Always-visible slim scrollbar (Figma: 6px, #cdcbcb thumb, r4). Chrome/Safari/Edge use
+   the custom ::-webkit-scrollbar below — a custom-styled webkit scrollbar is never an
+   overlay, so it stays visible the whole time the dropdown is open. */
+.contact-page .options::-webkit-scrollbar { width: 6px; }
+/* inset the track so the bar starts/ends past the panel's 25px rounded corners */
+.contact-page .options::-webkit-scrollbar-track { background: transparent; margin: 20px 0; }
+.contact-page .options::-webkit-scrollbar-thumb { background: #cdcbcb; border-radius: 4px; }
+/* Firefox has no ::-webkit-scrollbar, so feed it the standard props here. Gating this on
+   the *absence* of ::-webkit-scrollbar support keeps Chrome 121+ from preferring the
+   standard thin scrollbar (which can auto-hide on macOS) over the always-visible custom
+   one above — the two systems are mutually exclusive in Blink. */
+@supports not selector(::-webkit-scrollbar) {
+  .contact-page .options { scrollbar-width: thin; scrollbar-color: #cdcbcb transparent; }
 }
 .contact-page .options.open { display: block; }
 .contact-page .opt {
@@ -190,8 +201,8 @@
   from { opacity: 0; transform: translateY(14px); }
   to   { opacity: 1; transform: translateY(0); }
 }
-.contact-page .contact-success h1 { margin: 0; font-family: var(--font-heading); font-size: 48px; font-weight: 400; letter-spacing: -0.02em; color: var(--c-heading); }
-.contact-page .contact-success p { margin: 18px auto 0; max-width: 520px; font-family: var(--font); font-size: 28px; font-weight: 400; letter-spacing: -0.01em; line-height: 1.25; color: var(--c-sub); }
+.contact-page .contact-success h1 { margin: 0; font-family: var(--font-heading); font-size: 64px; font-weight: 400; line-height: 0.9; letter-spacing: 0; color: var(--dark); }
+.contact-page .contact-success p { margin: 16px auto 0; max-width: 100%; font-family: var(--font); font-size: 22px; font-weight: 500; letter-spacing: 0.02em; line-height: 1.13; color: var(--dark); }
 
 /* ============================================================
    MOBILE (≤600px) — single column, stacked layout.
@@ -212,8 +223,8 @@
   .contact-page .row { flex-direction: column; gap: 14px; }
 
   .contact-page .contact-success { padding: 96px 24px 0; }
-  .contact-page .contact-success h1 { font-size: 36px; }
-  .contact-page .contact-success p { font-size: 18px; max-width: 100%; }
+  .contact-page .contact-success h1 { font-size: 48px; line-height: 1.0; letter-spacing: -0.96px; }
+  .contact-page .contact-success p { font-size: 18px; line-height: 1.42; }
 }
 
 /* Match the home page's CTA→footer gap at the footer's own ≤480px breakpoint
