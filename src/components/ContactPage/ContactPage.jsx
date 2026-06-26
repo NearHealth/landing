@@ -25,7 +25,7 @@ const INTENTS = {
   },
   talk: {
     title: 'Talk to Us',
-    subtitle: "Tell us a bit about your organization and how you'd like to connect with Near.",
+    subtitle: "Tell us a bit about your organization and how\nyou'd like to connect with Near.",
     submitLabel: 'Send message',
   },
 }
