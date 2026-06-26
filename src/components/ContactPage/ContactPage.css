@@ -15,6 +15,7 @@
   --c-ref-cyan:    #00C0E8;
 
   padding-top: var(--navbar-h);                 /* clear the fixed navbar */
+  padding-bottom: 78px;                          /* match home page: FooterCta bottom padding above the shared footer */
   min-height: calc(100vh - var(--navbar-h));
   display: flex;
   flex-direction: column;
@@ -213,4 +214,10 @@
   .contact-page .contact-success { padding: 96px 24px 0; }
   .contact-page .contact-success h1 { font-size: 36px; }
   .contact-page .contact-success p { font-size: 18px; max-width: 100%; }
+}
+
+/* Match the home page's CTA→footer gap at the footer's own ≤480px breakpoint
+   (FooterCta bottom padding is 140px there, vs 78px on desktop). */
+@media (max-width: 480px) {
+  .contact-page { padding-bottom: 140px; }
 }
