@@ -33,9 +33,10 @@
 /* Title text differs by breakpoint — show the matching span, hide the other. */
 .contact-hero__title-mobile { display: none; }
 .contact-hero p {
-  /* Figma Body 1: Gilroy 22/500, line-height 113%, +0.44px tracking,
-     fixed 533px measure (capped to the viewport), Dark-Green (#0A1C1E). */
-  margin: 18px auto 0; width: 533px; max-width: 100%;
+  /* Figma Body 1: Gilroy 22/500, line-height 113%, +0.44px tracking, Dark-Green (#0A1C1E).
+     Width fits the forced <br> lines (max-content) so none soft-wrap — keeps "as" at the
+     end of line 2 despite Gilroy rendering wider in-browser than at Figma's 533px. */
+  margin: 18px auto 0; width: max-content; max-width: 100%;
   font-family: var(--font);
   font-size: 22px; font-weight: 500; letter-spacing: 0.44px; line-height: 1.13;
   color: var(--dark);
@@ -46,7 +47,9 @@
 .contact-page .form-card {
   width: 100%; max-width: 760px;
   background: rgba(255,255,255,0.30);
-  border-radius: 28px;
+  -webkit-backdrop-filter: blur(21.5px);   /* Figma: frosted glass over the page bg */
+  backdrop-filter: blur(21.5px);
+  border-radius: 50px;                       /* Figma: rounded-[50px] */
   padding: 40px;
   display: flex; flex-direction: column; gap: 16px;
 }
@@ -117,7 +120,7 @@
 }
 
 /* textarea */
-.contact-page .field.area { border-radius: 22px; height: auto; align-items: flex-start; padding: 18px 22px; }
+.contact-page .field.area { border-radius: 25px; height: auto; align-items: flex-start; padding: 18px 22px; }
 .contact-page .field.area svg { margin-top: 2px; }
 .contact-page .field.area textarea {
   flex: 1; border: none; outline: none; background: transparent; resize: none;
@@ -136,7 +139,7 @@
   cursor: pointer; user-select: none;
 }
 .contact-page .select .label { font-family: var(--font); font-size: 16px; font-weight: 500; letter-spacing: 0.02em; color: var(--c-placeholder); }
-.contact-page .select.disabled { opacity: 0.55; cursor: not-allowed; }
+.contact-page .select.disabled { opacity: 0.6; cursor: not-allowed; }
 .contact-page .select.disabled .label { color: var(--c-placeholder); }
 .contact-page .select .chev { width: 18px; height: 18px; stroke: var(--c-placeholder); fill: none; stroke-width: 1.8; transition: transform .18s ease; }
 .contact-page .select.open .chev { transform: rotate(180deg); }
@@ -180,7 +183,7 @@
   border-radius: 50%; animation: contact-spin .7s linear infinite;
 }
 @keyframes contact-spin { to { transform: rotate(360deg); } }
-.contact-page .legal { font-family: 'Gilroy-Semibold', var(--font); font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--c-placeholder); }
+.contact-page .legal { font-family: 'Gilroy-Semibold', var(--font); font-size: 12px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: #AFAEAD; /* Figma neutral/300 */ }
 
 /* success state (swaps in after submit) */
 .contact-page .contact-success {
@@ -209,7 +212,7 @@
   .contact-hero p { font-size: 22px; width: 322px; max-width: 100%; margin-top: 14px; }
 
   .contact-page .form-wrap { padding: 24px 16px 0; }
-  .contact-page .form-card { max-width: 100%; padding: 24px; border-radius: 24px; gap: 14px; }
+  .contact-page .form-card { max-width: 100%; padding: 24px; border-radius: 50px; gap: 14px; }
   .contact-page .row { flex-direction: column; gap: 14px; }
 
   .contact-page .contact-success { padding: 96px 24px 0; }

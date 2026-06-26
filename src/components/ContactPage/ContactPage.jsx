@@ -20,11 +20,13 @@ const INTENTS = {
     title: 'Get early access',
     // Mobile wraps to a shorter, fuller phrase per Figma (Mobile H2).
     titleMobile: 'Get early access to Near.',
-    subtitle: 'Tell us a bit about your organization and we\'ll\nkeep you in the loop as we roll out early access.',
+    subtitle: 'Tell us a bit about your organization so we can \nunderstand your interest and keep you updated as \nNear moves toward launch.',
+    submitLabel: 'Submit interest',
   },
   talk: {
     title: 'Talk to Us',
     subtitle: "Tell us a bit about your organization and how you'd like to connect with Near.",
+    submitLabel: 'Send message',
   },
 }
 const DEFAULT_INTENT = 'early-access'
@@ -325,7 +327,7 @@ export default function ContactPage() {
                 </div>
 
                 <div className="submit-area">
-                  <button className={`btn-submit${submitting ? ' loading' : ''}`} type="submit">Submit Request</button>
+                  <button className={`btn-submit${submitting ? ' loading' : ''}`} type="submit">{intent.submitLabel}</button>
                   <div className={`form-error-summary${showSummary ? ' show' : ''}`}>Please complete the required fields.</div>
                   <div className={`form-system-error${systemError ? ' show' : ''}`}>
                     <svg viewBox="0 0 24 24"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
