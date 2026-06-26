@@ -20,7 +20,7 @@ const INTENTS = {
     title: 'Get early access',
     // Mobile wraps to a shorter, fuller phrase per Figma (Mobile H2).
     titleMobile: 'Get early access to Near.',
-    subtitle: 'Tell us a bit about your organization so we can understand your interest and keep you updated as Near moves toward launch.',
+    subtitle: 'Tell us a bit about your organization and we\'ll\nkeep you in the loop as we roll out early access.',
   },
   talk: {
     title: 'Talk to Us',
@@ -280,7 +280,9 @@ export default function ContactPage() {
                 <span className="contact-hero__title-desktop">{intent.title}</span>
                 <span className="contact-hero__title-mobile">{intent.titleMobile || intent.title}</span>
               </h1>
-              <p>{intent.subtitle}</p>
+              <p>{intent.subtitle.split('\n').reduce((acc, line, i) =>
+                i === 0 ? [line] : [...acc, <br key={i} className="contact-hero__subtitle-break" />, line], []
+              )}</p>
             </div>
 
             <div className="form-wrap">

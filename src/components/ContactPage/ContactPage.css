@@ -199,6 +199,7 @@
    Same markup, state, validation and animations as desktop.
    ============================================================ */
 @media (max-width: 600px) {
+  .contact-hero__subtitle-break { display: none; }
   .contact-hero { padding: 28px 24px 0; }
   /* Figma Mobile H2: Gilroy 48/400, line-height 100%, letter-spacing -0.96px. */
   .contact-hero h1 { font-size: 48px; line-height: 1.0; letter-spacing: -0.96px; }
