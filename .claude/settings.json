@@ -32,7 +32,28 @@
       "Bash(git mv *)",
       "Bash(node -e ' *)",
       "Bash(git fetch *)",
-      "Bash(git rev-list *)"
+      "Bash(git rev-list *)",
+      "Bash(git status)",
+      "Bash(git diff)",
+      "Bash(git log)",
+      "Bash(git show)",
+      "Bash(git rev-parse)",
+      "Bash(git ls-files)",
+      "Bash(git branch)",
+      "Bash(git blame)",
+      "Bash(gh pr list)",
+      "Bash(gh pr view)",
+      "Bash(gh issue list)",
+      "Bash(gh issue view)",
+      "Bash(gh repo view)",
+      "Bash(gh api)",
+      "Bash(ls)",
+      "Bash(mkdir)",
+      "Bash(npm install)",
+      "Bash(npm test)",
+      "Bash(npm run)",
+      "Bash(npm audit)",
+      "Bash(npx)"
     ]
   }
 }
