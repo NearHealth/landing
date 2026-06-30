@@ -52,28 +52,36 @@
   color: #737272;
 }
 
+/* Intro sits in the content column above the sections — styled like a body
+   paragraph, just medium weight (no longer the oversized header lede). */
 .legal-intro {
   display: flex;
   flex-direction: column;
   gap: 1em;
-  max-width: 850px;
-  margin-top: 8px;
 }
 .legal-intro p {
   font-family: var(--font);
   font-weight: 500;
-  font-size: 22px;
-  line-height: 1.13;
+  font-size: 18px;
+  line-height: 1.42;
   letter-spacing: 0.02em;
-  color: var(--dark);
+  color: #4B4A4A;
 }
 
-/* ── Two-column body (TOC + sections) ── */
+/* ── Two-column body: content (intro + sections) left, sticky TOC right ── */
 .legal-body {
   display: flex;
   align-items: flex-start;
   gap: 96px;
   margin-top: 48px;
+}
+
+.legal-content {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
 }
 
 .legal-toc {
@@ -102,8 +110,6 @@
 .legal-toc a:hover { color: var(--dark); }
 
 .legal-sections {
-  flex: 1 1 auto;
-  min-width: 0;
   display: flex;
   flex-direction: column;
   gap: 48px;
@@ -123,7 +129,7 @@
   color: var(--dark);
 }
 .legal-section p,
-.legal-list li {
+.legal-section li {
   font-family: var(--font);
   font-weight: 500;
   font-size: 18px;
@@ -137,20 +143,21 @@
   text-underline-offset: 2px;
 }
 
-.legal-list {
+/* Bullet lists come from Markdown, so target the plain <ul> react-markdown
+   emits (no class). */
+.legal-section ul {
   display: flex;
   flex-direction: column;
   gap: 8px;
   padding-left: 1.4em;
 }
-.legal-list li { list-style: disc; }
+.legal-section li { list-style: disc; }
 
 /* ── Mobile (Figma "Terms of service — Mobile", node 317-6484) ──
    Single column, 48px title, no TOC. */
 @media (max-width: 1024px) {
   .legal-inner { padding: 40px 24px 56px; }
   .legal-title { font-size: 48px; letter-spacing: -0.02em; }
-  .legal-intro p { font-size: 18px; line-height: 1.6; }
   .legal-body { gap: 0; margin-top: 48px; }
   .legal-toc { display: none; }
 }

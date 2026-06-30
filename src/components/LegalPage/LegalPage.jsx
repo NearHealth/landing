@@ -1,3 +1,4 @@
+import Markdown from 'react-markdown'
 import Navbar from '../Navbar/Navbar'
 import Footer from '../Footer/Footer'
 import { asset } from '../../utils/assetPath'
@@ -6,35 +7,13 @@ import './LegalPage.css'
 
 // Shared layout for the standalone legal pages (Terms of Service, Privacy
 // Policy). REUSES the landing page's background (.site-bg), header (<Navbar/>)
-// and footer (<Footer/>) — nothing is recreated. Content (identical at every
-// breakpoint) is driven by props; the layout differs only by viewport: desktop
-// shows the "On this page" TOC + 64px H1 in a two-column row, mobile collapses
-// to a single 48px-H2 column (TOC hidden via CSS).
-//
-// `sections` is an array of { id, title, blocks }, where each block is a
-// paragraph (string), a bullet list (string[]), or a contact line
-// ({ contact: 'lead-in text…' }) rendered with a mailto link.
-
-const CONTACT_EMAIL = 'hello@near.health'
-
-function Block({ block }) {
-  if (Array.isArray(block)) {
-    return (
-      <ul className="legal-list">
-        {block.map((item, i) => <li key={i}>{item}</li>)}
-      </ul>
-    )
-  }
-  if (block && typeof block === 'object' && block.contact) {
-    return (
-      <p>
-        {block.contact}{' '}
-        <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
-      </p>
-    )
-  }
-  return <p>{block}</p>
-}
+// and footer (<Footer/>) — nothing is recreated. Content comes from a Markdown
+// file (see ../../content/legal/*.md) parsed by parseLegal() into:
+//   { title, lastUpdated, intro, sections: [{ id, title, body }] }
+// where `intro` and each section `body` are raw Markdown rendered with
+// react-markdown. The page header (eyebrow / 64px H1 / last-updated) spans the
+// full width; below it a two-column row holds the content on the left (intro +
+// sections) and a sticky "On this page" TOC on the right (hidden on mobile).
 
 export default function LegalPage({ title, lastUpdated, intro, sections }) {
   return (
@@ -54,12 +33,26 @@ export default function LegalPage({ title, lastUpdated, intro, sections }) {
             <p className="legal-eyebrow">LEGAL</p>
             <h1 className="legal-title">{title}</h1>
             <p className="legal-updated">Last updated: {lastUpdated}</p>
-            <div className="legal-intro">
-              {intro.map((text, i) => <p key={i}>{text}</p>)}
-            </div>
           </header>
 
           <div className="legal-body">
+            <div className="legal-content">
+              {intro && (
+                <div className="legal-intro">
+                  <Markdown>{intro}</Markdown>
+                </div>
+              )}
+
+              <div className="legal-sections">
+                {sections.map((s) => (
+                  <section key={s.id} id={s.id} className="legal-section">
+                    <h2>{s.title}</h2>
+                    <Markdown>{s.body}</Markdown>
+                  </section>
+                ))}
+              </div>
+            </div>
+
             <nav className="legal-toc" aria-label="On this page">
               <p className="legal-toc-label">ON THIS PAGE</p>
               <ul>
@@ -68,15 +61,6 @@ export default function LegalPage({ title, lastUpdated, intro, sections }) {
                 ))}
               </ul>
             </nav>
-
-            <div className="legal-sections">
-              {sections.map((s) => (
-                <section key={s.id} id={s.id} className="legal-section">
-                  <h2>{s.title}</h2>
-                  {s.blocks.map((block, i) => <Block key={i} block={block} />)}
-                </section>
-              ))}
-            </div>
           </div>
         </div>
       </main>
