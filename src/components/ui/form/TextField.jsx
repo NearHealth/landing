@@ -19,7 +19,7 @@ export default function TextField({
   return (
     <div className="fld">
       <label htmlFor={id} className="sr-only">{label}</label>
-      <div className={`fld-control${error ? ' is-invalid' : ''}`}>
+      <div className={`fld-control${value ? ' has-value' : ''}${error ? ' is-invalid' : ''}`}>
         {Icon && <span className="fld-icon"><Icon /></span>}
         <input
           id={id}

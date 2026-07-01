@@ -18,7 +18,7 @@
 
 /* ── Glass control (icon + input) ── */
 .fld-control {
-  display: flex; align-items: center; gap: 8px;
+  display: flex; align-items: center;
   background: rgba(255, 255, 255, 0.70);
   border: 1px solid transparent;
   border-radius: 24px;
@@ -28,9 +28,26 @@
 .fld-control:focus-within { border-color: var(--accent); }
 .fld-control.is-invalid { border-color: #FA4433; }
 
-.fld-icon { display: flex; flex-shrink: 0; width: 22px; height: 22px; }
-.fld-icon svg { width: 22px; height: 22px; fill: #737272; }
+.fld-icon {
+  display: flex; flex-shrink: 0;
+  width: 22px; height: 22px; margin-right: 8px;
+  overflow: hidden;                         /* clip the svg as the box collapses */
+  transition: width 0.28s var(--ease), margin-right 0.28s var(--ease),
+              opacity 0.2s var(--ease), transform 0.28s var(--ease);
+}
+.fld-icon svg { width: 22px; height: 22px; flex-shrink: 0; fill: #737272; }
 .fld-control.is-invalid .fld-icon svg { fill: #FA4433; }
+
+/* Leading icon eases out once the field starts being filled — width + margin
+   collapse so the input reclaims the space, plus a fade + slide-left. Reverses
+   when the field is cleared. */
+.fld-control.has-value .fld-icon {
+  width: 0; margin-right: 0; opacity: 0;
+  transform: translateX(-6px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .fld-icon, .fld-input { transition: none; }
+}
 
 .fld-input {
   flex: 1; min-width: 0;
@@ -39,7 +56,11 @@
   font-size: 16px;                          /* ≥16px → no iOS zoom-on-focus */
   font-weight: 500; letter-spacing: 0.02em;
   color: var(--dark);
+  transition: padding-left 0.28s var(--ease);
 }
+/* Once the icon has eased out, nudge the text 2px off the edge so it doesn't sit
+   flush against the pill — eased in step with the icon collapse. */
+.fld-control.has-value .fld-input { padding-left: 2px; }
 .fld-input::placeholder { color: #737272; opacity: 1; }
 /* Optical centering: nudge single-line input text 1px down; the icon stays put. */
 input.fld-input { position: relative; top: 1px; }

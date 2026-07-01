@@ -13,7 +13,7 @@ export default function TextareaField({
   return (
     <div className="fld">
       <label htmlFor={id} className="sr-only">{label}</label>
-      <div className={`fld-control fld-control--area${error ? ' is-invalid' : ''}`}>
+      <div className={`fld-control fld-control--area${value ? ' has-value' : ''}${error ? ' is-invalid' : ''}`}>
         {Icon && <span className="fld-icon"><Icon /></span>}
         <textarea
           id={id}
