@@ -1,0 +1,86 @@
+/* Contact form card + layout. Glass card geometry from the Figma frame
+   (rgba(255,255,255,.3) + 10.75px blur, 44px radius, 24px pad, 16px gap, max
+   640px). Rows are two-column on desktop/tablet and stack on mobile, where the
+   submit button goes full-width. Field/control styling lives in ui/form/form.css. */
+
+.contact-form {
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.30);
+  -webkit-backdrop-filter: blur(10.75px);
+  backdrop-filter: blur(10.75px);
+  border-radius: 44px;
+}
+
+.contact-form__row { display: flex; gap: 8px; }
+.contact-form__row > * { flex: 1 1 0; min-width: 0; }
+
+/* Honeypot — off-screen (not display:none, which some bots skip) and hidden from
+   assistive tech + keyboard, so only bots ever fill it. */
+.contact-form__hp {
+  position: absolute;
+  left: -9999px;
+  width: 1px; height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.contact-form__submit-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  padding-top: 12px;
+}
+.contact-form__summary {
+  margin: 0; text-align: center;
+  font-family: var(--font);
+  font-size: 13px; font-weight: 600; letter-spacing: 0.04em;
+  color: #FA4433;
+}
+.contact-form__system {
+  margin: 0;
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--font);
+  font-size: 14px; font-weight: 600; letter-spacing: 0.01em;
+  color: #FA4433;
+}
+.contact-form__system .fld-warn {
+  width: 17px; height: 17px; flex-shrink: 0;
+  stroke: #FA4433; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+}
+
+/* ── Success swap ── */
+.contact-form-success {
+  width: 100%; max-width: 640px; margin: 0 auto;
+  text-align: center; padding: 64px 24px;
+  animation: contact-form-success-in 0.5s ease forwards;
+}
+@keyframes contact-form-success-in {
+  from { opacity: 0; transform: translateY(14px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.contact-form-success h2 {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: 48px; font-weight: 400; line-height: 0.95; letter-spacing: 0;
+  color: var(--dark);
+}
+.contact-form-success p {
+  margin: 16px auto 0; max-width: 420px;
+  font-family: var(--font);
+  font-size: 18px; font-weight: 500; line-height: 1.42;
+  color: #4B4A4A;
+}
+
+/* ── Mobile (≤600px): single column, full-width submit ── */
+@media (max-width: 600px) {
+  .contact-form { border-radius: 36px; }
+  .contact-form__row { flex-direction: column; gap: 16px; }
+  .contact-form .fld-submit { width: 100%; }
+}

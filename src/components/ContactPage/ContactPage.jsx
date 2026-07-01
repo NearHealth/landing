@@ -1,24 +1,25 @@
 import { useEffect, useState } from 'react'
 import Navbar from '../Navbar/Navbar'
 import Footer from '../Footer/Footer'
+import ContactForm from '../ContactForm/ContactForm'
 import { asset } from '../../utils/assetPath'
 import { CONTACT_URL } from '../../constants/sections'
 import './ContactPage.css'
 
-// Standalone contact-form page. REUSES the landing page's background (.site-bg),
-// header (<Navbar standalone/>) and footer (<Footer/>) — same shell as LegalPage.
-// The form itself is a React port of the Near-Contact-Form.html prototype: the two
-// custom dropdowns, the leading-icon collapse, inline validation, the spinner and
-// the success swap are all driven by state (no DOM manipulation in effects).
-//
-// The hero title/subtitle are chosen by the `intent` query param so a single page
-// serves both CTAs (see CONTACT_URL in constants/sections.js):
+// Standalone /contact page: the landing shell (site-bg + Navbar + Footer) + an
+// intent-driven hero + the reusable <ContactForm/>. The hero title/subtitle and the
+// form's submit label are chosen by the ?intent= query param so one page serves both
+// CTAs (see CONTACT_URL in constants/sections.js):
 //   ?intent=early-access  → "Get early access"   (the relabelled "Request a demo")
 //   ?intent=talk          → "Talk to Us"
+// On success the hero + form fade out together and a "Thank you" panel fades in with
+// a button and a countdown that redirects to the homepage. Submission is simulated at
+// this call site (the real endpoint is wired here later); ?fail=1 forces the
+// system-error path for QA.
+
 const INTENTS = {
   'early-access': {
     title: 'Get early access',
-    // Mobile wraps to a shorter, fuller phrase per Figma (Mobile H2).
     titleMobile: 'Get early access to Near.',
     subtitle: 'Tell us a bit about your organization so we can \nunderstand your interest and keep you updated as \nNear moves toward launch.',
     submitLabel: 'Submit interest',
@@ -31,108 +32,51 @@ const INTENTS = {
 }
 const DEFAULT_INTENT = 'early-access'
 
+// The landing home page lives at the app base path (e.g. /landing/).
+const HOME_URL = import.meta.env.BASE_URL
+const REDIRECT_SECONDS = 8
+
 function getIntentKey() {
   if (typeof window === 'undefined') return DEFAULT_INTENT
   const param = new URLSearchParams(window.location.search).get('intent')
   return INTENTS[param] ? param : DEFAULT_INTENT
 }
 
-/* ---- Dropdown data (ported verbatim from the prototype) ---- */
-const ORG_TYPES = [
-  'Broker', 'Agency', 'FMO / IMO', 'Provider', 'Clinic',
-  'MSO', 'Healthcare Organization', 'Investor / Advisor', 'Strategic Partner', 'Other',
-]
-const GROUP_OF = {
-  'Broker': 'A', 'Agency': 'A', 'FMO / IMO': 'A',
-  'Provider': 'B', 'Clinic': 'B', 'MSO': 'B', 'Healthcare Organization': 'B',
-  'Investor / Advisor': 'C', 'Strategic Partner': 'C',
-  'Other': 'D',
-}
-const GROUPS = {
-  A: ['Early access', 'Broker / Agency partnership', 'Learn about post-enrollment support', 'Platform or product inquiry', 'Strategic partnership', 'Other'],
-  B: ['Early access', 'Provider / Clinic partnership', 'Learn about patient referrals', 'Platform or product inquiry', 'Strategic partnership', 'Other'],
-  C: ['Investment inquiry', 'Strategic partnership', 'Product overview', 'General inquiry', 'Other'],
-  D: ['General inquiry', 'Platform or product inquiry', 'Strategic partnership', 'Other'],
-}
-
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-const TEXT_FIELDS = [
-  { id: 'first',   placeholder: 'First name',   msg: 'Please enter your first name', icon: UserIcon },
-  { id: 'last',    placeholder: 'Last name',    msg: 'Please enter your last name',  icon: UserIcon },
-  { id: 'email',   placeholder: 'email',        msg: 'Please enter your email',      icon: MailIcon, email: true, type: 'email' },
-  { id: 'company', placeholder: 'Company name', msg: 'Please enter your company name', icon: BuildingIcon },
-]
-
-// Demo toggle: add ?fail=1 to simulate a failed submission (system-error state).
 function shouldSimulateFail() {
   if (typeof window === 'undefined') return false
   return new URLSearchParams(window.location.search).get('fail') === '1'
 }
 
-/* ---- Leading-field icons (Phosphor — Outline / Regular weight, from Figma) ---- */
-function UserIcon() {
-  return <svg viewBox="0 0 24 24"><path d="M21.6503 19.875C20.2225 17.4065 18.0222 15.6365 15.4544 14.7975C16.7246 14.0414 17.7114 12.8892 18.2634 11.5179C18.8153 10.1467 18.9019 8.63211 18.5098 7.20688C18.1177 5.78165 17.2685 4.52454 16.0928 3.6286C14.9171 2.73266 13.4798 2.24744 12.0016 2.24744C10.5234 2.24744 9.08609 2.73266 7.91037 3.6286C6.73465 4.52454 5.88553 5.78165 5.49342 7.20688C5.1013 8.63211 5.18787 10.1467 5.73983 11.5179C6.2918 12.8892 7.27863 14.0414 8.54878 14.7975C5.98097 15.6356 3.78066 17.4056 2.35285 19.875C2.30049 19.9604 2.26576 20.0554 2.2507 20.1544C2.23565 20.2534 2.24059 20.3544 2.26521 20.4515C2.28984 20.5486 2.33366 20.6397 2.39409 20.7196C2.45452 20.7995 2.53033 20.8664 2.61706 20.9165C2.70378 20.9666 2.79966 20.9988 2.89904 21.0113C2.99842 21.0237 3.09928 21.0161 3.19568 20.989C3.29208 20.9618 3.38205 20.9156 3.4603 20.8531C3.53855 20.7906 3.60349 20.713 3.65128 20.625C5.41753 17.5725 8.53941 15.75 12.0016 15.75C15.4638 15.75 18.5857 17.5725 20.3519 20.625C20.3997 20.713 20.4646 20.7906 20.5429 20.8531C20.6211 20.9156 20.7111 20.9618 20.8075 20.989C20.9039 21.0161 21.0048 21.0237 21.1042 21.0113C21.2035 20.9988 21.2994 20.9666 21.3861 20.9165C21.4729 20.8664 21.5487 20.7995 21.6091 20.7196C21.6695 20.6397 21.7134 20.5486 21.738 20.4515C21.7626 20.3544 21.7675 20.2534 21.7525 20.1544C21.7374 20.0554 21.7027 19.9604 21.6503 19.875ZM6.7516 8.99999C6.7516 7.96164 7.0595 6.9466 7.63638 6.08324C8.21326 5.21989 9.0332 4.54698 9.99251 4.14962C10.9518 3.75226 12.0074 3.64829 13.0258 3.85086C14.0442 4.05344 14.9797 4.55345 15.7139 5.28768C16.4481 6.0219 16.9481 6.95736 17.1507 7.97576C17.3533 8.99416 17.2493 10.0498 16.852 11.0091C16.4546 11.9684 15.7817 12.7883 14.9183 13.3652C14.055 13.9421 13.0399 14.25 12.0016 14.25C10.6097 14.2485 9.27517 13.6949 8.29093 12.7107C7.30669 11.7264 6.75309 10.3919 6.7516 8.99999Z" /></svg>
-}
-function MailIcon() {
-  return <svg viewBox="0 0 24 24"><path d="M21 4.5H3C2.80109 4.5 2.61032 4.57902 2.46967 4.71967C2.32902 4.86032 2.25 5.05109 2.25 5.25V18C2.25 18.3978 2.40804 18.7794 2.68934 19.0607C2.97064 19.342 3.35218 19.5 3.75 19.5H20.25C20.6478 19.5 21.0294 19.342 21.3107 19.0607C21.592 18.7794 21.75 18.3978 21.75 18V5.25C21.75 5.05109 21.671 4.86032 21.5303 4.71967C21.3897 4.57902 21.1989 4.5 21 4.5ZM19.0716 6L12 12.4828L4.92844 6H19.0716ZM20.25 18H3.75V6.95531L11.4928 14.0531C11.6312 14.1801 11.8122 14.2506 12 14.2506C12.1878 14.2506 12.3688 14.1801 12.5072 14.0531L20.25 6.95531V18Z" /></svg>
-}
-function BuildingIcon() {
-  return <svg viewBox="0 0 24 24"><path d="M21.75 21H19.5V3H20.25C20.4489 3 20.6397 2.92098 20.7803 2.78033C20.921 2.63968 21 2.44891 21 2.25C21 2.05109 20.921 1.86032 20.7803 1.71967C20.6397 1.57902 20.4489 1.5 20.25 1.5H3.75C3.55109 1.5 3.36032 1.57902 3.21967 1.71967C3.07902 1.86032 3 2.05109 3 2.25C3 2.44891 3.07902 2.63968 3.21967 2.78033C3.36032 2.92098 3.55109 3 3.75 3H4.5V21H2.25C2.05109 21 1.86032 21.079 1.71967 21.2197C1.57902 21.3603 1.5 21.5511 1.5 21.75C1.5 21.9489 1.57902 22.1397 1.71967 22.2803C1.86032 22.421 2.05109 22.5 2.25 22.5H21.75C21.9489 22.5 22.1397 22.421 22.2803 22.2803C22.421 22.1397 22.5 21.9489 22.5 21.75C22.5 21.5511 22.421 21.3603 22.2803 21.2197C22.1397 21.079 21.9489 21 21.75 21ZM6 3H18V21H15V17.25C15 17.0511 14.921 16.8603 14.7803 16.7197C14.6397 16.579 14.4489 16.5 14.25 16.5H9.75C9.55109 16.5 9.36032 16.579 9.21967 16.7197C9.07902 16.8603 9 17.0511 9 17.25V21H6V3ZM13.5 21H10.5V18H13.5V21ZM8.25 6C8.25 5.80109 8.32902 5.61032 8.46967 5.46967C8.61032 5.32902 8.80109 5.25 9 5.25H10.5C10.6989 5.25 10.8897 5.32902 11.0303 5.46967C11.171 5.61032 11.25 5.80109 11.25 6C11.25 6.19891 11.171 6.38968 11.0303 6.53033C10.8897 6.67098 10.6989 6.75 10.5 6.75H9C8.80109 6.75 8.61032 6.67098 8.46967 6.53033C8.32902 6.38968 8.25 6.19891 8.25 6ZM12.75 6C12.75 5.80109 12.829 5.61032 12.9697 5.46967C13.1103 5.32902 13.3011 5.25 13.5 5.25H15C15.1989 5.25 15.3897 5.32902 15.5303 5.46967C15.671 5.61032 15.75 5.80109 15.75 6C15.75 6.19891 15.671 6.38968 15.5303 6.53033C15.3897 6.67098 15.1989 6.75 15 6.75H13.5C13.3011 6.75 13.1103 6.67098 12.9697 6.53033C12.829 6.38968 12.75 6.19891 12.75 6ZM8.25 9.75C8.25 9.55109 8.32902 9.36032 8.46967 9.21967C8.61032 9.07902 8.80109 9 9 9H10.5C10.6989 9 10.8897 9.07902 11.0303 9.21967C11.171 9.36032 11.25 9.55109 11.25 9.75C11.25 9.94891 11.171 10.1397 11.0303 10.2803C10.8897 10.421 10.6989 10.5 10.5 10.5H9C8.80109 10.5 8.61032 10.421 8.46967 10.2803C8.32902 10.1397 8.25 9.94891 8.25 9.75ZM12.75 9.75C12.75 9.55109 12.829 9.36032 12.9697 9.21967C13.1103 9.07902 13.3011 9 13.5 9H15C15.1989 9 15.3897 9.07902 15.5303 9.21967C15.671 9.36032 15.75 9.55109 15.75 9.75C15.75 9.94891 15.671 10.1397 15.5303 10.2803C15.3897 10.421 15.1989 10.5 15 10.5H13.5C13.3011 10.5 13.1103 10.421 12.9697 10.2803C12.829 10.1397 12.75 9.94891 12.75 9.75ZM8.25 13.5C8.25 13.3011 8.32902 13.1103 8.46967 12.9697C8.61032 12.829 8.80109 12.75 9 12.75H10.5C10.6989 12.75 10.8897 12.829 11.0303 12.9697C11.171 13.1103 11.25 13.3011 11.25 13.5C11.25 13.6989 11.171 13.8897 11.0303 14.0303C10.8897 14.171 10.6989 14.25 10.5 14.25H9C8.80109 14.25 8.61032 14.171 8.46967 14.0303C8.32902 13.8897 8.25 13.6989 8.25 13.5ZM12.75 13.5C12.75 13.3011 12.829 13.1103 12.9697 12.9697C13.1103 12.829 13.3011 12.75 13.5 12.75H15C15.1989 12.75 15.3897 12.829 15.5303 12.9697C15.671 13.1103 15.75 13.3011 15.75 13.5C15.75 13.6989 15.671 13.8897 15.5303 14.0303C15.3897 14.171 15.1989 14.25 15 14.25H13.5C13.3011 14.25 13.1103 14.171 12.9697 14.0303C12.829 13.8897 12.75 13.6989 12.75 13.5Z" /></svg>
-}
-function NoteIcon() {
-  return <svg viewBox="0 0 24 24"><path d="M10.875 12C10.875 11.7775 10.941 11.56 11.0646 11.375C11.1882 11.19 11.3639 11.0458 11.5695 10.9606C11.7751 10.8755 12.0013 10.8532 12.2195 10.8966C12.4377 10.94 12.6382 11.0472 12.7955 11.2045C12.9529 11.3618 13.06 11.5623 13.1034 11.7805C13.1468 11.9988 13.1245 12.225 13.0394 12.4305C12.9542 12.6361 12.81 12.8118 12.625 12.9354C12.44 13.059 12.2225 13.125 12 13.125C11.7017 13.125 11.4155 13.0065 11.2045 12.7955C10.9936 12.5845 10.875 12.2984 10.875 12ZM7.87503 13.125C8.09753 13.125 8.31504 13.059 8.50004 12.9354C8.68505 12.8118 8.82924 12.6361 8.91439 12.4305C8.99954 12.225 9.02182 11.9988 8.97841 11.7805C8.935 11.5623 8.82786 11.3618 8.67052 11.2045C8.51319 11.0472 8.31273 10.94 8.0945 10.8966C7.87627 10.8532 7.65007 10.8755 7.44451 10.9606C7.23894 11.0458 7.06324 11.19 6.93962 11.375C6.81601 11.56 6.75003 11.7775 6.75003 12C6.75003 12.2984 6.86855 12.5845 7.07953 12.7955C7.29051 13.0065 7.57666 13.125 7.87503 13.125ZM16.125 13.125C16.3475 13.125 16.565 13.059 16.75 12.9354C16.935 12.8118 17.0792 12.6361 17.1644 12.4305C17.2495 12.225 17.2718 11.9988 17.2284 11.7805C17.185 11.5623 17.0779 11.3618 16.9205 11.2045C16.7632 11.0472 16.5627 10.94 16.3445 10.8966C16.1263 10.8532 15.9001 10.8755 15.6945 10.9606C15.4889 11.0458 15.3132 11.19 15.1896 11.375C15.066 11.56 15 11.7775 15 12C15 12.2984 15.1186 12.5845 15.3295 12.7955C15.5405 13.0065 15.8267 13.125 16.125 13.125ZM21.75 6V18C21.75 18.3978 21.592 18.7794 21.3107 19.0607C21.0294 19.342 20.6479 19.5 20.25 19.5H7.78128L4.72503 22.14L4.71659 22.1466C4.44662 22.3755 4.10397 22.5008 3.75003 22.5C3.52968 22.4995 3.31211 22.4509 3.11253 22.3575C2.85365 22.2379 2.63468 22.0462 2.48174 21.8055C2.3288 21.5648 2.24836 21.2852 2.25003 21V6C2.25003 5.60218 2.40806 5.22064 2.68937 4.93934C2.97067 4.65804 3.3522 4.5 3.75003 4.5H20.25C20.6479 4.5 21.0294 4.65804 21.3107 4.93934C21.592 5.22064 21.75 5.60218 21.75 6ZM20.25 6H3.75003V21L7.00971 18.1875C7.14523 18.068 7.31934 18.0014 7.50003 18H20.25V6Z" /></svg>
-}
-function CheckIcon() {
-  return <svg className="check" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" /></svg>
-}
-function ChevronIcon() {
-  return <svg className="chev" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6" /></svg>
+// Stand-in for the real backend call. Resolves after a short delay (success) or
+// rejects when ?fail=1 (the form's system-error path). Replace with a real fetch()
+// to the contact endpoint once it exists — ContactForm only needs a Promise.
+function simulateSubmit() {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      if (shouldSimulateFail()) reject(new Error('Simulated submission failure'))
+      else resolve({ ok: true })
+    }, 900)
+  })
 }
 
-function TextField({ field, value, error, onChange, onBlur }) {
-  const Icon = field.icon
-  const hasText = value.trim().length > 0
-  return (
-    <div className={`field-group${error ? ' invalid' : ''}`}>
-      <div className={`field${hasText ? ' has-text' : ''}`}>
-        <Icon />
-        <input
-          id={field.id}
-          type={field.type || 'text'}
-          placeholder={field.placeholder}
-          value={value}
-          onChange={(e) => onChange(field.id, e.target.value)}
-          onBlur={() => onBlur(field.id)}
-        />
-      </div>
-      <div className="err">{error || ''}</div>
-    </div>
-  )
-}
+// Post-submit panel: thank-you message, a manual "back to home" button, and a
+// live countdown that auto-redirects to the homepage.
+function ContactThanks() {
+  const [count, setCount] = useState(REDIRECT_SECONDS)
+  useEffect(() => {
+    if (count <= 0) { window.location.href = HOME_URL; return }
+    const t = setTimeout(() => setCount((c) => c - 1), 1000)
+    return () => clearTimeout(t)
+  }, [count])
 
-function Dropdown({ placeholder, value, options, open, disabled, error, onToggle, onSelect }) {
   return (
-    <div className={`select-wrap${error ? ' invalid' : ''}`}>
-      <div
-        className={`select${open ? ' open' : ''}${value ? ' has-value' : ''}${disabled ? ' disabled' : ''}`}
-        onClick={(e) => { e.stopPropagation(); if (!disabled) onToggle() }}
-      >
-        <span className="label">{value || placeholder}</span>
-        <ChevronIcon />
-      </div>
-      <div className={`options${open ? ' open' : ''}`}>
-        {options.map((opt) => (
-          <div
-            key={opt}
-            className={`opt${opt === value ? ' selected' : ''}`}
-            onClick={(e) => { e.stopPropagation(); onSelect(opt) }}
-          >
-            <CheckIcon />
-            <span>{opt}</span>
-          </div>
-        ))}
-      </div>
-      <div className="err">{error || ''}</div>
+    <div className="contact-thanks" role="status">
+      <h1>Thank you.</h1>
+      <p>We received your request and our team will be in touch soon.</p>
+      <a className="contact-thanks__btn" href={HOME_URL}>Back to home</a>
+      <p className="contact-thanks__timer" aria-live="polite">
+        Redirecting to the homepage in {count}s…
+      </p>
     </div>
   )
 }
@@ -140,17 +84,7 @@ function Dropdown({ placeholder, value, options, open, disabled, error, onToggle
 export default function ContactPage() {
   const intentKey = getIntentKey()
   const intent = INTENTS[intentKey]
-
-  const [fields, setFields] = useState({ first: '', last: '', email: '', company: '', message: '' })
-  const [errors, setErrors] = useState({})
-  const [orgValue, setOrgValue] = useState(null)
-  const [intValue, setIntValue] = useState(null)
-  const [orgOpen, setOrgOpen] = useState(false)
-  const [intOpen, setIntOpen] = useState(false)
-  const [submitting, setSubmitting] = useState(false)
-  const [systemError, setSystemError] = useState(false)
-  const [submitted, setSubmitted] = useState(false)
-  const [attempted, setAttempted] = useState(false)
+  const [phase, setPhase] = useState('form') // 'form' | 'leaving' | 'done'
 
   // Keep the browser tab title in sync with the intent (the static HTML ships the
   // early-access default; this overrides it client-side for the talk variant).
@@ -158,102 +92,11 @@ export default function ContactPage() {
     document.title = `${intent.title} — Near Health`
   }, [intent.title])
 
-  // Click anywhere outside an open dropdown closes it. Each select/option handler
-  // stopPropagation()s, so clicks on the controls themselves don't trigger this.
-  useEffect(() => {
-    const closeAll = () => { setOrgOpen(false); setIntOpen(false) }
-    document.addEventListener('click', closeAll)
-    return () => document.removeEventListener('click', closeAll)
-  }, [])
-
-  const interestOptions = orgValue ? GROUPS[GROUP_OF[orgValue]] : []
-
-  function fieldError(id, value) {
-    const f = TEXT_FIELDS.find((x) => x.id === id)
-    const val = value.trim()
-    if (!val) return f.msg
-    if (f.email && !EMAIL_RE.test(val)) return 'Please enter a valid email address'
-    return undefined
+  // On a successful submit, fade the hero + form out, then swap in the thank-you.
+  function handleSuccess() {
+    setPhase('leaving')
+    setTimeout(() => setPhase('done'), 420) // matches the .contact-page__content fade
   }
-
-  function computeErrors() {
-    const e = {}
-    for (const f of TEXT_FIELDS) {
-      const msg = fieldError(f.id, fields[f.id])
-      if (msg) e[f.id] = msg
-    }
-    if (!orgValue) e.org = 'Please select your organization type'
-    if (!intValue) e.interested = 'Please select an option'
-    return e
-  }
-
-  function handleChange(id, value) {
-    setFields((prev) => ({ ...prev, [id]: value }))
-    // Clear/refresh this field's error live once it already has one (§8.1).
-    if (errors[id]) {
-      const msg = fieldError(id, value)
-      setErrors((prev) => {
-        const next = { ...prev }
-        if (msg) next[id] = msg; else delete next[id]
-        return next
-      })
-    }
-  }
-
-  function handleBlur(id) {
-    if (!errors[id]) return
-    const msg = fieldError(id, fields[id])
-    setErrors((prev) => {
-      const next = { ...prev }
-      if (msg) next[id] = msg; else delete next[id]
-      return next
-    })
-  }
-
-  function selectOrg(value) {
-    setOrgValue(value)
-    setOrgOpen(false)
-    // Reset + re-enable the dependent "interested in" dropdown (§7 rules 2 & 3).
-    setIntValue(null)
-    setErrors((prev) => { const n = { ...prev }; delete n.org; delete n.interested; return n })
-  }
-
-  function selectInterest(value) {
-    setIntValue(value)
-    setIntOpen(false)
-    setErrors((prev) => { const n = { ...prev }; delete n.interested; return n })
-  }
-
-  function toggleOrg() { setIntOpen(false); setOrgOpen((o) => !o) }
-  function toggleInterest() { setOrgOpen(false); setIntOpen((o) => !o) }
-
-  function handleSubmit(e) {
-    e.preventDefault()
-    const errs = computeErrors()
-    setErrors(errs)
-    setAttempted(true)
-    if (Object.keys(errs).length > 0) {
-      const firstInvalid = TEXT_FIELDS.find((f) => errs[f.id])
-      if (firstInvalid) document.getElementById(firstInvalid.id)?.focus({ preventScroll: false })
-      return
-    }
-    setSystemError(false) // clear any previous failure before retrying
-    setSubmitting(true)
-    // TODO: replace this simulated round-trip with a real API call (POST the form
-    // payload to the backend, then show success / system-error from the response).
-    setTimeout(() => {
-      if (shouldSimulateFail()) { // POST failed → keep values, re-enable, show error
-        setSubmitting(false)
-        setSystemError(true)
-        return
-      }
-      setSubmitting(false)
-      setSubmitted(true)
-    }, 900)
-  }
-
-  const showSummary = attempted && Object.keys(errors).length > 0
-  const messageHasText = fields.message.trim().length > 0
 
   return (
     <>
@@ -267,17 +110,13 @@ export default function ContactPage() {
       <a href={CONTACT_URL.earlyAccess()} className="navbar-cta-fixed">Early access</a>
 
       <main className="contact-page">
-        {submitted ? (
-          <div className="contact-success">
-            <h1>Thank you.</h1>
-            <p>We received your request and our team will be in touch soon.</p>
-          </div>
+        {phase === 'done' ? (
+          <ContactThanks />
         ) : (
-          <>
+          <div className={`contact-page__content${phase === 'leaving' ? ' is-leaving' : ''}`}>
             <div className="contact-hero">
               {/* Desktop/mobile titles swap via CSS so the mobile copy can differ
-                  (e.g. early-access reads "Get early access to Near."). When an
-                  intent has no mobile-specific title, both spans show the same text. */}
+                  (e.g. early-access reads "Get early access to Near."). */}
               <h1>
                 <span className="contact-hero__title-desktop">{intent.title}</span>
                 <span className="contact-hero__title-mobile">{intent.titleMobile || intent.title}</span>
@@ -287,57 +126,10 @@ export default function ContactPage() {
               )}</p>
             </div>
 
-            <div className="form-wrap">
-              <form className="form-card" noValidate onSubmit={handleSubmit}>
-                <div className="row">
-                  <TextField field={TEXT_FIELDS[0]} value={fields.first} error={errors.first} onChange={handleChange} onBlur={handleBlur} />
-                  <TextField field={TEXT_FIELDS[1]} value={fields.last} error={errors.last} onChange={handleChange} onBlur={handleBlur} />
-                </div>
-                <TextField field={TEXT_FIELDS[2]} value={fields.email} error={errors.email} onChange={handleChange} onBlur={handleBlur} />
-                <TextField field={TEXT_FIELDS[3]} value={fields.company} error={errors.company} onChange={handleChange} onBlur={handleBlur} />
-
-                <Dropdown
-                  placeholder="Organization type"
-                  value={orgValue}
-                  options={ORG_TYPES}
-                  open={orgOpen}
-                  error={errors.org}
-                  onToggle={toggleOrg}
-                  onSelect={selectOrg}
-                />
-
-                <Dropdown
-                  placeholder={orgValue ? 'Select an option' : "I'm interested in (select your organization type first)"}
-                  value={intValue}
-                  options={interestOptions}
-                  open={intOpen}
-                  disabled={!orgValue}
-                  error={errors.interested}
-                  onToggle={toggleInterest}
-                  onSelect={selectInterest}
-                />
-
-                <div className={`field area${messageHasText ? ' has-text' : ''}`}>
-                  <NoteIcon />
-                  <textarea
-                    placeholder="Tell us about your organization (Optional)"
-                    value={fields.message}
-                    onChange={(e) => handleChange('message', e.target.value)}
-                  />
-                </div>
-
-                <div className="submit-area">
-                  <button className={`btn-submit${submitting ? ' loading' : ''}`} type="submit">{intent.submitLabel}</button>
-                  <div className={`form-error-summary${showSummary ? ' show' : ''}`}>Please complete the required fields.</div>
-                  <div className={`form-system-error${systemError ? ' show' : ''}`}>
-                    <svg viewBox="0 0 24 24"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" /><line x1="12" y1="9" x2="12" y2="13" /><line x1="12" y1="17" x2="12.01" y2="17" /></svg>
-                    <span>Something went wrong. Please try again.</span>
-                  </div>
-                  <div className="legal">By submitting, you agree to Near&rsquo;s Privacy Policy.</div>
-                </div>
-              </form>
+            <div className="contact-page__form">
+              <ContactForm onSubmit={simulateSubmit} onSuccess={handleSuccess} submitLabel={intent.submitLabel} />
             </div>
-          </>
+          </div>
         )}
       </main>
 
