@@ -136,13 +136,6 @@ export default function Navbar({ standalone = false }) {
         aria-label="Menu"
       >
         <div className="mobile-drawer__header">
-          <a
-            href={CONTACT_URL.earlyAccess()}
-            className="mobile-drawer__cta"
-            onClick={() => setMenuOpen(false)}
-          >
-            Early access
-          </a>
           <button
             className="mobile-drawer__close"
             onClick={() => setMenuOpen(false)}
@@ -159,6 +152,13 @@ export default function Navbar({ standalone = false }) {
           <a {...linkProps(SECTIONS.whyNear)} className="mobile-drawer__link">Why near</a>
           <a href={CONTACT_URL.talk()} className="mobile-drawer__link" onClick={() => setMenuOpen(false)}>Talk to us</a>
         </nav>
+        <a
+          href={CONTACT_URL.earlyAccess()}
+          className="mobile-drawer__cta"
+          onClick={() => setMenuOpen(false)}
+        >
+          Early access
+        </a>
       </aside>
     </>
   )
