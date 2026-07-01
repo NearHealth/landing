@@ -44,3 +44,8 @@ playwright-report/
 # Local Claude Code config (per-developer, not shared)
 CLAUDE.md
 .mcp.json
+.claude/
+
+# dev-process-toolkit artifacts — used locally by us only, not part of the
+# client deliverable (specs/FRs/plan live outside the pushed repo)
+specs/
