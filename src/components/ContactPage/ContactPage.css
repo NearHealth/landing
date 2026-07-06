@@ -5,9 +5,14 @@
    Reuses <Navbar/> + <Footer/> and the shared <img class="site-bg"> background. */
 
 .contact-page {
-  padding-top: var(--navbar-h);                 /* clear the fixed navbar */
-  padding-bottom: 78px;                          /* match home page CTA→footer gap */
-  min-height: calc(100vh - var(--navbar-h));
+  padding-top: calc(var(--navbar-h) + 32px);    /* clear the fixed navbar + 32px */
+  /* Keep the page at least tall enough that the footer lands at the bottom of the
+     viewport: min-height = 100vh − (live footer height) + 32px. --footer-h is
+     measured at runtime in ContactPage.jsx because the footer height is responsive
+     (the wordmark scales with width). padding-bottom is the min gap below the form
+     when the content is tall enough to exceed min-height. */
+  min-height: calc(100vh - var(--footer-h, 0px) + 32px);
+  padding-bottom: 188px;
   display: flex;
   flex-direction: column;
 }
@@ -43,11 +48,30 @@
 .contact-thanks {
   text-align: center;
   padding: 130px 24px 0;
-  animation: contact-thanks-in 0.5s ease forwards;
 }
-@keyframes contact-thanks-in {
-  from { opacity: 0; transform: translateY(14px); }
+/* Sequential reveal: "Thank you." settles first, then the subheading fades in at
+   its exact resting spot, then the button and the redirect note. Only opacity +
+   transform animate (never margin/height), so the spacing under the h1 is never
+   disturbed. Strong custom ease-out (--ease-out) for a responsive entrance. */
+.contact-thanks > * {
+  opacity: 0;
+  animation: contact-thanks-rise 0.5s var(--ease-out) both;
+}
+.contact-thanks h1                            { animation-delay: 0.05s; }
+.contact-thanks p:not(.contact-thanks__timer) { animation-delay: 0.20s; }
+.contact-thanks__btn                          { animation-delay: 0.36s; }
+.contact-thanks__timer                        { animation-delay: 0.50s; }
+@keyframes contact-thanks-rise {
+  from { opacity: 0; transform: translateY(10px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+/* Reduced motion: keep the fade (aids comprehension), drop the movement. */
+@media (prefers-reduced-motion: reduce) {
+  .contact-thanks > * { animation: contact-thanks-fade 0.4s ease both; }
+}
+@keyframes contact-thanks-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 .contact-thanks h1 {
   margin: 0;
@@ -55,8 +79,8 @@
   font-size: 64px; font-weight: 400; line-height: 0.9; letter-spacing: 0;
   color: var(--dark);
 }
-.contact-thanks p {
-  margin: 16px auto 0; max-width: 480px;
+.contact-thanks p:not(.contact-thanks__timer) {
+  margin: 16px auto 0; max-width: 428px;
   font-family: var(--font);
   font-size: 22px; font-weight: 500; line-height: 1.13; letter-spacing: 0.02em;
   color: var(--dark);
@@ -75,7 +99,7 @@
 .contact-thanks__timer {
   margin: 18px auto 0;
   font-family: var(--font);
-  font-size: 13px; font-weight: 500; letter-spacing: 0.01em;
+  font-size: 14px; font-weight: 500; letter-spacing: 0.01em;
   color: #737272;
 }
 
@@ -90,13 +114,13 @@
   .contact-hero h1 { font-size: 48px; line-height: 1.0; letter-spacing: -0.96px; }
   .contact-hero__title-desktop { display: none; }
   .contact-hero__title-mobile { display: inline; }
-  .contact-hero p { font-size: var(--fs-body-mobile); width: 288px; max-width: 100%; margin-top: 14px; }
+  .contact-hero p { font-size: var(--fs-body-mobile); width: 100%; max-width: 318px; margin-top: 14px; }
 
   .contact-page__form { padding: 24px 16px 0; }
 
   .contact-thanks { padding: 96px 24px 0; }
   .contact-thanks h1 { font-size: 48px; line-height: 1.0; letter-spacing: -0.96px; }
-  .contact-thanks p { font-size: 18px; line-height: 1.42; }
+  .contact-thanks p:not(.contact-thanks__timer) { font-size: 18px; line-height: 1.42; }
 }
 
 /* Match the home page's CTA→footer gap at the footer's own ≤480px breakpoint. */

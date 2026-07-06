@@ -92,6 +92,20 @@ export default function ContactPage() {
     document.title = `${intent.title} — Near Health`
   }, [intent.title])
 
+  // The contact-page min-height is 100vh − footer height + 32px (see ContactPage.css).
+  // The footer height is responsive (the wordmark scales with width), so measure it
+  // live and expose it as --footer-h on the page element.
+  useEffect(() => {
+    const page = document.querySelector('.contact-page')
+    const footer = document.querySelector('.footer')
+    if (!page || !footer) return
+    const sync = () => page.style.setProperty('--footer-h', `${footer.offsetHeight}px`)
+    sync()
+    const ro = new ResizeObserver(sync)
+    ro.observe(footer)
+    return () => ro.disconnect()
+  }, [])
+
   // On a successful submit, fade the hero + form out, then swap in the thank-you.
   function handleSuccess() {
     setPhase('leaving')
