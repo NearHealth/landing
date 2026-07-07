@@ -127,7 +127,7 @@ export default function Navbar({ standalone = false }) {
         onClick={() => setMenuOpen(false)}
         aria-hidden="true"
       />
-      <aside
+      <div
         id="mobile-drawer"
         className="mobile-drawer"
         data-open={menuOpen}
@@ -159,7 +159,7 @@ export default function Navbar({ standalone = false }) {
         >
           Early access
         </a>
-      </aside>
+      </div>
     </>
   )
 }

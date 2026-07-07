@@ -130,6 +130,7 @@ export default function App() {
       <a href={CONTACT_URL.earlyAccess()} className="navbar-cta-fixed">
         Early access
       </a>
+      <main>
       <HeroLab key={sectionKey(SECTIONS.hero)} />
       {/* LAB: everything after the hero lives in one wrapper that rises over the
           hero's empty (letterbox + tail) area. The hero video stays sticky; this
@@ -149,6 +150,7 @@ export default function App() {
           <Footer />
         </div>
       </div>
+      </main>
       {import.meta.env.DEV && <GridOverlay />}
       {import.meta.env.DEV && <GradientTuner />}
     </>
