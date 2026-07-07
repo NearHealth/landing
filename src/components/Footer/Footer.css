@@ -85,6 +85,5 @@
   .footer-socials   { grid-row: 2; grid-column: 2; justify-self: center; margin-left: 0; }
   .footer-privacy   { grid-row: 2; grid-column: 3; justify-self: end; }
   .footer-copyright { grid-row: 3; grid-column: 1 / 2; justify-self: start; white-space: nowrap; }
-  .footer-email     { grid-row: 3; grid-column: 3; justify-self: end; }
   .footer-item { font-size: 11px; }
 }

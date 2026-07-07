@@ -28,7 +28,6 @@ export default function Footer() {
           <path d="M706.178 211.119V307.983H652.475V170.071C652.475 140.739 628.666 116.956 599.301 116.956C569.937 116.956 546.128 140.739 546.128 170.071V307.983H492.425V170.071C492.425 111.113 540.278 63.312 599.301 63.312C658.324 63.312 706.178 111.113 706.178 170.071V211.119Z" fill="currentColor"/>
         </motion.svg>
         <span className="footer-item footer-copyright">&copy; NearHealth LLC. 2026</span>
-        <a href="mailto:hello@near.health" className="footer-item footer-email">hello@near.health</a>
         <a href={asset('terms/')} className="footer-item footer-terms">Terms</a>
         <a href={asset('privacy/')} className="footer-item footer-privacy">Privacy</a>
         <div className="footer-socials">
