@@ -121,7 +121,11 @@
    overflow:hidden + object-fit:cover; this caps the horizontal axis as a guard
    so a slow-host / wrong-aspect frame (or its poster) can't stretch the layout. */
 video, img { max-width: 100%; }
-html { -webkit-font-smoothing: antialiased; overscroll-behavior-y: none; overflow-x: clip; }
+/* background-color paints the viewport canvas the warm base tone so a full-page
+   (MPA) navigation and the createRoot #root rebuild never flash white, and the
+   navbar's mix-blend-mode always composites over a consistent backdrop (no white
+   inversion in the frame before the .site-bg mesh paints). */
+html { -webkit-font-smoothing: antialiased; overscroll-behavior-y: none; overflow-x: clip; background-color: var(--warm); }
 html.lenis, html.lenis body { height: auto; }
 .lenis.lenis-smooth { scroll-behavior: auto !important; }
 .lenis.lenis-smooth [data-lenis-prevent] { overscroll-behavior: contain; }

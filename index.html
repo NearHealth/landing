@@ -58,6 +58,10 @@
     <link rel="preload" as="image" href="/landing/assets/video/hero_desktop_poster.jpg" media="(min-width: 481px)" fetchpriority="high">
     <link rel="preload" as="image" href="/landing/assets/video/ai_chat_mobile_poster.jpg" media="(max-width: 480px)">
     <link rel="preload" as="image" href="/landing/assets/video/ai_chat_desktop_poster.jpg" media="(min-width: 481px)">
+    <!-- Background mesh — preload so it's decoded before React renders .site-bg
+         (avoids the navbar blend flickering against an undecoded background).
+         Base-less path: Vite prepends the /landing/ base once (as with favicon). -->
+    <link rel="preload" as="image" href="/assets/images/site-bg.jpg" fetchpriority="high">
     <link href="/fonts.css" rel="stylesheet">
   </head>
   <body>
