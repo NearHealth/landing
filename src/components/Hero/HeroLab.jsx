@@ -15,6 +15,13 @@ const heroItem = {
   hidden: { opacity: 0, y: 8 },
   visible: { opacity: 1, y: 0, transition: { duration: 0.65, ease: [0.16, 1, 0.3, 1] } },
 }
+// The heading is the LCP candidate — an opacity:0 entrance makes Chrome skip it
+// for LCP (the NO_LCP in the mobile audit). Start at 0.12 so it's paint-visible
+// from frame 1; the fade-up still reads the same.
+const heroHeadingItem = {
+  hidden: { opacity: 0.12, y: 8 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.65, ease: [0.16, 1, 0.3, 1] } },
+}
 
 // Scrub tuning (mirrors the previous GSAP values).
 const SCRUB_VH = 0.6      // scrub scroll distance as a fraction of viewport height
@@ -291,6 +298,7 @@ export default function HeroLab() {
   // movement); only this opacity entrance is preserved.
   const enter = { initial: 'hidden', animate: 'visible', variants: softVariants(reduce, heroContainer) }
   const itemVariants = softVariants(reduce, heroItem)
+  const headingVariants = softVariants(reduce, heroHeadingItem)
 
   return (
     <div className="hero-outer">
@@ -325,7 +333,7 @@ export default function HeroLab() {
                 elements so the two opacity drivers don't fight (combined =
                 entrance × scroll). */}
             <motion.div className="hero-left-col" {...enter}>
-              <motion.div variants={itemVariants}>
+              <motion.div variants={headingVariants}>
                 <motion.h1 className="hero-heading" style={{ opacity: textFade }}>
                   The future of<br />post-enrollment<br />healthcare.
                 </motion.h1>

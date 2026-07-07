@@ -125,12 +125,18 @@
 /* Pure CSS: divider grows via keyframe, no JS class toggle */
 .built-for-divider {
   flex-shrink: 0;
-  width: 0; height: 1px; margin-top: 65px;
+  width: clamp(60px, 9vw, 130px); height: 1px; margin-top: 65px;
   background: var(--dark);
+  /* Draw in via transform (GPU-composited) instead of animating width — a width
+     animation is non-composited (Lighthouse flag) and reflows every frame. The
+     viewport beside it is opacity:0 until 1.05s, so reserving the divider's full
+     width up-front shifts nothing visible. */
+  transform: scaleX(0);
+  transform-origin: left center;
   animation: divider-grow 0.8s var(--ease) 0.25s forwards;
 }
 @keyframes divider-grow {
-  to { width: clamp(60px, 9vw, 130px); }
+  to { transform: scaleX(1); }
 }
 /* Viewport handles fade-in + edge fade via mask-image (NOT background-clip:text
    which breaks repaint when child track scrolls via translateY) */
@@ -230,13 +236,19 @@
 }
 /* Pure CSS: line grows via keyframe, no JS class toggle needed */
 .built-for-line-v {
-  width: 1px; height: 0;
+  width: 1px; height: 24px;
   margin: 8px 0;
   background: var(--dark);
+  /* Draw in via transform (GPU-composited) instead of animating height — a
+     height animation is non-composited (Lighthouse flag) and reflows every
+     frame. The viewport below is opacity:0 until 1.05s, so reserving the 24px
+     up-front shifts nothing visible. */
+  transform: scaleY(0);
+  transform-origin: top center;
   animation: line-grow 0.8s var(--ease) 0.25s forwards;
 }
 @keyframes line-grow {
-  to { height: 24px; }
+  to { transform: scaleY(1); }
 }
 /* Viewport handles the fade-in — one animation only.
    Width is 100% of the parent (container content area) instead of the
@@ -308,11 +320,19 @@
   from { opacity: 0; transform: translateY(8px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+/* The heading is the LCP candidate. Starting its entrance at opacity:0 makes
+   Chrome skip it for LCP — that's what produced NO_LCP in the mobile audit.
+   Start at 0.12 instead: paint-visible from frame 1 (so it registers as an LCP
+   candidate) while the fade-up still reads the same. */
+@keyframes hero-enter-heading {
+  from { opacity: 0.12; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 @keyframes hero-fade-in {
   from { opacity: 0; }
   to   { opacity: 1; }
 }
-.hero-heading                           { opacity: 0; animation: hero-enter 0.65s var(--ease-out) 0.08s forwards; }
+.hero-heading                           { opacity: 0.12; animation: hero-enter-heading 0.65s var(--ease-out) 0.08s forwards; }
 .hero-built-for, .hero-mobile-built-for { opacity: 0; animation: hero-enter 0.65s var(--ease-out) 0.18s forwards; }
 .hero-subtitle                          { opacity: 0; animation: hero-enter 0.65s var(--ease-out) 0.28s forwards; }
 .hero-buttons                           { opacity: 0; animation: hero-enter 0.65s var(--ease-out) 0.38s forwards; }
