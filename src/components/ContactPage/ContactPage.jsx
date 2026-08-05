@@ -135,9 +135,10 @@ export default function ContactPage() {
                 <span className="contact-hero__title-desktop">{intent.title}</span>
                 <span className="contact-hero__title-mobile">{intent.titleMobile || intent.title}</span>
               </h1>
-              <p>{intent.subtitle.split('\n').reduce((acc, line, i) =>
-                i === 0 ? [line] : [...acc, <br key={i} className="contact-hero__subtitle-break" />, line], []
-              )}</p>
+              {/* The subtitle's "\n" are honoured as line breaks on desktop
+                  (white-space: pre-line) and collapse to spaces on mobile,
+                  where the copy soft-wraps to the narrower column. */}
+              <p>{intent.subtitle}</p>
             </div>
 
             <div className="contact-page__form">
