@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Delete Your Account — Near (NearHealth)</title>
+<style>
+  :root {
+    --ink: #191919;
+    --muted: #5c6660;
+    --accent: #0e6f5c;
+    --rule: #e3e8e6;
+    --bg: #ffffff;
+    --soft: #f4f7f6;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    -webkit-text-size-adjust: 100%;
+  }
+  main {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 48px 24px 96px;
+  }
+  h1 {
+    font-size: 2rem;
+    line-height: 1.2;
+    margin: 0 0 4px;
+  }
+  .subtitle {
+    color: var(--muted);
+    margin: 0 0 8px;
+  }
+  .effective {
+    color: var(--muted);
+    font-size: 0.9375rem;
+    margin: 0 0 32px;
+  }
+  h2 {
+    font-size: 1.25rem;
+    margin: 40px 0 12px;
+    padding-top: 24px;
+    border-top: 1px solid var(--rule);
+  }
+  p, li { margin: 0 0 12px; }
+  ul { padding-left: 22px; margin: 0 0 16px; }
+  li { margin-bottom: 8px; }
+  a { color: var(--accent); }
+  strong { font-weight: 600; }
+  .steps {
+    background: var(--soft);
+    border: 1px solid var(--rule);
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin: 0 0 8px;
+  }
+  .steps h2 {
+    border: 0;
+    padding-top: 0;
+    margin: 0 0 16px;
+    font-size: 1.125rem;
+  }
+  .steps ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: step;
+  }
+  .steps ol li {
+    counter-increment: step;
+    position: relative;
+    padding-left: 44px;
+    margin-bottom: 14px;
+  }
+  .steps ol li:last-child { margin-bottom: 0; }
+  .steps ol li::before {
+    content: counter(step);
+    position: absolute;
+    left: 0;
+    top: 1px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.9375rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .mail-cta {
+    display: inline-block;
+    background: var(--accent);
+    color: #fff;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 12px 22px;
+    border-radius: 10px;
+    margin: 8px 0 4px;
+  }
+  .mail-cta:hover { opacity: 0.92; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9375rem;
+    margin: 0 0 16px;
+  }
+  th, td {
+    text-align: left;
+    vertical-align: top;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--rule);
+  }
+  th {
+    background: var(--soft);
+    font-weight: 600;
+  }
+  .table-wrap { overflow-x: auto; }
+  footer {
+    margin-top: 48px;
+    padding-top: 24px;
+    border-top: 1px solid var(--rule);
+    color: var(--muted);
+    font-size: 0.9375rem;
+  }
+  @media print {
+    main { padding: 0; }
+    .steps { border: 1px solid #bbb; }
+  }
+</style>
+</head>
+<body>
+<main>
+  <h1>Delete Your Account</h1>
+  <p class="subtitle">Near — the NearHealth member app (Android package <code>com.nearhealth.app</code> and iOS)</p>
+  <p class="effective">Last updated: August 22, 2026</p>
+
+  <p>This page explains how to request deletion of your account and the personal data associated with it for the <strong>Near</strong> app, published on Google Play and the App Store by <strong>NearHealth</strong>.</p>
+  <p>Anyone with a Near account can make this request — <strong>you do not need the App installed</strong>, and there is no cost. Deletion is permanent and cannot be undone.</p>
+
+  <div class="steps" id="steps">
+    <h2>How to request deletion of your account and data</h2>
+    <ol>
+      <li>Write an email to <a href="mailto:privacy@near.health?subject=Delete%20my%20account">privacy@near.health</a> <strong>from the email address registered on your Near account</strong>.</li>
+      <li>Use the subject line <strong>“Delete my account”</strong>. You do not need to explain why.</li>
+      <li>We verify that the request comes from the account owner — we may reply to your email to confirm before proceeding.</li>
+      <li>Once verified, we permanently delete your account and associated personal data <strong>within 30 days</strong> and send you a confirmation email when it is done.</li>
+    </ol>
+    <p style="margin:16px 0 0;">
+      <a class="mail-cta" href="mailto:privacy@near.health?subject=Delete%20my%20account">Email privacy@near.health</a>
+    </p>
+  </div>
+
+  <h2 id="data">What data is deleted, and what is kept</h2>
+  <p>When your deletion request is completed, the following applies:</p>
+  <div class="table-wrap">
+    <table>
+      <tr><th>Data</th><th>What happens</th><th>Retention period</th></tr>
+      <tr>
+        <td>Account and profile data (name, date of birth, email, phone, postal address, member ID, group ID, password)</td>
+        <td><strong>Permanently deleted</strong></td>
+        <td>Within 30 days of your verified request</td>
+      </tr>
+      <tr>
+        <td>Chat history and messages, including health questions you asked</td>
+        <td><strong>Permanently deleted</strong></td>
+        <td>Within 30 days of your verified request</td>
+      </tr>
+      <tr>
+        <td>Files and photos you uploaded in the chat</td>
+        <td><strong>Permanently deleted</strong></td>
+        <td>Within 30 days of your verified request</td>
+      </tr>
+      <tr>
+        <td>Appointment requests</td>
+        <td><strong>Permanently deleted</strong></td>
+        <td>Within 30 days of your verified request</td>
+      </tr>
+      <tr>
+        <td>Claims and health-plan records we must keep for your health plan or by law (for example insurance, HIPAA, and record-keeping obligations)</td>
+        <td><strong>Kept temporarily</strong>, then deleted or de-identified</td>
+        <td>Only as long as the legal or contractual obligation lasts</td>
+      </tr>
+      <tr>
+        <td>Diagnostic and security logs</td>
+        <td><strong>Kept temporarily</strong>, then deleted or de-identified</td>
+        <td>A limited period for troubleshooting and security</td>
+      </tr>
+      <tr>
+        <td>Chat history stored locally on your device</td>
+        <td><strong>Removed by you</strong> — delete the App or clear its data</td>
+        <td>Until you delete the App or clear its data</td>
+      </tr>
+    </table>
+  </div>
+  <p>Data kept under a legal or health-plan obligation is no longer used to provide you the service and is deleted or de-identified as soon as that obligation ends.</p>
+
+  <h2 id="partial">If you don't want to delete your whole account</h2>
+  <p>You can also ask us to delete or correct specific data without closing your account, or request a copy of the personal data we hold about you. Email <a href="mailto:privacy@near.health">privacy@near.health</a> from the email address on your account and tell us what you need.</p>
+
+  <h2 id="more">More information</h2>
+  <p>For full details about how the Near app collects, uses, and protects your information, see our <a href="./android-privacy-policy.html">Privacy Policy</a>.</p>
+  <p><strong>Email:</strong> <a href="mailto:privacy@near.health">privacy@near.health</a><br>
+  <strong>Website:</strong> <a href="https://near.health" rel="noopener">https://near.health</a></p>
+
+  <footer>
+    <p>© 2026 NearHealth. This page applies to the Near mobile application on Android and iOS, published by NearHealth.</p>
+  </footer>
+</main>
+</body>
+</html>
