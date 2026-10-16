@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Unlisted team page: reachable by direct link only. Not linked from the
+     site, not in sitemap.xml, and kept out of search via noindex (+ the
+     X-Robots-Tag header in vercel.json). Deliberately NOT in robots.txt —
+     a Disallow line there would publish the path. -->
+<meta name="robots" content="noindex, nofollow, noarchive">
+<title>Email signatures — Near (NearHealth)</title>
+<script>
+  // Relative asset paths below need the trailing slash (/signatures/, not /signatures).
+  if (!location.pathname.endsWith('/') && !location.pathname.endsWith('.html')) {
+    location.replace(location.pathname + '/' + location.search + location.hash)
+  }
+</script>
+<link rel="icon" href="../assets/icons/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../fonts.css">
+<style>
+  /* Tokens mirror public/support.html (headings #0A1C1E, body #4B4A4A,
+     labels #737272, accent cyan #5EE6FD). */
+  :root {
+    --dark: #0A1C1E;
+    --accent: #5EE6FD;
+    --warm: #EFE1DC;
+    --body: #4B4A4A;
+    --label: #737272;
+    --glass: rgba(255, 255, 255, 0.30);
+    --glass-strong: rgba(255, 255, 255, 0.45);
+    --glass-border: rgba(255, 255, 255, 0.55);
+    --radius-card: 30px;
+    --font: 'Gilroy-Medium', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --font-heading: 'Gilroy-Regular', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --font-semibold: 'Gilroy-Semibold', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --ease: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html {
+    background-color: var(--warm);
+    -webkit-font-smoothing: antialiased;
+    -webkit-text-size-adjust: 100%;
+    overflow-x: clip;
+  }
+  body {
+    position: relative;
+    min-height: 100vh;
+    font-family: var(--font);
+    font-weight: 500;
+    color: var(--dark);
+    overflow-x: clip;
+  }
+  .site-bg {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
+    pointer-events: none;
+    background: #FFFFFF;
+  }
+  a { color: inherit; }
+
+  main {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 24px 120px;
+  }
+
+  /* ── Hero ── */
+  .hero { text-align: center; padding: 88px 0 0; }
+  .eyebrow {
+    font-family: var(--font-semibold);
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--label);
+  }
+  .hero h1 {
+    margin-top: 16px;
+    font-family: var(--font-heading);
+    font-weight: 400;
+    font-size: 64px;
+    line-height: 0.9;
+  }
+  .hero__lede {
+    margin: 20px auto 0;
+    max-width: 560px;
+    font-size: 18px;
+    line-height: 1.36;
+    letter-spacing: 0.02em;
+  }
+
+  /* ── Signature cards ── */
+  .group { margin-top: 72px; }
+  .group:first-child { margin-top: 56px; }
+  .grid {
+    margin-top: 24px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+  .card {
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    -webkit-backdrop-filter: blur(10.75px);
+    backdrop-filter: blur(10.75px);
+    border-radius: var(--radius-card);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.06);
+  }
+  .card__preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 140px;
+    padding: 16px;
+    background: #FFFFFF;
+    border-radius: 18px;
+  }
+  .card__preview img { display: block; max-width: 100%; height: auto; }
+  .card__name {
+    margin-top: 18px;
+    font-family: var(--font-semibold);
+    font-weight: 600;
+    font-size: 18px;
+  }
+  .card__role { margin-top: 4px; font-size: 14px; letter-spacing: 0.02em; color: var(--label); }
+  .card__actions { margin-top: 18px; display: flex; flex-wrap: wrap; gap: 8px; }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: var(--accent);
+    border: 0;
+    border-radius: 30px;
+    padding: 11px 16px;
+    font-family: var(--font-semibold);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--dark);
+    text-decoration: none;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: filter 0.18s var(--ease), transform 0.08s var(--ease);
+  }
+  .btn:hover { filter: brightness(0.95); }
+  .btn:active { transform: translateY(1px); filter: brightness(0.9); }
+  .btn:focus-visible { outline: 2px solid var(--dark); outline-offset: 3px; }
+  .btn--glass {
+    background: var(--glass-strong);
+    border: 1px solid var(--glass-border);
+  }
+  .card__actions .btn:first-child { flex: 1 1 100%; }
+
+
+  /* ── How-to ── */
+  .section { margin-top: 88px; }
+  .section__title {
+    margin-top: 12px;
+    font-family: var(--font-heading);
+    font-weight: 400;
+    font-size: 48px;
+    line-height: 1;
+    letter-spacing: -0.01em;
+  }
+  .howto {
+    margin-top: 28px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .howto article {
+    padding: 22px;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+  }
+  .howto h3 { font-family: var(--font-semibold); font-weight: 600; font-size: 16px; }
+  .howto ol {
+    margin-top: 12px;
+    padding-left: 18px;
+    font-size: 15px;
+    line-height: 1.5;
+    letter-spacing: 0.02em;
+    color: var(--body);
+  }
+  .howto strong { font-family: var(--font-semibold); font-weight: 600; color: var(--dark); }
+
+  /* ── Toast ── */
+  .toast {
+    position: fixed;
+    left: 50%;
+    bottom: 32px;
+    transform: translate(-50%, 16px);
+    padding: 12px 20px;
+    border-radius: 30px;
+    background: var(--dark);
+    color: #FFFFFF;
+    font-size: 14px;
+    letter-spacing: 0.02em;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s var(--ease), transform 0.3s var(--ease-out);
+  }
+  .toast.is-visible { opacity: 1; transform: translate(-50%, 0); }
+
+  @media (max-width: 720px) {
+    .howto { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 600px) {
+    main { padding: 0 16px 88px; }
+    .hero { padding-top: 56px; }
+    .hero h1 { font-size: 48px; line-height: 1; letter-spacing: -0.96px; }
+    .hero__lede { font-size: 16px; }
+    .group { margin-top: 56px; }
+    .group:first-child { margin-top: 40px; }
+    .section { margin-top: 64px; }
+    .section__title { font-size: 36px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .toast { transition: none; }
+  }
+</style>
+</head>
+<body>
+<img class="site-bg" src="../assets/images/site-bg.jpg" alt="" aria-hidden="true">
+
+<main>
+  <section class="hero">
+    <p class="eyebrow">Team only</p>
+    <h1>Email signatures</h1>
+    <p class="hero__lede">Find your animated signature below. Use “Copy signature” and paste it into your mail app’s signature settings.</p>
+  </section>
+
+  <div id="signatures"></div>
+
+  <section class="section" aria-labelledby="howto-title">
+    <p class="eyebrow">Setup</p>
+    <h2 class="section__title" id="howto-title">How to add it</h2>
+    <div class="howto">
+      <article>
+        <h3>Gmail</h3>
+        <ol>
+          <li>Click <strong>Copy signature</strong> on your card.</li>
+          <li>Open <strong>Settings → See all settings → General → Signature</strong>.</li>
+          <li>Paste it into the editor, then <strong>Save changes</strong> at the bottom.</li>
+        </ol>
+      </article>
+      <article>
+        <h3>Apple Mail</h3>
+        <ol>
+          <li>Open <strong>Mail → Settings → Signatures</strong> and add a new one.</li>
+          <li>Uncheck <strong>Always match my default message font</strong>.</li>
+          <li>Paste the copied signature into the right-hand pane.</li>
+        </ol>
+      </article>
+      <article>
+        <h3>Outlook</h3>
+        <ol>
+          <li>Open <strong>Settings → Mail → Compose and reply</strong>.</li>
+          <li>Create a signature and paste the copied signature into it.</li>
+          <li>If the image doesn’t paste, use <strong>Insert picture</strong> with the downloaded GIF.</li>
+        </ol>
+      </article>
+    </div>
+  </section>
+</main>
+
+<div class="toast" role="status" aria-live="polite"></div>
+
+<script>
+  // Signatures, grouped. Drop a GIF into public/signatures/gifs/ and add an
+  // entry to the right group. `width` (optional) overrides the display width.
+  const GROUPS = [
+    {
+      title: 'Team',
+      items: [
+        { name: 'Adrian Thistle', file: 'adrian-thistle.gif' },
+        { name: 'Alejandro Rivas', file: 'alejandro-rivas.gif' },
+        { name: 'Carlos Calderon', file: 'carlos-calderon.gif' },
+        { name: 'David Cao', file: 'david-cao.gif' },
+        { name: 'Esteban Moreno', file: 'esteban-moreno.gif' },
+        { name: 'Fausta Mikutaite', file: 'fausta-mikutaite.gif' },
+        { name: 'Ignacio Paricio', file: 'ignacio-paricio.gif' },
+        { name: 'Jesus Alvarez', file: 'jesus-alvarez.gif' },
+        { name: 'Naman Bajpai', file: 'naman-bajpai.gif' },
+        { name: 'Nina Centurion', file: 'nina-centurion.gif' },
+        { name: 'Ramiro Rela', file: 'ramiro-rela.gif' },
+        { name: 'Samuel Sanabria', file: 'samuel-sanabria.gif' },
+        { name: 'Vasily Feofanov', file: 'vasily-feofanov.gif' },
+      ],
+    },
+    {
+      title: 'Shared inboxes',
+      items: [
+        { name: 'hello@near.health', file: 'hello.gif' },
+        { name: 'admin@near.health', file: 'admin.gif' },
+        { name: 'accounting@near.health', file: 'accounting.gif' },
+        { name: 'design@near.health', file: 'design.gif' },
+      ],
+    },
+  ]
+
+  // Display width in emails. The GIFs are ~496px wide, so 340px keeps them
+  // crisp on retina screens while matching the original 680px @2x design.
+  const DEFAULT_WIDTH = 340
+
+  // Where the signature image links to when clicked in an email.
+  const LINK = 'https://near.health'
+
+  const root = document.getElementById('signatures')
+  const toast = document.querySelector('.toast')
+  let toastTimer
+
+  function showToast(text) {
+    toast.textContent = text
+    toast.classList.add('is-visible')
+    clearTimeout(toastTimer)
+    toastTimer = setTimeout(() => toast.classList.remove('is-visible'), 1800)
+  }
+
+  const escape = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]))
+
+  // Mail clients fetch the image from this absolute URL, so it must be public.
+  const gifUrl = (file) => new URL('gifs/' + encodeURIComponent(file), location.href).href
+
+  function signatureHtml(person, img) {
+    const width = person.width || DEFAULT_WIDTH
+    return `<a href="${LINK}" target="_blank"><img src="${gifUrl(person.file)}" ` +
+      `alt="${escape(person.name)} · Near Health"${width ? ` width="${width}"` : ''} ` +
+      `style="display:block;border:0;${width ? `width:${width}px;` : ''}max-width:100%;height:auto"></a>`
+  }
+
+  async function copyRich(html, plain) {
+    if (window.ClipboardItem && navigator.clipboard?.write) {
+      try {
+        await navigator.clipboard.write([new ClipboardItem({
+          'text/html': new Blob([html], { type: 'text/html' }),
+          'text/plain': new Blob([plain], { type: 'text/plain' }),
+        })])
+        return
+      } catch { /* fall through to the selection-based copy */ }
+    }
+    const holder = document.createElement('div')
+    holder.innerHTML = html
+    holder.style.cssText = 'position:fixed;left:-9999px;top:0'
+    document.body.appendChild(holder)
+    const range = document.createRange()
+    range.selectNodeContents(holder)
+    const sel = getSelection()
+    sel.removeAllRanges()
+    sel.addRange(range)
+    document.execCommand('copy')
+    sel.removeAllRanges()
+    holder.remove()
+  }
+
+  function renderGroup(group) {
+    const section = document.createElement('section')
+    section.className = 'group'
+    section.innerHTML = `<p class="eyebrow">${escape(group.title)}</p><div class="grid"></div>`
+    const list = section.querySelector('.grid')
+    for (const person of group.items) {
+      const card = document.createElement('article')
+      card.className = 'card'
+      card.innerHTML = `
+        <div class="card__preview"><img alt="${escape(person.name)} signature" loading="lazy"></div>
+        <p class="card__name">${escape(person.name)}</p>
+        ${person.role ? `<p class="card__role">${escape(person.role)}</p>` : ''}
+        <div class="card__actions">
+          <button class="btn" type="button" data-action="signature">Copy signature</button>
+          <button class="btn btn--glass" type="button" data-action="url">Copy link</button>
+          <a class="btn btn--glass" download>Download</a>
+        </div>`
+      const img = card.querySelector('img')
+      img.src = gifUrl(person.file)
+      img.width = person.width || DEFAULT_WIDTH
+      card.querySelector('a[download]').href = gifUrl(person.file)
+
+      card.querySelector('[data-action="signature"]').addEventListener('click', async () => {
+        await copyRich(signatureHtml(person, img), gifUrl(person.file))
+        showToast('Signature copied — paste it into your mail settings')
+      })
+      card.querySelector('[data-action="url"]').addEventListener('click', async () => {
+        await navigator.clipboard.writeText(gifUrl(person.file))
+        showToast('Image link copied')
+      })
+      list.appendChild(card)
+    }
+    root.appendChild(section)
+  }
+
+  GROUPS.forEach(renderGroup)
+</script>
+</body>
+</html>

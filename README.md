@@ -113,6 +113,9 @@ src/
 
 public/
 ├── fonts.css                        # @font-face for Gilroy (self-hosted)
+├── signatures/                      # Unlisted team page (direct link only, noindex): email-signature GIFs
+│   ├── index.html                   # Edit the GROUPS list here when adding a person
+│   └── gifs/                        # One GIF per person / shared inbox (compressed, ~496px wide)
 └── assets/
     ├── fonts/                       # Gilroy-{Regular,Medium,Semibold,Bold}.woff2 + .woff
     ├── icons/                       # near-logo{,-coloured}.svg + favicon.svg (adaptive) / favicon-light.png (fallback)
