@@ -4,193 +4,457 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Support — Near (NearHealth)</title>
+<meta name="description" content="Get help with the Near app by NearHealth. Contact our support team and find answers to common questions.">
+<link rel="icon" href="./assets/icons/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="./fonts.css">
 <style>
+  /* Tokens mirror src/styles/global.css + the LegalPage / ContactPage palette
+     (headings #0A1C1E, body #4B4A4A, labels #737272, accent cyan #5EE6FD). */
   :root {
-    --ink: #191919;
-    --muted: #5c6660;
-    --accent: #0e6f5c;
-    --rule: #e3e8e6;
-    --bg: #ffffff;
-    --soft: #f4f7f6;
+    --dark: #0A1C1E;
+    --accent: #5EE6FD;
+    --accent-light: #A6F2FF;
+    --warm: #EFE1DC;
+    --body: #4B4A4A;
+    --label: #737272;
+    --glass: rgba(255, 255, 255, 0.30);
+    --glass-strong: rgba(255, 255, 255, 0.45);
+    --glass-border: rgba(255, 255, 255, 0.55);
+    --radius-card: 30px;
+    --radius-glass: 44px;
+    --font: 'Gilroy-Medium', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --font-heading: 'Gilroy-Regular', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --font-semibold: 'Gilroy-Semibold', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --ease: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
   }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    background: var(--bg);
-    color: var(--ink);
-    font: 16px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html {
+    background-color: var(--warm);
+    -webkit-font-smoothing: antialiased;
     -webkit-text-size-adjust: 100%;
+    overflow-x: clip;
   }
-  main {
-    max-width: 760px;
+  body {
+    position: relative;
+    min-height: 100vh;
+    font-family: var(--font);
+    font-weight: 500;
+    color: var(--dark);
+    overflow-x: clip;
+  }
+  /* Same full-document mesh as the landing + legal pages (.site-bg). */
+  .site-bg {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    object-fit: fill;
+    pointer-events: none;
+    background: #FFFFFF;
+  }
+  a { color: inherit; }
+
+  /* ── Top bar ── */
+  .topbar {
+    max-width: 880px;
     margin: 0 auto;
-    padding: 48px 24px 96px;
+    padding: 24px 24px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
   }
-  h1 {
-    font-size: 2rem;
-    line-height: 1.2;
-    margin: 0 0 4px;
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    color: var(--dark);
+    text-decoration: none;
   }
-  .subtitle {
-    color: var(--muted);
-    margin: 0 0 8px;
+  .brand__icon { height: 27px; width: auto; }
+  .brand__wordmark { display: flex; align-items: center; gap: 2px; }
+  .brand__wordmark svg { height: 18px; width: auto; }
+
+  /* ── Buttons (cyan pill, as on /contact) ── */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--accent);
+    border-radius: 30px;
+    padding: 14px 24px;
+    font-family: var(--font-semibold);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--dark);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: filter 0.18s var(--ease), transform 0.08s var(--ease);
   }
-  .effective {
-    color: var(--muted);
-    font-size: 0.9375rem;
-    margin: 0 0 32px;
+  .btn:hover { filter: brightness(0.95); }
+  .btn:active { transform: translateY(1px); filter: brightness(0.9); }
+  .btn:focus-visible,
+  .faq summary:focus-visible,
+  .links a:focus-visible { outline: 2px solid var(--dark); outline-offset: 3px; }
+  .btn--sm { padding: 11px 18px; }
+  .btn--glass {
+    background: var(--glass-strong);
+    border: 1px solid var(--glass-border);
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
+    backdrop-filter: blur(20px) saturate(150%);
   }
-  h2 {
-    font-size: 1.25rem;
-    margin: 40px 0 12px;
-    padding-top: 24px;
-    border-top: 1px solid var(--rule);
+
+  main {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 0 24px 120px;
   }
-  p, li { margin: 0 0 12px; }
-  ul { padding-left: 22px; margin: 0 0 16px; }
-  li { margin-bottom: 8px; }
-  a { color: var(--accent); }
-  strong { font-weight: 600; }
+
+  /* ── Hero ── */
+  .hero { text-align: center; padding: 88px 0 0; }
+  .eyebrow {
+    font-family: var(--font-semibold);
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--label);
+  }
+  .hero h1 {
+    margin-top: 16px;
+    font-family: var(--font-heading);
+    font-weight: 400;
+    font-size: 64px;
+    line-height: 0.9;
+    color: var(--dark);
+  }
+  .hero__lede {
+    margin: 20px auto 0;
+    max-width: 520px;
+    font-size: 18px;
+    line-height: 1.36;
+    letter-spacing: 0.02em;
+    color: var(--dark);
+  }
+
+  /* ── Contact card (glass, as the /contact form card) ── */
+  .card {
+    margin-top: 48px;
+    padding: 32px;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    -webkit-backdrop-filter: blur(10.75px);
+    backdrop-filter: blur(10.75px);
+    border-radius: var(--radius-glass);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.06);
+  }
+  .card__head {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .card h2 {
+    font-family: var(--font-heading);
+    font-weight: 400;
+    font-size: 36px;
+    line-height: 1;
+    color: var(--dark);
+  }
+  .card__email {
+    margin-top: 10px;
+    font-size: 18px;
+    letter-spacing: 0.02em;
+    color: var(--body);
+  }
+  .card__email a { color: var(--dark); text-underline-offset: 3px; }
+
   .steps {
-    background: var(--soft);
-    border: 1px solid var(--rule);
-    border-radius: 12px;
-    padding: 24px 28px;
-    margin: 0 0 8px;
-  }
-  .steps h2 {
-    border: 0;
-    padding-top: 0;
-    margin: 0 0 16px;
-    font-size: 1.125rem;
-  }
-  .steps ol {
-    margin: 0;
-    padding: 0;
     list-style: none;
+    margin-top: 28px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
     counter-reset: step;
   }
-  .steps ol li {
+  .steps li {
     counter-increment: step;
-    position: relative;
-    padding-left: 44px;
-    margin-bottom: 14px;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 24px;
+    font-size: 16px;
+    line-height: 1.4;
+    letter-spacing: 0.02em;
+    color: var(--body);
   }
-  .steps ol li:last-child { margin-bottom: 0; }
-  .steps ol li::before {
+  .steps li::before {
     content: counter(step);
-    position: absolute;
-    left: 0;
-    top: 1px;
-    width: 28px;
-    height: 28px;
-    border-radius: 50%;
-    background: var(--accent);
-    color: #fff;
-    font-weight: 600;
-    font-size: 0.9375rem;
     display: flex;
     align-items: center;
     justify-content: center;
-  }
-  .mail-cta {
-    display: inline-block;
+    width: 32px;
+    height: 32px;
+    margin-bottom: 14px;
+    border-radius: 50%;
     background: var(--accent);
-    color: #fff;
+    font-family: var(--font-semibold);
+    font-size: 14px;
+    color: var(--dark);
+  }
+  .steps strong { font-family: var(--font-semibold); font-weight: 600; color: var(--dark); }
+
+  /* ── FAQ (native <details> accordion, glass rows) ── */
+  .section { margin-top: 88px; }
+  .section__title {
+    margin-top: 12px;
+    font-family: var(--font-heading);
+    font-weight: 400;
+    font-size: 48px;
+    line-height: 1;
+    letter-spacing: -0.01em;
+    color: var(--dark);
+  }
+  .faq { margin-top: 28px; display: flex; flex-direction: column; gap: 10px; }
+  .faq details {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    -webkit-backdrop-filter: blur(10.75px);
+    backdrop-filter: blur(10.75px);
+    border-radius: var(--radius-card);
+    transition: background 0.2s var(--ease);
+  }
+  .faq details[open] { background: var(--glass-strong); }
+  .faq summary {
+    list-style: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 22px 24px;
+    border-radius: var(--radius-card);
+    font-size: 18px;
+    line-height: 1.3;
+    letter-spacing: 0.02em;
+    color: var(--dark);
+  }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::after {
+    content: "";
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background:
+      linear-gradient(var(--dark), var(--dark)) center / 12px 1.5px no-repeat,
+      linear-gradient(var(--dark), var(--dark)) center / 1.5px 12px no-repeat,
+      rgba(255, 255, 255, 0.7);
+    transition: transform 0.3s var(--ease-out), background-color 0.2s var(--ease);
+  }
+  .faq details[open] summary::after {
+    transform: rotate(45deg);
+    background-color: var(--accent);
+  }
+  .faq details p {
+    padding: 0 24px 24px;
+    max-width: 680px;
+    font-size: 16px;
+    line-height: 1.5;
+    letter-spacing: 0.02em;
+    color: var(--body);
+  }
+  .faq details a { color: var(--dark); text-underline-offset: 2px; }
+
+  /* ── More information ── */
+  .links { margin-top: 24px; display: flex; flex-wrap: wrap; gap: 10px; }
+  .links a {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border-radius: 1000px;
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    -webkit-backdrop-filter: blur(10.75px);
+    backdrop-filter: blur(10.75px);
+    font-size: 15px;
+    letter-spacing: 0.02em;
+    color: var(--dark);
     text-decoration: none;
-    font-weight: 600;
-    padding: 12px 22px;
-    border-radius: 10px;
-    margin: 8px 0 4px;
+    transition: background 0.2s var(--ease);
   }
-  .mail-cta:hover { opacity: 0.92; }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.9375rem;
-    margin: 0 0 16px;
-  }
-  th, td {
-    text-align: left;
-    vertical-align: top;
-    padding: 10px 12px;
-    border-bottom: 1px solid var(--rule);
-  }
-  th {
-    background: var(--soft);
-    font-weight: 600;
-  }
-  .table-wrap { overflow-x: auto; }
-  .notice {
-    color: var(--muted);
-    font-size: 0.9375rem;
-    margin: 16px 0 0;
-  }
-  h3 {
-    font-size: 1rem;
-    margin: 24px 0 6px;
-  }
+  .links a:hover { background: var(--glass-strong); }
+  .links a::after { content: "→"; color: var(--label); }
+
+  /* ── Footer ── */
   footer {
-    margin-top: 48px;
+    margin-top: 96px;
     padding-top: 24px;
-    border-top: 1px solid var(--rule);
-    color: var(--muted);
-    font-size: 0.9375rem;
+    border-top: 1px solid rgba(10, 28, 30, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    font-size: 14px;
+    letter-spacing: 0.01em;
+    color: var(--label);
+  }
+  footer .brand__icon { height: 22px; }
+  footer .brand__wordmark svg { height: 14px; }
+
+  /* ── Page-load entrance (mirrors the /contact hero stagger) ── */
+  @keyframes enter {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .hero > *, .card, .section {
+    opacity: 0;
+    animation: enter 0.65s var(--ease-out) forwards;
+  }
+  .hero .eyebrow { animation-delay: 0.04s; }
+  .hero h1       { animation-delay: 0.08s; }
+  .hero__lede    { animation-delay: 0.18s; }
+  .card          { animation-delay: 0.30s; }
+  .section       { animation-delay: 0.40s; }
+  @media (prefers-reduced-motion: reduce) {
+    .hero > *, .card, .section { animation-duration: 0.01ms; animation-delay: 0ms; }
+    .faq summary::after { transition: none; }
+  }
+
+  /* ── Mobile ── */
+  @media (max-width: 720px) {
+    .steps { grid-template-columns: 1fr; }
+    .steps li { display: flex; align-items: flex-start; gap: 14px; }
+    .steps li::before { flex-shrink: 0; margin-bottom: 0; }
+  }
+  @media (max-width: 600px) {
+    .topbar { padding: 20px 16px 0; }
+    main { padding: 0 16px 88px; }
+    .hero { padding-top: 56px; }
+    .hero h1 { font-size: 48px; line-height: 1; letter-spacing: -0.96px; }
+    .hero__lede { font-size: 16px; }
+    .card { margin-top: 36px; padding: 24px 20px; border-radius: 32px; }
+    .card h2 { font-size: 30px; }
+    .card__head .btn { width: 100%; justify-content: center; }
+    .section { margin-top: 64px; }
+    .section__title { font-size: 36px; }
+    .faq summary { padding: 18px 18px 18px 20px; font-size: 16px; }
+    .faq details p { padding: 0 20px 20px; font-size: 15px; }
+    footer { margin-top: 72px; }
   }
   @media print {
-    main { padding: 0; }
-    .steps { border: 1px solid #bbb; }
+    .site-bg { display: none; }
+    .hero > *, .card, .section { opacity: 1; animation: none; }
+    .faq details > p { display: block; }
   }
 </style>
 </head>
 <body>
+<img class="site-bg" src="./assets/images/site-bg.jpg" alt="" aria-hidden="true">
+
+<!-- Brand SVG paths copied verbatim from src/components/ui/NearBrand/NearBrand.jsx. -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="near-icon" viewBox="0 0 27 27"><path d="M17.6461 26.8359L12.9205 19.7883L17.781 10.3299H17.7716C15.4159 10.3299 13.2813 11.6387 12.1991 13.7448L7.33857 23.2063H4.72717L0 16.1587L5.66978 5.12153C7.29308 1.96241 10.4958 0 14.0294 0H16.3114C18.5197 0 20.5226 1.13356 21.6707 3.03124C22.5239 4.44266 22.7874 6.08458 22.4486 7.6444C23.661 8.14487 24.7008 9.0274 25.4113 10.2036C26.5594 12.1013 26.6394 14.4142 25.6246 16.3876L20.2575 26.8359H17.6461ZM16.5624 19.5752L18.7675 22.8637L22.8391 14.9383C23.3457 13.9516 23.3065 12.7959 22.7325 11.8471C22.367 11.2424 21.8291 10.794 21.2017 10.5478L16.5624 19.5767V19.5752ZM3.64184 15.9456L5.84701 19.2341L9.412 12.2939C11.0353 9.13476 14.238 7.17235 17.7716 7.17235H19.3337C19.5706 6.3356 19.4545 5.43728 18.9934 4.67316C18.4193 3.72432 17.4171 3.15754 16.3145 3.15754H14.0325C11.6768 3.15754 9.54218 4.46634 8.45998 6.57242L3.64497 15.9456H3.64184Z"/></symbol>
+    <symbol id="near-n" viewBox="0 0 16 18"><path d="M15.2893 10.5723V17.5008H11.448V7.63624C11.448 5.53817 9.74502 3.83702 7.64464 3.83702C5.54426 3.83702 3.84124 5.53817 3.84124 7.63624V17.5008H0V7.63624C0 3.41909 3.42285 0 7.64464 0C11.8664 0 15.2893 3.41909 15.2893 7.63624V10.5723Z"/></symbol>
+    <symbol id="near-e" viewBox="0 0 18 18"><path d="M17.007 10.3392H3.83914C4.35215 12.9686 6.21705 14.5038 8.70429 14.5038C10.79 14.5038 12.1061 13.773 12.8378 12.349L15.9158 13.9494C14.4903 16.4402 11.7949 17.8641 8.74214 17.8641C3.62259 17.8641 0 14.2098 0 8.94885C0 3.68791 3.58263 0 8.70429 0C13.3865 0 17.0427 3.83702 17.0427 8.95095C17.0427 9.4991 17.0428 9.79102 17.007 10.3392ZM3.83914 7.41572H13.2394C13.0207 5.22314 11.1537 3.36028 8.70429 3.36028C6.25489 3.36028 4.35215 4.96902 3.83914 7.41572Z"/></symbol>
+    <symbol id="near-a" viewBox="0 0 18 18"><path d="M17.5558 8.95095V17.5008H14.1539L13.8617 14.8692C12.617 16.8056 10.4599 17.8662 8.22913 17.8662C3.62048 17.8662 0 14.2119 0 8.95095C0 3.69001 3.8034 0 8.81573 0C13.8281 0 17.5579 3.28888 17.5579 8.95095H17.5558ZM13.7524 8.95095C13.7524 5.47936 11.448 3.43379 8.81362 3.43379C6.03414 3.43379 3.83914 5.66208 3.83914 8.95095C3.83914 12.2398 5.92481 14.4324 8.81362 14.4324C11.3009 14.4324 13.7524 12.4961 13.7524 8.95095Z"/></symbol>
+    <symbol id="near-r" viewBox="0 0 9 18"><path d="M0 17.5008V6.97889C0 2.74073 2.56083 0 6.69431 0C7.46172 0 8.08405 0.109209 8.74213 0.256222V3.76352C8.08405 3.69001 7.68248 3.72781 7.42598 3.72781C5.1574 3.72781 3.84124 4.7506 3.84124 7.63624V17.5008H0Z"/></symbol>
+  </defs>
+</svg>
+
+<header class="topbar">
+  <a class="brand" href="https://near.health" aria-label="Near Health home">
+    <svg class="brand__icon" viewBox="0 0 27 27" fill="currentColor" aria-hidden="true"><use href="#near-icon"/></svg>
+    <span class="brand__wordmark" aria-hidden="true">
+      <svg viewBox="0 0 16 18" width="16" fill="currentColor"><use href="#near-n"/></svg>
+      <svg viewBox="0 0 18 18" width="18" fill="currentColor"><use href="#near-e"/></svg>
+      <svg viewBox="0 0 18 18" width="18" fill="currentColor"><use href="#near-a"/></svg>
+      <svg viewBox="0 0 9 18" width="9" fill="currentColor"><use href="#near-r"/></svg>
+    </span>
+  </a>
+  <a class="btn btn--sm btn--glass" href="mailto:hello@near.health?subject=Near%20app%20support">Contact</a>
+</header>
+
 <main>
-  <h1>Near Support</h1>
-  <p class="subtitle">Near — the NearHealth member app for iOS and Android</p>
-  <p class="effective">Last updated: October 7, 2026</p>
+  <section class="hero">
+    <p class="eyebrow">Near app support</p>
+    <h1>How can we help?</h1>
+    <p class="hero__lede">Questions about your account, your plan information, appointment requests, or anything else in the Near app for iOS and Android? Our team is here for you.</p>
+  </section>
 
-  <p>Need help with the <strong>Near</strong> app? Our team is here for questions about your account, your plan information, appointment requests, or anything else in the App.</p>
-
-  <div class="steps" id="contact">
-    <h2>Contact us</h2>
-    <ol>
-      <li>Email <a href="mailto:hello@near.health?subject=Near%20app%20support">hello@near.health</a>, ideally <strong>from the email address registered on your Near account</strong> so we can find it quickly.</li>
-      <li>Tell us what happened and include your device model and iOS or Android version. A screenshot helps.</li>
-      <li>We aim to reply <strong>within 2 business days</strong>.</li>
+  <section class="card" id="contact" aria-labelledby="contact-title">
+    <div class="card__head">
+      <div>
+        <h2 id="contact-title">Contact us</h2>
+        <p class="card__email">Email <a href="mailto:hello@near.health?subject=Near%20app%20support">hello@near.health</a></p>
+      </div>
+      <a class="btn" href="mailto:hello@near.health?subject=Near%20app%20support">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="3"/><path d="m3 7 9 6 9-6"/></svg>
+        Email support
+      </a>
+    </div>
+    <ol class="steps">
+      <li><span>Write <strong>from the email address on your Near account</strong> so we can find it quickly.</span></li>
+      <li><span>Tell us what happened and include your <strong>device model and iOS or Android version</strong>. A screenshot helps.</span></li>
+      <li><span>We aim to reply <strong>within 2 business days</strong>.</span></li>
     </ol>
-    <p style="margin:16px 0 0;">
-      <a class="mail-cta" href="mailto:hello@near.health?subject=Near%20app%20support">Email hello@near.health</a>
-    </p>
-    <p class="notice"><strong>Near is not for emergencies.</strong> If you have a medical emergency, call 911 or your local emergency number.</p>
-  </div>
+  </section>
 
-  <h2 id="faq">Common questions</h2>
+  <section class="section" id="faq" aria-labelledby="faq-title">
+    <p class="eyebrow">FAQ</p>
+    <h2 class="section__title" id="faq-title">Common questions</h2>
+    <div class="faq">
+      <details>
+        <summary>I can't sign in, or I didn't get my verification code</summary>
+        <p>Check that you're using the email address or phone number your account was set up with, and look in your spam or junk folder for the code. You can reset your password from the sign-in screen. If you still can't get in, email us and we'll help.</p>
+      </details>
+      <details>
+        <summary>My plan, claims, or benefits information looks wrong</summary>
+        <p>Plan, claims, and benefits details come from your health plan. Email us with what looks incorrect and we'll check it with your plan.</p>
+      </details>
+      <details>
+        <summary>How do I request an appointment?</summary>
+        <p>Ask in the App's chat. Tell the assistant what kind of care you need and the reason for your visit, and our care team will follow up to arrange it.</p>
+      </details>
+      <details>
+        <summary>Does the AI assistant give medical advice?</summary>
+        <p>No. The assistant helps with plan and administrative questions such as coverage, claims, benefits, and finding care. It does not diagnose conditions. For medical advice, talk to a licensed health professional.</p>
+      </details>
+      <details>
+        <summary>How do I delete my account?</summary>
+        <p>Follow the steps on our <a href="./delete-account.html">Delete Your Account</a> page. You don't need the App installed to make the request.</p>
+      </details>
+    </div>
+  </section>
 
-  <h3>I can't sign in, or I didn't get my verification code</h3>
-  <p>Check that you're using the email address or phone number your account was set up with, and look in your spam or junk folder for the code. You can reset your password from the sign-in screen. If you still can't get in, email us and we'll help.</p>
-
-  <h3>My plan, claims, or benefits information looks wrong</h3>
-  <p>Plan, claims, and benefits details come from your health plan. Email us with what looks incorrect and we'll check it with your plan.</p>
-
-  <h3>How do I request an appointment?</h3>
-  <p>Ask in the App's chat. Tell the assistant what kind of care you need and the reason for your visit, and our care team will follow up to arrange it.</p>
-
-  <h3>Does the AI assistant give medical advice?</h3>
-  <p>No. The assistant helps with plan and administrative questions such as coverage, claims, benefits, and finding care. It does not diagnose conditions. For medical advice, talk to a licensed health professional.</p>
-
-  <h3>How do I delete my account?</h3>
-  <p>Follow the steps on our <a href="./delete-account.html">Delete Your Account</a> page. You don't need the App installed to make the request.</p>
-
-  <h2 id="more">More information</h2>
-  <ul>
-    <li><a href="./android-privacy-policy.html">Privacy Policy</a></li>
-    <li><a href="./delete-account.html">Delete your account</a></li>
-  </ul>
-  <p><strong>Email:</strong> <a href="mailto:hello@near.health">hello@near.health</a><br>
-  <strong>Website:</strong> <a href="https://near.health" rel="noopener">https://near.health</a></p>
+  <section class="section" id="more" aria-labelledby="more-title">
+    <p class="eyebrow">More information</p>
+    <h2 class="section__title" id="more-title">Policies &amp; links</h2>
+    <nav class="links" aria-label="More information">
+      <a href="./android-privacy-policy.html">Privacy Policy</a>
+      <a href="./delete-account.html">Delete your account</a>
+      <a href="https://near.health" rel="noopener">near.health</a>
+    </nav>
+  </section>
 
   <footer>
-    <p>© 2026 NearHealth. This page applies to the Near mobile application on iOS and Android, published by NearHealth.</p>
+    <a class="brand" href="https://near.health" aria-label="Near Health home">
+      <svg class="brand__icon" viewBox="0 0 27 27" fill="currentColor" aria-hidden="true"><use href="#near-icon"/></svg>
+      <span class="brand__wordmark" aria-hidden="true">
+        <svg viewBox="0 0 16 18" width="16" fill="currentColor"><use href="#near-n"/></svg>
+        <svg viewBox="0 0 18 18" width="18" fill="currentColor"><use href="#near-e"/></svg>
+        <svg viewBox="0 0 18 18" width="18" fill="currentColor"><use href="#near-a"/></svg>
+        <svg viewBox="0 0 9 18" width="9" fill="currentColor"><use href="#near-r"/></svg>
+      </span>
+    </a>
+    <p>© 2026 NearHealth. Support for the Near mobile app on iOS and Android.</p>
   </footer>
 </main>
 </body>
