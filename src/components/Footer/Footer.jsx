@@ -47,6 +47,11 @@ export default function Footer() {
             </svg>
           </a>
         </div>
+        <div className="footer-grants">
+          <a href="https://elevenlabs.io/startup-grants" target="_blank" rel="noopener noreferrer">
+            <img src="https://eleven-public-cdn.elevenlabs.io/payloadcms/pwsc4vchsqt-ElevenLabsGrants.webp" alt="ElevenLabs" style={{ width: '250px' }} loading="lazy" />
+          </a>
+        </div>
       </div>
     </footer>
   )
