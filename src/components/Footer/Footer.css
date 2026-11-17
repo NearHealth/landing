@@ -65,7 +65,8 @@
   color: var(--dark);
   transition: background 0.2s, color 0.2s;
 }
-.footer-grants { flex-basis: 100%; margin-top: -46px; }   /* full-width bottom row, ~32px below links (offsets the 78px row-gap) */
+.footer-grants { margin-left: auto; display: flex; align-items: center; }   /* sits just left of the socials */
+.footer-grants + .footer-socials { margin-left: 0; }
 .footer-grants img { display: block; max-width: 100%; height: auto; }
 .social-icon:hover { background: var(--dark); color: var(--white); }
 

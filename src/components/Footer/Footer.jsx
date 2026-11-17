@@ -30,6 +30,11 @@ export default function Footer() {
         <span className="footer-item footer-copyright">&copy; NearHealth LLC. 2026</span>
         <a href={asset('terms/')} className="footer-item footer-terms">Terms</a>
         <a href={asset('privacy/')} className="footer-item footer-privacy">Privacy</a>
+        <div className="footer-grants">
+          <a href="https://elevenlabs.io/startup-grants" target="_blank" rel="noopener noreferrer">
+            <img src="https://eleven-public-cdn.elevenlabs.io/payloadcms/pwsc4vchsqt-ElevenLabsGrants.webp" alt="ElevenLabs" style={{ width: '140px' }} loading="lazy" />
+          </a>
+        </div>
         <div className="footer-socials">
           <a href="https://www.linkedin.com/company/nearhealth/" className="social-icon" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -45,11 +50,6 @@ export default function Footer() {
                 <path d="M22.539 8.242H1.46V5.406h21.08v2.836zM1.46 10.812V24L12 18.11 22.54 24V10.812H1.46zM22.54 0H1.46v2.836h21.08V0z" fill="currentColor"/>
               </g>
             </svg>
-          </a>
-        </div>
-        <div className="footer-grants">
-          <a href="https://elevenlabs.io/startup-grants" target="_blank" rel="noopener noreferrer">
-            <img src="https://eleven-public-cdn.elevenlabs.io/payloadcms/pwsc4vchsqt-ElevenLabsGrants.webp" alt="ElevenLabs" style={{ width: '250px' }} loading="lazy" />
           </a>
         </div>
       </div>
